@@ -45,6 +45,13 @@
             {{ ('kind.' + kind) | t }}
           </app-button>
         }
+        <app-button
+          size="s"
+          [variant]="filters().favoriteOnly ? 'primary' : 'ghost'"
+          (click)="toggleFavoriteOnly()"
+        >
+          {{ 'library.filters.favoriteOnly' | t }}
+        </app-button>
       </div>
 
       <app-input
@@ -98,6 +105,12 @@
     <div class="library-page__grid">
       @for (item of visibleItems(); track item.id) {
         <a class="library-card" [routerLink]="['/item', item.id]">
+          <app-favorite-toggle
+            class="library-card__favorite"
+            [active]="!!item.favorite"
+            [ariaLabel]="favoriteAriaLabel(item)"
+            (toggled)="onToggleFavorite(item)"
+          />
           <div class="library-card__poster">
             @if (item.posterUrl) {
               <img class="library-card__poster-img" [src]="item.posterUrl" [alt]="item.title" loading="lazy" />

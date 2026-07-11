@@ -84,6 +84,7 @@
 }
 
 .library-card {
+  position: relative;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -105,6 +106,15 @@
     outline: 2px solid var(--color-primary);
     outline-offset: 2px;
   }
+}
+
+.library-card__favorite {
+  position: absolute;
+  top: var(--space-2);
+  right: var(--space-2);
+  z-index: 1;
+  background: color-mix(in srgb, var(--color-bg) 55%, transparent);
+  border-radius: var(--radius-s);
 }
 
 .library-card__poster {

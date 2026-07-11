@@ -65,6 +65,15 @@ export class ItemsRepository {
     this.mutationSeq.update((n) => n + 1);
   }
 
+  /** «Улюблене» (Step 11) — читає поточне значення і перемикає, той самий шлях, що update(). */
+  async toggleFavorite(id: string): Promise<void> {
+    const current = await this.db.items.get(id);
+    if (!current) {
+      return;
+    }
+    await this.update(id, { favorite: !current.favorite });
+  }
+
   async softDelete(id: string): Promise<void> {
     const now = new Date().toISOString();
     await this.db.items.update(id, { deletedAt: now, updatedAt: now });

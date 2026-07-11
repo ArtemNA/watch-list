@@ -106,7 +106,11 @@ function mergeLinks(local: CustomLink[], remote: CustomLink[]): CustomLink[] | n
 function contentEquals(a: MediaItem, b: MediaItem, includeDeleted = true): boolean {
   const sameFields =
     METADATA_FIELDS.every((field) => eq(a[field], b[field])) &&
-    USER_FIELDS.every((field) => eq(a[field], b[field]));
+    USER_FIELDS.every((field) => eq(a[field], b[field])) &&
+    // favorite: undefined і false — та сама семантика. Без цього порівняння
+    // зміна лише улюбленого в парі виглядала б як identical і губилась
+    // (знайдено живим ревью Step 11).
+    (a.favorite === true) === (b.favorite === true);
   if (!includeDeleted) {
     return sameFields;
   }
@@ -175,6 +179,11 @@ export function mergeItems(local: MediaItem, remote: MediaItem, nowIso: string):
     base.links = mergedLinks;
   }
 
+  // favorite — union-true БЕЗ діалогу (той самий компроміс, що воскресіння
+  // лінків): якщо хоч один бік улюбив — лишається улюбленим; «розлюбити»
+  // може програти лише в рідкісній гонці одночасних правок з двох пристроїв.
+  base.favorite = local.favorite === true || remote.favorite === true ? true : undefined;
+
   if (fields.length > 0) {
     return { kind: 'conflict', base, fields };
   }
@@ -192,27 +201,35 @@ export function mergeItems(local: MediaItem, remote: MediaItem, nowIso: string):
 
 // ---------------------------------------------------------------------------
 
-export interface ChangePair {
-  local: MediaItem;
-  remote: MediaItem;
+export interface ChangePair<T = MediaItem> {
+  local: T;
+  remote: T;
 }
 
-export interface Classified {
+export interface Classified<T = MediaItem> {
   /** Є лише в хмарі — застосувати локально без питань. */
-  remoteOnly: MediaItem[];
+  remoteOnly: T[];
   /** Є лише локально — запушити без питань. */
-  localOnly: MediaItem[];
-  /** Змінені з обох боків — через mergeItems. */
-  pairs: ChangePair[];
+  localOnly: T[];
+  /** Змінені з обох боків — через mergeItems/mergeLists. */
+  pairs: ChangePair<T>[];
 }
 
-/** Розкладає зміни з двох боків по кошиках за id. Чиста функція. */
-export function classifyChanges(localChanged: MediaItem[], remoteChanged: MediaItem[]): Classified {
+/**
+ * Розкладає зміни з двох боків по кошиках за id. Чиста функція, генерична за
+ * типом record'а (T extends { id }) — той самий алгоритм використовує і синк
+ * items, і синк lists (Step 11, core/sync/merge-lists.ts), інакше довелось би
+ * дублювати цю розкладку двічі.
+ */
+export function classifyChanges<T extends { id: string }>(
+  localChanged: T[],
+  remoteChanged: T[],
+): Classified<T> {
   const remoteById = new Map(remoteChanged.map((item) => [item.id, item]));
   const localIds = new Set(localChanged.map((item) => item.id));
 
-  const pairs: ChangePair[] = [];
-  const localOnly: MediaItem[] = [];
+  const pairs: ChangePair<T>[] = [];
+  const localOnly: T[] = [];
   for (const local of localChanged) {
     const remote = remoteById.get(local.id);
     if (remote) {

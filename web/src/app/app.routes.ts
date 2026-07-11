@@ -4,6 +4,8 @@ import { AuthPage } from './features/auth/auth-page/auth-page';
 import { DevUi } from './features/dev-ui/dev-ui';
 import { ItemPage } from './features/item/item-page/item-page';
 import { LibraryPage } from './features/library/library-page/library-page';
+import { ListDetailPage } from './features/lists/list-detail-page/list-detail-page';
+import { ListsPage } from './features/lists/lists-page/lists-page';
 import { PreviewPage } from './features/preview/preview-page/preview-page';
 import { SearchPage } from './features/search/search-page/search-page';
 import { SettingsPage } from './features/settings/settings-page/settings-page';
@@ -18,6 +20,8 @@ export const routes: Routes = [
       { path: '', component: LibraryPage },
       { path: 'search', component: SearchPage },
       { path: 'item/:id', component: ItemPage },
+      { path: 'lists', component: ListsPage },
+      { path: 'lists/:id', component: ListDetailPage },
       // Превью з пошуку БЕЗ додавання в бібліотеку (Step 13) — дані живуть тільки
       // в пам'яті сторінки, нічого не пишеться в IndexedDB.
       { path: 'preview/:kind/:tmdbId', component: PreviewPage },

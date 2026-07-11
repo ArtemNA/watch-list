@@ -1,0 +1,110 @@
+@if (list(); as l) {
+  <div class="list-detail-page">
+    <div class="list-detail-page__topbar">
+      <a class="list-detail-page__back" routerLink="/lists">{{ 'lists.backToLists' | t }}</a>
+      <div class="list-detail-page__topbar-actions">
+        <button
+          type="button"
+          class="list-detail-page__menu-btn"
+          [matMenuTriggerFor]="listMenu"
+          [attr.aria-label]="'lists.menu.ariaLabel' | t"
+        >
+          <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
+            <circle cx="12" cy="5" r="1.6" />
+            <circle cx="12" cy="12" r="1.6" />
+            <circle cx="12" cy="19" r="1.6" />
+          </svg>
+        </button>
+        <mat-menu #listMenu="matMenu">
+          <button mat-menu-item type="button" (click)="openRenameDialog()">{{ 'lists.menu.rename' | t }}</button>
+          <button mat-menu-item type="button" (click)="openDeleteConfirm()">{{ 'lists.menu.delete' | t }}</button>
+        </mat-menu>
+      </div>
+    </div>
+
+    <header class="list-detail-page__header">
+      <h1 class="list-detail-page__title">{{ l.name }}</h1>
+      @if (l.description) {
+        <p class="list-detail-page__description">{{ l.description }}</p>
+      }
+      <span class="list-detail-page__count">{{ 'lists.itemCount' | t: { count: l.entries.length } }}</span>
+    </header>
+
+    @if (l.entries.length === 0) {
+      <app-empty-state
+        [title]="'lists.detail.empty.title' | t"
+        [description]="'lists.detail.empty.description' | t"
+      />
+    } @else {
+      <div class="list-detail-page__grid">
+        @for (entry of l.entries; track entry.id) {
+          <div class="entry-card">
+            <button
+              type="button"
+              class="entry-card__remove"
+              [attr.aria-label]="'lists.detail.removeEntry' | t"
+              (click)="removeEntry(entry)"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                width="16"
+                height="16"
+              >
+                <line x1="6" y1="6" x2="18" y2="18" />
+                <line x1="18" y1="6" x2="6" y2="18" />
+              </svg>
+            </button>
+
+            @if (resolvedItem(entry); as resolved) {
+              <a class="entry-card__link" [routerLink]="['/item', resolved.id]">
+                <div class="entry-card__poster">
+                  @if (posterFor(entry)) {
+                    <img class="entry-card__poster-img" [src]="posterFor(entry)" [alt]="titleFor(entry)" loading="lazy" />
+                  } @else {
+                    <div class="entry-card__poster-placeholder"></div>
+                  }
+                </div>
+                <div class="entry-card__body">
+                  <app-chip [tone]="resolved.status">{{ ('status.' + resolved.status) | t }}</app-chip>
+                  <h3 class="entry-card__title">{{ titleFor(entry) }}</h3>
+                  @if (yearFor(entry)) {
+                    <span class="entry-card__year">{{ yearFor(entry) }}</span>
+                  }
+                </div>
+              </a>
+            } @else {
+              <div class="entry-card__link">
+                <div class="entry-card__poster">
+                  @if (posterFor(entry)) {
+                    <img class="entry-card__poster-img" [src]="posterFor(entry)" [alt]="titleFor(entry)" loading="lazy" />
+                  } @else {
+                    <div class="entry-card__poster-placeholder"></div>
+                  }
+                </div>
+                <div class="entry-card__body">
+                  <app-chip>{{ 'lists.detail.notInLibrary' | t }}</app-chip>
+                  <h3 class="entry-card__title">{{ titleFor(entry) }}</h3>
+                  @if (yearFor(entry)) {
+                    <span class="entry-card__year">{{ yearFor(entry) }}</span>
+                  }
+                  <app-button size="s" (click)="addToLibrary(entry)">
+                    {{ 'lists.detail.addToLibrary' | t }}
+                  </app-button>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    }
+  </div>
+} @else {
+  <div class="list-detail-page__not-found">
+    <p>{{ 'lists.detail.notFound' | t }}</p>
+    <a routerLink="/lists">{{ 'lists.backToLists' | t }}</a>
+  </div>
+}

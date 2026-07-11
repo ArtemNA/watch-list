@@ -1,0 +1,13 @@
+.list-form-dialog__content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  min-width: 280px;
+  padding-top: var(--space-1);
+}
+
+@media (max-width: 480px) {
+  .list-form-dialog__content {
+    min-width: 0;
+  }
+}

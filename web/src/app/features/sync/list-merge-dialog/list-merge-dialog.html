@@ -1,0 +1,68 @@
+<h2 mat-dialog-title>
+  {{ 'sync.merge.title' | t: { current: index() + 1, total: total } }}
+</h2>
+
+<mat-dialog-content>
+  <div class="list-merge__item">
+    <span class="list-merge__item-title">{{ title() }}</span>
+  </div>
+
+  @if (isDeletedConflict) {
+    <p class="list-merge__deleted-text">
+      {{ (deletedSide === 'local' ? 'sync.merge.deleted.localText' : 'sync.merge.deleted.remoteText') | t }}
+    </p>
+  } @else {
+    <div class="list-merge__bulk">
+      <button type="button" class="list-merge__bulk-btn" (click)="takeAll('local')">
+        {{ 'sync.merge.takeAllLocal' | t }}
+      </button>
+      <button type="button" class="list-merge__bulk-btn" (click)="takeAll('remote')">
+        {{ 'sync.merge.takeAllRemote' | t }}
+      </button>
+    </div>
+
+    <div class="list-merge__cols-head">
+      <span></span>
+      <span class="list-merge__col-label">{{ 'sync.merge.thisDevice' | t }}</span>
+      <span class="list-merge__col-label">{{ 'sync.merge.cloud' | t }}</span>
+    </div>
+
+    @for (field of current().fields; track field.field) {
+      <div class="list-merge__row">
+        <span class="list-merge__field-name">{{ fieldLabel(field.field) }}</span>
+        <button
+          type="button"
+          class="list-merge__value"
+          [class.list-merge__value--chosen]="choiceFor(field.field) === 'local'"
+          (click)="choose(field.field, 'local')"
+        >
+          {{ format(field.local) }}
+        </button>
+        <button
+          type="button"
+          class="list-merge__value"
+          [class.list-merge__value--chosen]="choiceFor(field.field) === 'remote'"
+          (click)="choose(field.field, 'remote')"
+        >
+          {{ format(field.remote) }}
+        </button>
+      </div>
+    }
+  }
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <app-button variant="ghost" (click)="skip()">{{ 'sync.merge.skip' | t }}</app-button>
+  @if (isDeletedConflict) {
+    <app-button variant="danger" (click)="resolveDeleted('delete')">
+      {{ 'sync.merge.deleted.delete' | t }}
+    </app-button>
+    <app-button variant="primary" (click)="resolveDeleted('restore')">
+      {{ 'sync.merge.deleted.restore' | t }}
+    </app-button>
+  } @else {
+    <app-button variant="primary" [disabled]="!allResolved()" (click)="saveFields()">
+      {{ 'sync.merge.save' | t }}
+    </app-button>
+  }
+</mat-dialog-actions>

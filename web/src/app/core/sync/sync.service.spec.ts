@@ -8,9 +8,18 @@ import { of } from 'rxjs';
 
 import { AppDb } from '../db/app-db';
 import type { MediaItem } from '../models/media-item.model';
+import type { ListEntry, MediaList } from '../models/media-list.model';
 import { MetaRepository } from '../data/meta.repository';
-import type { ConflictResolution, SyncConflict } from './sync.service';
+import type {
+  ConflictResolution,
+  ListConflictResolution,
+  ListSyncConflict,
+  SyncConflict,
+} from './sync.service';
 import { SyncService } from './sync.service';
+
+type AnyConflict = SyncConflict | ListSyncConflict;
+type AnyResolution = ConflictResolution | ListConflictResolution;
 
 /**
  * Крутить чергу мікрозадач/дінамічних import'ів, доки не з'явиться очікуваний
@@ -28,14 +37,16 @@ async function nextRequest(mock: HttpTestingController, url: string) {
 }
 
 class FakeDialog {
-  readonly calls: { data: { conflicts: SyncConflict[] } }[] = [];
-  private readonly queue: ConflictResolution[][] = [];
+  // Один double обслуговує і openMergeDialog (items), і openListMergeDialog
+  // (lists, Step 11) — обидва кличуть той самий injected MatDialog.
+  readonly calls: { data: { conflicts: AnyConflict[] } }[] = [];
+  private readonly queue: AnyResolution[][] = [];
 
-  enqueue(resolutions: ConflictResolution[]): void {
+  enqueue(resolutions: AnyResolution[]): void {
     this.queue.push(resolutions);
   }
 
-  open(_component: unknown, config: { data: { conflicts: SyncConflict[] } }) {
+  open(_component: unknown, config: { data: { conflicts: AnyConflict[] } }) {
     this.calls.push(config);
     const resolutions = this.queue.shift() ?? [];
     return { afterClosed: () => of(resolutions) };
@@ -48,6 +59,22 @@ const BASE = {
   status: 'watched' as const,
   title: 'Test Movie',
   links: [],
+  createdAt: '2026-01-01T00:00:00.000Z',
+};
+
+function listEntry(overrides: Partial<ListEntry>): ListEntry {
+  return {
+    id: 'entry-a',
+    kind: 'movie',
+    snapshot: { title: 'X' },
+    addedAt: '2026-01-01T00:00:00.000Z',
+    ...overrides,
+  };
+}
+
+const BASE_LIST = {
+  id: 'list-1',
+  name: 'Horror',
   createdAt: '2026-01-01T00:00:00.000Z',
 };
 
@@ -86,8 +113,11 @@ describe('SyncService — авто vs інтерактивний синк (step-
     sync = TestBed.inject(SyncService);
 
     // Поглинаємо порожній startup-синк, щоб він не заважав сценарію тесту.
+    // Items, потім lists — той самий послідовний цикл, що runSync (Step 11).
     const startupReq = await nextRequest(httpMock, '/api/sync/items');
     startupReq.flush({ items: [], next: null, serverTime: 'T0' });
+    const startupListsReq = await nextRequest(httpMock, '/api/sync/lists');
+    startupListsReq.flush({ items: [], next: null, serverTime: 'LT0' });
     await vi.waitFor(() => {
       if (sync.isSyncing()) {
         throw new Error('startup sync still running');
@@ -115,6 +145,8 @@ describe('SyncService — авто vs інтерактивний синк (step-
     const autoPromise = sync.sync({ interactive: false, silent: true });
     const autoReq = await nextRequest(httpMock, '/api/sync/items');
     autoReq.flush({ items: [remote], next: null, serverTime: 'T1' });
+    const autoListsReq = await nextRequest(httpMock, '/api/sync/lists');
+    autoListsReq.flush({ items: [], next: null, serverTime: 'LT1' });
     await autoPromise;
 
     expect(fakeDialog.calls.length).toBe(0);
@@ -135,6 +167,8 @@ describe('SyncService — авто vs інтерактивний синк (step-
     // Push злитого результату — POST-запит на той самий шлях.
     const pushReq = await nextRequest(httpMock, '/api/sync/items');
     pushReq.flush({ saved: ['item-1'], conflicts: [] });
+    const secondListsReq = await nextRequest(httpMock, '/api/sync/lists');
+    secondListsReq.flush({ items: [], next: null, serverTime: 'LT2' });
     await interactivePromise;
 
     expect(fakeDialog.calls.length).toBe(1);
@@ -158,6 +192,8 @@ describe('SyncService — авто vs інтерактивний синк (step-
     const firstPush = await nextRequest(httpMock, '/api/sync/items');
     expect(firstPush.request.method).toBe('POST');
     firstPush.flush({ saved: ['item-1'], conflicts: [] });
+    const firstListsPull = await nextRequest(httpMock, '/api/sync/lists');
+    firstListsPull.flush({ items: [], next: null, serverTime: 'LT1' });
     await firstPromise;
 
     // Крок 2: юзер редагує айтем (v2 локально). Наступний pull повертає ЛУНУ
@@ -173,11 +209,144 @@ describe('SyncService — авто vs інтерактивний синк (step-
     expect(secondPush.request.method).toBe('POST');
     expect((secondPush.request.body as { items: MediaItem[] }).items[0].myRating).toBe(9);
     secondPush.flush({ saved: ['item-1'], conflicts: [] });
+    const secondListsPull = await nextRequest(httpMock, '/api/sync/lists');
+    secondListsPull.flush({ items: [], next: null, serverTime: 'LT2' });
     const summary = await secondPromise;
 
     expect(fakeDialog.calls.length).toBe(0); // жодного діалогу
     expect(summary?.conflicts).toBe(0);
     expect(sync.pendingConflicts()).toBe(0);
     expect(await meta.get('sync.lastServerTime')).toBe('T2');
+  });
+
+  it('після помилки синку повторний sync() ПРАЦЮЄ (стан error не замикає синк назавжди — фікс ревью step-11)', async () => {
+    // Крок 1: синк падає (мережа/бекенд) → стан 'error'.
+    const failedPromise = sync.sync({ interactive: true }).catch(() => 'failed');
+    const failedPull = await nextRequest(httpMock, '/api/sync/items');
+    failedPull.flush({ error: 'INTERNAL_ERROR' }, { status: 500, statusText: 'Server Error' });
+    expect(await failedPromise).toBe('failed');
+    expect(sync.state()).toBe('error');
+
+    // Крок 2: «натисніть, щоб повторити» — повторний виклик має зробити НОВИЙ
+    // запит (з guard'ом `state() !== 'idle'` він мовчки повертав null).
+    const retryPromise = sync.sync({ interactive: true });
+    const retryPull = await nextRequest(httpMock, '/api/sync/items');
+    retryPull.flush({ items: [], next: null, serverTime: 'T1' });
+    const retryListsPull = await nextRequest(httpMock, '/api/sync/lists');
+    retryListsPull.flush({ items: [], next: null, serverTime: 'LT1' });
+    const summary = await retryPromise;
+
+    expect(summary).not.toBeNull();
+    expect(sync.state()).toBe('idle');
+  });
+});
+
+describe('SyncService — синк колекції lists (Step 11, ARCHITECTURE §9)', () => {
+  let sync: SyncService;
+  let db: AppDb;
+  let httpMock: HttpTestingController;
+  let fakeDialog: FakeDialog;
+
+  beforeAll(() => {
+    Dexie.dependencies.indexedDB = new IDBFactory();
+    Dexie.dependencies.IDBKeyRange = IDBKeyRange;
+  });
+
+  beforeEach(async () => {
+    localStorage.clear();
+    localStorage.setItem('watchlist.auth.token', 'test-token');
+    localStorage.setItem('watchlist.auth.email', 'test@example.com');
+
+    fakeDialog = new FakeDialog();
+    TestBed.configureTestingModule({
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        { provide: MatDialog, useValue: fakeDialog },
+      ],
+    });
+
+    db = TestBed.inject(AppDb);
+    httpMock = TestBed.inject(HttpTestingController);
+    sync = TestBed.inject(SyncService);
+
+    const startupReq = await nextRequest(httpMock, '/api/sync/items');
+    startupReq.flush({ items: [], next: null, serverTime: 'T0' });
+    const startupListsReq = await nextRequest(httpMock, '/api/sync/lists');
+    startupListsReq.flush({ items: [], next: null, serverTime: 'LT0' });
+    await vi.waitFor(() => {
+      if (sync.isSyncing()) {
+        throw new Error('startup sync still running');
+      }
+    });
+  });
+
+  afterEach(async () => {
+    httpMock.verify();
+    TestBed.resetTestingModule();
+    await db.delete();
+    localStorage.clear();
+  });
+
+  it('конфлікт name відкриває ListMergeDialog, а entries зливаються автоматично union — БЕЗ питань, навіть у base конфлікту', async () => {
+    const entryA = listEntry({ id: 'a', tmdbId: 1 });
+    const entryB = listEntry({ id: 'b', tmdbId: 2 });
+    const local: MediaList = {
+      ...BASE_LIST,
+      name: 'Local Name',
+      entries: [entryA],
+      updatedAt: '2026-07-11T10:00:00.000Z',
+    };
+    await db.lists.add(local);
+    const remote: MediaList = {
+      ...BASE_LIST,
+      name: 'Remote Name',
+      entries: [entryB],
+      updatedAt: '2026-07-11T10:05:00.000Z',
+    };
+
+    const resolved: MediaList = { ...local, name: 'Local Name', entries: [entryA, entryB] };
+    fakeDialog.enqueue([{ kind: 'resolved', item: resolved }]);
+
+    const promise = sync.sync({ interactive: true });
+    const itemsReq = await nextRequest(httpMock, '/api/sync/items');
+    itemsReq.flush({ items: [], next: null, serverTime: 'T1' });
+    const listsPull = await nextRequest(httpMock, '/api/sync/lists');
+    listsPull.flush({ items: [remote], next: null, serverTime: 'LT1' });
+    const listsPush = await nextRequest(httpMock, '/api/sync/lists');
+    listsPush.flush({ saved: ['list-1'], conflicts: [] });
+    await promise;
+
+    expect(fakeDialog.calls.length).toBe(1);
+    const shownConflict = fakeDialog.calls[0].data.conflicts[0] as ListSyncConflict;
+    expect(shownConflict.fields).toEqual([{ field: 'name', local: 'Local Name', remote: 'Remote Name' }]);
+    // Entries вже об'єднані в base конфлікту — юзера НІКОЛИ не питають про склад списку.
+    expect(shownConflict.base?.entries.map((e) => e.id).sort()).toEqual(['a', 'b']);
+
+    expect(sync.pendingConflicts()).toBe(0);
+  });
+
+  it('без конфліктів entries тихо зливаються (union) і пушаться — без відкриття діалогу взагалі', async () => {
+    const entryA = listEntry({ id: 'a', tmdbId: 1 });
+    const entryB = listEntry({ id: 'b', tmdbId: 2 });
+    const local: MediaList = { ...BASE_LIST, entries: [entryA], updatedAt: '2026-07-11T10:00:00.000Z' };
+    await db.lists.add(local);
+    const remote: MediaList = { ...BASE_LIST, entries: [entryB], updatedAt: '2026-07-11T10:05:00.000Z' };
+
+    const promise = sync.sync({ interactive: true });
+    const itemsReq = await nextRequest(httpMock, '/api/sync/items');
+    itemsReq.flush({ items: [], next: null, serverTime: 'T1' });
+    const listsPull = await nextRequest(httpMock, '/api/sync/lists');
+    listsPull.flush({ items: [remote], next: null, serverTime: 'LT1' });
+    const listsPush = await nextRequest(httpMock, '/api/sync/lists');
+    const pushedBody = listsPush.request.body as { items: MediaList[] };
+    expect(pushedBody.items[0].entries.map((e) => e.id).sort()).toEqual(['a', 'b']);
+    listsPush.flush({ saved: ['list-1'], conflicts: [] });
+    await promise;
+
+    expect(fakeDialog.calls.length).toBe(0);
+
+    const merged = await db.lists.get('list-1');
+    expect(merged?.entries.map((e) => e.id).sort()).toEqual(['a', 'b']);
   });
 });

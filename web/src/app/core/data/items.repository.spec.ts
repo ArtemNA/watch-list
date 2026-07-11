@@ -88,6 +88,21 @@ describe('ItemsRepository', () => {
     expect(visibleAfterRestore.some((i) => i.id === item.id)).toBe(true);
   });
 
+  it('toggleFavorite flips favorite (undefined -> true -> false) and bumps updatedAt', async () => {
+    const item = await repo.add({ kind: 'movie', status: 'want', title: 'Arrival' });
+    expect(item.favorite).toBeUndefined();
+    await delay(5);
+
+    await repo.toggleFavorite(item.id);
+    const favorited = await repo.getById(item.id);
+    expect(favorited?.favorite).toBe(true);
+    expect(favorited?.updatedAt).not.toBe(item.updatedAt);
+
+    await repo.toggleFavorite(item.id);
+    const unfavorited = await repo.getById(item.id);
+    expect(unfavorited?.favorite).toBe(false);
+  });
+
   it('changedSince filters items updated after the given timestamp', async () => {
     const before = new Date().toISOString();
     await delay(5);

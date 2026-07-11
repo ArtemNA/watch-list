@@ -25,6 +25,8 @@ function ensureIndexes(db: Db): Promise<void> {
     globalThis.__mongoIndexesPromise = Promise.all([
       db.collection('users').createIndex({ email: 1 }, { unique: true }),
       db.collection('items').createIndex({ userId: 1, id: 1 }, { unique: true }),
+      // Step 11: колекція lists — той самий unique index, що items (DECISIONS §9).
+      db.collection('lists').createIndex({ userId: 1, id: 1 }, { unique: true }),
     ]).then(() => undefined);
   }
   return globalThis.__mongoIndexesPromise;

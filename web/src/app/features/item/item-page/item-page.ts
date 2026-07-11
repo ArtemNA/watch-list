@@ -1,22 +1,28 @@
 import { Component, computed, effect, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { MatDialog } from '@angular/material/dialog';
+import { MatMenuModule } from '@angular/material/menu';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { map } from 'rxjs';
+import { firstValueFrom, map } from 'rxjs';
 
 import { languageForUi } from '../../../core/api/tmdb-language';
+import { entryFromItem, entryKey } from '../../../core/data/list-entry';
 import { ItemsRepository } from '../../../core/data/items.repository';
+import { ListsRepository } from '../../../core/data/lists.repository';
 import { I18nService } from '../../../core/i18n/i18n.service';
 import { TPipe } from '../../../core/i18n/t.pipe';
 import type { CustomLink, MediaItem, MediaStatus } from '../../../core/models/media-item.model';
+import type { MediaList } from '../../../core/models/media-list.model';
 import { AppButton } from '../../../shared/ui/button/app-button';
 import { AppCard } from '../../../shared/ui/card/app-card';
+import { AppFavoriteToggle } from '../../../shared/ui/favorite-toggle/app-favorite-toggle';
 import { AppInput } from '../../../shared/ui/input/app-input';
 import { AppRating } from '../../../shared/ui/rating/app-rating';
 import { DeleteConfirmDialog } from '../delete-confirm-dialog/delete-confirm-dialog';
 import { faviconUrl, normalizeUrl } from '../link-utils';
+import { ListFormDialog, type ListFormDialogResult } from '../../lists/list-form-dialog/list-form-dialog';
 import { MediaHeader } from '../media-header/media-header';
 import { MediaRatings } from '../media-ratings/media-ratings';
 import { MediaWatchProviders } from '../media-watch-providers/media-watch-providers';
@@ -32,8 +38,10 @@ const NOTES_DEBOUNCE_MS = 800;
     TPipe,
     AppButton,
     AppCard,
+    AppFavoriteToggle,
     AppInput,
     AppRating,
+    MatMenuModule,
     MatTooltipModule,
     MediaHeader,
     MediaRatings,
@@ -44,6 +52,7 @@ const NOTES_DEBOUNCE_MS = 800;
 })
 export class ItemPage {
   private readonly repo = inject(ItemsRepository);
+  private readonly listsRepo = inject(ListsRepository);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly dialog = inject(MatDialog);
@@ -61,6 +70,22 @@ export class ItemPage {
   protected readonly item = computed<MediaItem | null>(
     () => this.repo.items().find((candidate) => candidate.id === this.id()) ?? null,
   );
+
+  /** Списки, що вже містять цей айтем (резолв тим самим ключем, що list-detail-page). */
+  protected readonly listsForItem = computed<MediaList[]>(() => {
+    const current = this.item();
+    if (!current) {
+      return [];
+    }
+    const key = entryKey({ id: current.id, tmdbId: current.tmdbId });
+    return this.listsRepo.lists().filter((list) => list.entries.some((entry) => entryKey(entry) === key));
+  });
+
+  /** Списки в меню «Додати в список» — без тих, де айтем уже є. */
+  protected readonly listsAvailableToAdd = computed<MediaList[]>(() => {
+    const already = new Set(this.listsForItem().map((list) => list.id));
+    return this.listsRepo.lists().filter((list) => !already.has(list.id));
+  });
 
   // Нотатки: локальний драфт з debounce-автозбереженням, не читаємо напряму з item()
   // під час набору тексту — інакше кожен зовнішній рефреш items() перезаписав би
@@ -130,6 +155,16 @@ export class ItemPage {
 
   setStatus(item: MediaItem, status: MediaStatus): void {
     void this.repo.update(item.id, { status });
+  }
+
+  toggleFavorite(item: MediaItem): void {
+    void this.repo.toggleFavorite(item.id);
+  }
+
+  favoriteAriaLabel(item: MediaItem): string {
+    return this.i18n.t(item.favorite ? 'library.favorite.remove' : 'library.favorite.add', {
+      title: item.title,
+    });
   }
 
   onRatingChange(item: MediaItem, value: number): void {
@@ -234,6 +269,34 @@ export class ItemPage {
 
   openTmdbLinkSearch(item: MediaItem): void {
     void this.router.navigate(['/search'], { queryParams: { linkItemId: item.id, q: item.title } });
+  }
+
+  addToList(item: MediaItem, list: MediaList): void {
+    void this.listsRepo.addEntry(list.id, entryFromItem(item));
+  }
+
+  /** Хрестик на чіпі списку (item-page): видаляє тільки entry, статус айтема не чіпає. */
+  removeFromList(item: MediaItem, list: MediaList): void {
+    const key = entryKey({ id: item.id, tmdbId: item.tmdbId });
+    const entry = list.entries.find((candidate) => entryKey(candidate) === key);
+    if (!entry) {
+      return;
+    }
+    void this.listsRepo.removeEntry(list.id, entry.id);
+  }
+
+  removeFromListAriaLabel(list: MediaList): string {
+    return this.i18n.t('item.lists.removeFromList', { name: list.name });
+  }
+
+  async createListWithItem(item: MediaItem): Promise<void> {
+    const ref = this.dialog.open<ListFormDialog, unknown, ListFormDialogResult>(ListFormDialog);
+    const result = await firstValueFrom(ref.afterClosed());
+    if (!result) {
+      return;
+    }
+    const list = await this.listsRepo.create(result.name, result.description || undefined);
+    await this.listsRepo.addEntry(list.id, entryFromItem(item));
   }
 
   private async saveNotes(): Promise<void> {

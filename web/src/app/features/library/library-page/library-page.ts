@@ -10,6 +10,7 @@ import type { MediaItem, MediaKind, MediaStatus } from '../../../core/models/med
 import { AppButton } from '../../../shared/ui/button/app-button';
 import { AppChip } from '../../../shared/ui/chip/app-chip';
 import { AppEmptyState } from '../../../shared/ui/empty-state/app-empty-state';
+import { AppFavoriteToggle } from '../../../shared/ui/favorite-toggle/app-favorite-toggle';
 import { AppInput } from '../../../shared/ui/input/app-input';
 import { AppRating } from '../../../shared/ui/rating/app-rating';
 import { AddItemDialog } from '../add-item-dialog/add-item-dialog';
@@ -35,7 +36,7 @@ function parseSortFilter(raw: string | null): LibrarySort {
 
 @Component({
   selector: 'app-library-page',
-  imports: [RouterLink, TPipe, AppButton, AppChip, AppEmptyState, AppInput, AppRating],
+  imports: [RouterLink, TPipe, AppButton, AppChip, AppEmptyState, AppFavoriteToggle, AppInput, AppRating],
   templateUrl: './library-page.html',
   styleUrl: './library-page.scss',
 })
@@ -61,6 +62,7 @@ export class LibraryPage {
       kind: parseKindFilter(params.get('kind')),
       search: params.get('q') ?? '',
       sort: parseSortFilter(params.get('sort')),
+      favoriteOnly: params.get('fav') === '1',
     };
   });
 
@@ -92,6 +94,20 @@ export class LibraryPage {
     this.updateFilters({ kind });
   }
 
+  toggleFavoriteOnly(): void {
+    this.updateFilters({ favoriteOnly: !this.filters().favoriteOnly });
+  }
+
+  onToggleFavorite(item: MediaItem): void {
+    void this.repo.toggleFavorite(item.id);
+  }
+
+  protected favoriteAriaLabel(item: MediaItem): string {
+    return this.i18n.t(item.favorite ? 'library.favorite.remove' : 'library.favorite.add', {
+      title: item.title,
+    });
+  }
+
   onSortChange(event: Event): void {
     this.updateFilters({ sort: (event.target as HTMLSelectElement).value as LibrarySort });
   }
@@ -121,6 +137,7 @@ export class LibraryPage {
         kind: next.kind === 'all' ? null : next.kind,
         q: next.search || null,
         sort: next.sort === 'addedDesc' ? null : next.sort,
+        fav: next.favoriteOnly ? '1' : null,
       },
       queryParamsHandling: 'merge',
       replaceUrl: true,

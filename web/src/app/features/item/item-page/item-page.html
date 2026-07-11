@@ -3,6 +3,11 @@
     <div class="item-page__topbar">
       <a class="item-page__back" routerLink="/">{{ 'item.backToLibrary' | t }}</a>
       <div class="item-page__topbar-actions">
+        <app-favorite-toggle
+          [active]="!!it.favorite"
+          [ariaLabel]="favoriteAriaLabel(it)"
+          (toggled)="toggleFavorite(it)"
+        />
         @if (it.tmdbId) {
           <app-button
             variant="ghost"
@@ -90,6 +95,51 @@
           }
         </span>
       </div>
+    </app-card>
+
+    <app-card class="item-page__section" [title]="'item.lists.title' | t">
+      @if (listsForItem().length > 0) {
+        <div class="item-page__lists-chips">
+          @for (list of listsForItem(); track list.id) {
+            <div class="item-page__list-chip">
+              <a class="item-page__list-chip-link" [routerLink]="['/lists', list.id]">{{ list.name }}</a>
+              <button
+                type="button"
+                class="item-page__list-chip-remove"
+                [attr.aria-label]="removeFromListAriaLabel(list)"
+                (click)="removeFromList(it, list)"
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  width="12"
+                  height="12"
+                >
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                </svg>
+              </button>
+            </div>
+          }
+        </div>
+      } @else {
+        <p class="item-page__lists-empty">{{ 'item.lists.empty' | t }}</p>
+      }
+
+      <app-button size="s" variant="ghost" [matMenuTriggerFor]="addToListMenu">
+        {{ 'item.lists.add' | t }}
+      </app-button>
+      <mat-menu #addToListMenu="matMenu">
+        @for (list of listsAvailableToAdd(); track list.id) {
+          <button mat-menu-item type="button" (click)="addToList(it, list)">{{ list.name }}</button>
+        }
+        <button mat-menu-item type="button" (click)="createListWithItem(it)">
+          {{ 'item.lists.createNew' | t }}
+        </button>
+      </mat-menu>
     </app-card>
 
     <app-card class="item-page__section" [title]="'item.links.title' | t">

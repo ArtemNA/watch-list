@@ -100,6 +100,18 @@ describe('filterAndSortItems', () => {
     expect(result.map((i) => i.id)).toEqual(['b', 'a', 'c']);
   });
 
+  it('filters by favoriteOnly', () => {
+    const items = [
+      item({ id: 'a', favorite: true }),
+      item({ id: 'b', favorite: false }),
+      item({ id: 'c' }),
+    ];
+
+    const result = filterAndSortItems(items, { ...DEFAULT_LIBRARY_FILTERS, favoriteOnly: true });
+
+    expect(result.map((i) => i.id)).toEqual(['a']);
+  });
+
   it('sorts by my rating descending, treating unrated as lowest', () => {
     const items = [
       item({ id: 'a', myRating: 6 }),

@@ -73,6 +73,7 @@ async function main() {
   const registerHandler = (await import('./api/auth/register.ts')).default;
   const loginHandler = (await import('./api/auth/login.ts')).default;
   const syncItemsHandler = (await import('./api/sync/items.ts')).default;
+  const syncListsHandler = (await import('./api/sync/lists.ts')).default;
 
   const port = Number(process.env['PORT']) || 3000;
 
@@ -100,7 +101,7 @@ async function main() {
       return;
     }
 
-    if (url.pathname === '/api/sync/items') {
+    if (url.pathname === '/api/sync/items' || url.pathname === '/api/sync/lists') {
       req.query = query;
       if (req.method === 'POST') {
         try {
@@ -110,7 +111,8 @@ async function main() {
           return;
         }
       }
-      void syncItemsHandler(req, res);
+      const handler = url.pathname === '/api/sync/items' ? syncItemsHandler : syncListsHandler;
+      void handler(req, res);
       return;
     }
 

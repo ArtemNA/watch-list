@@ -148,6 +148,31 @@ describe('mergeItems', () => {
   });
 });
 
+describe('mergeItems — favorite (фікс ревью step-11: губилось у синку)', () => {
+  it('зміна лише favorite НЕ вважається identical — favorite-бік перемагає', () => {
+    const local = item({ favorite: true });
+    const remote = item({ updatedAt: '2026-07-10T05:00:00.000Z' });
+    expect(mergeItems(local, remote, NOW)).toEqual({ kind: 'useLocal' });
+  });
+
+  it('favorite зливається union-true разом з іншими авто-полями', () => {
+    const local = item({ favorite: true });
+    const remote = item({ notes: 'нотатка', updatedAt: '2026-07-10T05:00:00.000Z' });
+    const result = mergeItems(local, remote, NOW);
+    expect(result.kind).toBe('merged');
+    if (result.kind === 'merged') {
+      expect(result.item.favorite).toBe(true);
+      expect(result.item.notes).toBe('нотатка');
+    }
+  });
+
+  it('favorite: false і undefined — та сама семантика (identical)', () => {
+    const local = item({ favorite: false });
+    const remote = item({ updatedAt: '2026-07-10T05:00:00.000Z' });
+    expect(mergeItems(local, remote, NOW)).toEqual({ kind: 'identical' });
+  });
+});
+
 describe('classifyChanges', () => {
   it('розкладає зміни на remoteOnly / localOnly / pairs за id', () => {
     const shared = item({ id: '22222222-2222-4222-8222-222222222222' });

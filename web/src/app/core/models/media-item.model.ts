@@ -60,6 +60,7 @@ export interface MediaItem {
   notes?: string; // plain text / markdown
   links: CustomLink[];
   watchedAt?: string; // ISO-дата коли подивився
+  favorite?: boolean; // «Улюблене» (Dexie v2, Step 11); undefined === false
 
   // Службове
   createdAt: string; // ISO

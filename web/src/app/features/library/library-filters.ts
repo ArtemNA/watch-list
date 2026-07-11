@@ -9,6 +9,7 @@ export interface LibraryFilters {
   kind: KindFilter;
   search: string;
   sort: LibrarySort;
+  favoriteOnly: boolean;
 }
 
 export const DEFAULT_LIBRARY_FILTERS: LibraryFilters = {
@@ -16,6 +17,7 @@ export const DEFAULT_LIBRARY_FILTERS: LibraryFilters = {
   kind: 'all',
   search: '',
   sort: 'addedDesc',
+  favoriteOnly: false,
 };
 
 /** Чиста функція фільтрації + сортування бібліотеки — винесена для юніт-тестів. */
@@ -27,6 +29,9 @@ export function filterAndSortItems(items: MediaItem[], filters: LibraryFilters):
       return false;
     }
     if (filters.kind !== 'all' && item.kind !== filters.kind) {
+      return false;
+    }
+    if (filters.favoriteOnly && !item.favorite) {
       return false;
     }
     if (search && !matchesSearch(item, search)) {

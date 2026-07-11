@@ -35,3 +35,14 @@ describe('sanitizeSyncItem — metadataLang (Step 10)', () => {
     expect(result?.metadataLang).toBeUndefined();
   });
 });
+
+describe('sanitizeSyncItem — favorite (Step 11, фікс ревью: санітизація стирала поле)', () => {
+  it('favorite: true проходить санітизацію (НЕ стирається)', () => {
+    expect(sanitizeSyncItem(baseItem({ favorite: true }))?.favorite).toBe(true);
+  });
+
+  it('false і не-boolean нормалізуються в undefined', () => {
+    expect(sanitizeSyncItem(baseItem({ favorite: false }))?.favorite).toBeUndefined();
+    expect(sanitizeSyncItem(baseItem({ favorite: 'yes' }))?.favorite).toBeUndefined();
+  });
+});

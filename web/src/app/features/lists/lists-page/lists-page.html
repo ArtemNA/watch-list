@@ -1,0 +1,97 @@
+<div class="lists-page">
+  <header class="lists-page__header">
+    <h1 class="lists-page__title">{{ 'lists.title' | t }}</h1>
+    <app-button (click)="openCreateDialog()">{{ 'lists.new' | t }}</app-button>
+  </header>
+
+  <section class="lists-page__section">
+    <h2 class="lists-page__section-title">{{ 'lists.derived.sectionTitle' | t }}</h2>
+    <div class="lists-page__grid">
+      @for (list of derivedLists(); track list.key) {
+        <a class="list-card" routerLink="/" [queryParams]="derivedListQueryParams(list.key)">
+          <div class="list-card__cover">
+            @if (derivedListCover(list).length > 0) {
+              @for (poster of derivedListCover(list); track poster) {
+                <img class="list-card__cover-img" [src]="poster" alt="" loading="lazy" />
+              }
+            } @else {
+              <div class="list-card__cover-placeholder"></div>
+            }
+          </div>
+          <div class="list-card__body">
+            <h3 class="list-card__title">{{ list.titleKey | t }}</h3>
+            <span class="list-card__count">{{ 'lists.itemCount' | t: { count: list.items.length } }}</span>
+          </div>
+        </a>
+      }
+    </div>
+  </section>
+
+  <section class="lists-page__section">
+    <h2 class="lists-page__section-title">{{ 'lists.custom.sectionTitle' | t }}</h2>
+
+    @if (customLists().length === 0) {
+      <app-empty-state
+        [title]="'lists.custom.empty.title' | t"
+        [description]="'lists.custom.empty.description' | t"
+      >
+        <svg
+          icon
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M4 6h16M4 12h10M4 18h10" />
+          <circle cx="19" cy="17" r="3" />
+          <path d="M19 16v2M18 17h2" />
+        </svg>
+        <app-button action (click)="openCreateDialog()">{{ 'lists.new' | t }}</app-button>
+      </app-empty-state>
+    } @else {
+      <div class="lists-page__grid">
+        @for (list of customLists(); track list.id) {
+          <div class="list-card">
+            <a class="list-card__link" [routerLink]="['/lists', list.id]">
+              <div class="list-card__cover">
+                @if (customListCover(list).length > 0) {
+                  @for (poster of customListCover(list); track poster) {
+                    <img class="list-card__cover-img" [src]="poster" alt="" loading="lazy" />
+                  }
+                } @else {
+                  <div class="list-card__cover-placeholder"></div>
+                }
+              </div>
+              <div class="list-card__body">
+                <h3 class="list-card__title">{{ list.name }}</h3>
+                <span class="list-card__count">{{ 'lists.itemCount' | t: { count: list.entries.length } }}</span>
+              </div>
+            </a>
+            <button
+              type="button"
+              class="list-card__menu-btn"
+              [matMenuTriggerFor]="listMenu"
+              [attr.aria-label]="'lists.menu.ariaLabel' | t"
+            >
+              <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
+                <circle cx="12" cy="5" r="1.6" />
+                <circle cx="12" cy="12" r="1.6" />
+                <circle cx="12" cy="19" r="1.6" />
+              </svg>
+            </button>
+            <mat-menu #listMenu="matMenu">
+              <button mat-menu-item type="button" (click)="openRenameDialog(list)">
+                {{ 'lists.menu.rename' | t }}
+              </button>
+              <button mat-menu-item type="button" (click)="openDeleteConfirm(list)">
+                {{ 'lists.menu.delete' | t }}
+              </button>
+            </mat-menu>
+          </div>
+        }
+      </div>
+    }
+  </section>
+</div>

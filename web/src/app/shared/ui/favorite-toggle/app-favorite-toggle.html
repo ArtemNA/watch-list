@@ -1,0 +1,23 @@
+<button
+  type="button"
+  class="app-favorite-toggle"
+  [class.app-favorite-toggle--active]="active()"
+  [attr.aria-pressed]="active()"
+  [attr.aria-label]="ariaLabel()"
+  (click)="onClick($event)"
+>
+  <svg
+    viewBox="0 0 24 24"
+    [attr.fill]="active() ? 'currentColor' : 'none'"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    width="20"
+    height="20"
+  >
+    <path
+      d="M12 20.5s-7.5-4.6-10-9.3C.4 8 1.6 4.5 4.8 3.4c2.2-.8 4.6 0 6 1.9l1.2 1.6 1.2-1.6c1.4-1.9 3.8-2.7 6-1.9 3.2 1.1 4.4 4.6 2.8 7.8-2.5 4.7-10 9.3-10 9.3z"
+    />
+  </svg>
+</button>

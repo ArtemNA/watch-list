@@ -89,6 +89,18 @@
   </section>
 
   <section class="dev-ui__section">
+    <h2>{{ 'devUi.section.favoriteToggle' | t }}</h2>
+    <div class="dev-ui__row">
+      <app-favorite-toggle
+        [active]="favoriteDemo()"
+        [ariaLabel]="'devUi.favoriteToggle.ariaLabel' | t"
+        (toggled)="toggleFavoriteDemo()"
+      />
+      <app-favorite-toggle [active]="true" [ariaLabel]="'devUi.favoriteToggle.ariaLabel' | t" />
+    </div>
+  </section>
+
+  <section class="dev-ui__section">
     <h2>{{ 'devUi.section.dialog' | t }}</h2>
     <app-button (click)="openTestDialog()">{{ 'devUi.openDialog' | t }}</app-button>
   </section>
