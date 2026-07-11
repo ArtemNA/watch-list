@@ -5,6 +5,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { I18nService } from '../../../core/i18n/i18n.service';
 import { TPipe } from '../../../core/i18n/t.pipe';
 import type { MediaStatus } from '../../../core/models/media-item.model';
+import { OnlineStatus } from '../../../core/network/online-status.service';
 import { AppButton } from '../../../shared/ui/button/app-button';
 import { AppChip } from '../../../shared/ui/chip/app-chip';
 import { AppEmptyState } from '../../../shared/ui/empty-state/app-empty-state';
@@ -32,6 +33,7 @@ export class SearchPage {
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   protected readonly i18n = inject(I18nService);
+  protected readonly online = inject(OnlineStatus);
 
   protected readonly queryDraft = signal('');
   protected readonly status = signal<SearchStatus>('idle');

@@ -1,0 +1,85 @@
+<div class="settings-page">
+  <h1 class="settings-page__title">{{ 'settings.title' | t }}</h1>
+
+  <app-card class="settings-page__section" [title]="'settings.backup.title' | t">
+    <p class="settings-page__hint">{{ 'settings.backup.hint' | t: { count: itemCount() } }}</p>
+
+    <div class="settings-page__row">
+      <app-button size="s" (click)="exportBackup()">{{ 'settings.backup.export' | t }}</app-button>
+    </div>
+
+    <div class="settings-page__divider"></div>
+
+    @switch (importState()) {
+      @case ('idle') {
+        <input
+          #fileInput
+          type="file"
+          accept="application/json,.json"
+          class="settings-page__file-input"
+          (change)="onFileSelected($event)"
+          hidden
+        />
+        <div class="settings-page__row">
+          <app-button size="s" variant="ghost" (click)="fileInput.click()">
+            {{ 'settings.backup.import.chooseFile' | t }}
+          </app-button>
+        </div>
+        @if (importError()) {
+          <p class="settings-page__error">{{ importError() }}</p>
+        }
+      }
+      @case ('previewing') {
+        @if (preview(); as p) {
+          <div class="settings-page__preview">
+            <p class="settings-page__preview-file">{{ p.fileName }}</p>
+            <p>{{ 'settings.backup.import.preview.total' | t: { count: p.total } }}</p>
+            <p>{{ 'settings.backup.import.preview.new' | t: { count: p.newCount } }}</p>
+            <p>{{ 'settings.backup.import.preview.matching' | t: { count: p.matchingCount } }}</p>
+          </div>
+          <div class="settings-page__row">
+            <app-button size="s" variant="ghost" (click)="cancelImport()">{{ 'common.cancel' | t }}</app-button>
+            <app-button size="s" (click)="confirmImport()">{{ 'settings.backup.import.confirm' | t }}</app-button>
+          </div>
+        }
+      }
+      @case ('importing') {
+        <p class="settings-page__hint">{{ 'settings.backup.import.importing' | t }}</p>
+      }
+    }
+  </app-card>
+
+  <app-card class="settings-page__section" [title]="'settings.appearance.title' | t">
+    <div class="settings-page__field">
+      <span class="settings-page__field-label">{{ 'shell.theme.label' | t }}</span>
+      <div class="settings-page__toggle-group" role="group" [attr.aria-label]="'shell.theme.label' | t">
+        <app-button
+          size="s"
+          [variant]="theme.theme() === 'dark' ? 'primary' : 'ghost'"
+          (click)="theme.setTheme('dark')"
+        >
+          {{ 'settings.appearance.themeDark' | t }}
+        </app-button>
+        <app-button
+          size="s"
+          [variant]="theme.theme() === 'light' ? 'primary' : 'ghost'"
+          (click)="theme.setTheme('light')"
+        >
+          {{ 'settings.appearance.themeLight' | t }}
+        </app-button>
+      </div>
+    </div>
+
+    <div class="settings-page__field">
+      <span class="settings-page__field-label">{{ 'shell.lang.label' | t }}</span>
+      <div class="settings-page__toggle-group" role="group" [attr.aria-label]="'shell.lang.label' | t">
+        <app-button size="s" [variant]="i18n.lang() === 'uk' ? 'primary' : 'ghost'" (click)="setLang('uk')">
+          UK
+        </app-button>
+        <app-button size="s" [variant]="i18n.lang() === 'en' ? 'primary' : 'ghost'" (click)="setLang('en')">
+          EN
+        </app-button>
+      </div>
+    </div>
+  </app-card>
+</div>

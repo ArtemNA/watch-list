@@ -4,6 +4,22 @@
   flex-wrap: wrap;
 }
 
+// Компактний режим (step-09, 4б): одна зірка + число, замість 10-зіркового
+// рядка, що на картках бібліотеки переносився в 2-3 рядки.
+.app-rating--compact {
+  align-items: center;
+  gap: 2px;
+  flex-wrap: nowrap;
+  font-size: var(--font-size-s);
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.app-rating__compact-star {
+  color: var(--color-accent);
+  line-height: 1;
+}
+
 .app-rating__star {
   display: inline-flex;
   align-items: center;

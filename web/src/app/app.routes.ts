@@ -5,6 +5,8 @@ import { DevUi } from './features/dev-ui/dev-ui';
 import { ItemPage } from './features/item/item-page/item-page';
 import { LibraryPage } from './features/library/library-page/library-page';
 import { SearchPage } from './features/search/search-page/search-page';
+import { SettingsPage } from './features/settings/settings-page/settings-page';
+import { devOnlyGuard } from './core/dev-only.guard';
 import { Shell } from './shell/shell';
 
 export const routes: Routes = [
@@ -16,7 +18,10 @@ export const routes: Routes = [
       { path: 'search', component: SearchPage },
       { path: 'item/:id', component: ItemPage },
       { path: 'auth', component: AuthPage },
-      { path: 'dev/ui', component: DevUi },
+      { path: 'settings', component: SettingsPage },
+      // /dev/ui — постійна демо-сторінка дизайн-системи (CLAUDE.md, DECISIONS #14),
+      // у проді ховається guard'ом, з коду НЕ видаляється (Step 09, задача 5).
+      { path: 'dev/ui', component: DevUi, canActivate: [devOnlyGuard] },
     ],
   },
 ];

@@ -1,6 +1,7 @@
 {
   "app.title": "WatchList",
   "nav.search": "Search",
+  "nav.settings": "Settings",
   "nav.login": "Log in",
   "nav.login.tooltip": "Only needed to sync between devices",
   "nav.account.menuAriaLabel": "Account",
@@ -8,8 +9,21 @@
   "nav.account.syncing": "Syncing...",
   "nav.account.logout": "Log out",
 
+  "shell.offline.label": "Offline",
+  "shell.offline.tooltip": "No network connection. Library and editing still work; sync and search are unavailable.",
+
+  "pwa.updateAvailable": "A new version of WatchList is available.",
+  "pwa.updateAction": "Update",
+
   "sync.summary": "Synced: ↓{{pulled}} ↑{{pushed}}, conflicts: {{conflicts}}",
   "sync.error": "Sync failed. Try again later.",
+  "sync.indicator.syncing": "Syncing...",
+  "sync.indicator.error": "Sync failed. Click to retry.",
+  "sync.indicator.conflicts": "Conflicts to resolve: {{count}}. Click to open.",
+  "sync.indicator.neverSynced": "Not synced yet. Click to sync.",
+  "sync.indicator.synced": "Last synced: {{time}}",
+  "sync.indicator.justNow": "just now",
+  "sync.indicator.minutesAgo": "{{minutes}} min ago",
   "sync.merge.title": "Conflict {{current}} of {{total}}",
   "sync.merge.thisDevice": "On this device",
   "sync.merge.cloud": "In the cloud",
@@ -152,6 +166,8 @@
   "item.metadata.lastUpdated": "Last refreshed: {{date}}",
 
   "search.title": "TMDB search",
+  "search.offline.title": "Search is unavailable offline",
+  "search.offline.description": "Searching for movies and shows needs a network connection. Your library and editing still work offline.",
   "search.placeholder": "Enter a movie or show title (min. 2 characters)...",
   "search.hint": "Enter at least 2 characters to start searching.",
   "search.loading": "Searching...",
@@ -191,5 +207,21 @@
   "auth.errors.invalidCredentials": "Invalid email or password",
   "auth.errors.tooManyRequests": "Too many attempts. Please try again later.",
   "auth.errors.unknown": "Something went wrong. Please try again.",
-  "auth.sessionExpired": "Your session has expired. Please log in again."
+  "auth.sessionExpired": "Your session has expired. Please log in again.",
+
+  "settings.title": "Settings",
+  "settings.backup.title": "Backup",
+  "settings.backup.hint": "Your library has {{count}} items.",
+  "settings.backup.export": "Export JSON",
+  "settings.backup.import.chooseFile": "Choose a file to import",
+  "settings.backup.import.errors.invalidFile": "Couldn't read the file. Make sure it's a WatchList backup (JSON).",
+  "settings.backup.import.preview.total": "In file: {{count}} items.",
+  "settings.backup.import.preview.new": "New (not yet in your library): {{count}}.",
+  "settings.backup.import.preview.matching": "Matching existing items by id: {{count}}.",
+  "settings.backup.import.confirm": "Import",
+  "settings.backup.import.importing": "Importing...",
+  "settings.backup.import.success": "Imported: {{imported}}, skipped (conflict): {{skipped}}.",
+  "settings.appearance.title": "Appearance",
+  "settings.appearance.themeDark": "Dark",
+  "settings.appearance.themeLight": "Light"
 }

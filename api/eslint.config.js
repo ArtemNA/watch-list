@@ -16,5 +16,11 @@ module.exports = tseslint.config(
         tsconfigRootDir: __dirname,
       },
     },
+    rules: {
+      // Дозволяє конвенцію "_ім'я" для навмисно невикористаних змінних —
+      // зокрема паттерн `const { field: _field, ...rest } = obj` (strip полів
+      // через деструктуризацію+rest), як у api/sync/items.ts stripDoc().
+      '@typescript-eslint/no-unused-vars': ['error', { varsIgnorePattern: '^_', argsIgnorePattern: '^_' }],
+    },
   },
 );

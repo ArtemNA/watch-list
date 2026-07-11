@@ -4,6 +4,10 @@ import { firstValueFrom } from 'rxjs';
 
 const TOKEN_KEY = 'watchlist.auth.token';
 const EMAIL_KEY = 'watchlist.auth.email';
+// НЕ чиститься в logout() — постійний маркер "юзер хоч раз логінився на цьому
+// пристрої" (Step 09, задача 6: вакуум tombstones дозволений без синку лише
+// якщо синкати нема з ким, тобто юзер НІКОЛИ не логінився).
+const EVER_LOGGED_IN_KEY = 'watchlist.auth.everLoggedIn';
 
 export type AuthErrorCode =
   | 'INVALID_EMAIL'
@@ -57,6 +61,11 @@ export class AuthService {
     localStorage.removeItem(EMAIL_KEY);
   }
 
+  /** Юзер хоч раз логінився на цьому пристрої (навіть якщо зараз розлогінений). */
+  hasEverLoggedIn(): boolean {
+    return localStorage.getItem(EVER_LOGGED_IN_KEY) === '1';
+  }
+
   private async authenticate(url: string, email: string, password: string): Promise<void> {
     let response: AuthResponse;
     try {
@@ -69,6 +78,7 @@ export class AuthService {
     this.email.set(response.email);
     localStorage.setItem(TOKEN_KEY, response.token);
     localStorage.setItem(EMAIL_KEY, response.email);
+    localStorage.setItem(EVER_LOGGED_IN_KEY, '1');
   }
 
   private mapErrorCode(error: unknown): AuthErrorCode {

@@ -1,6 +1,7 @@
 {
   "app.title": "WatchList",
   "nav.search": "Пошук",
+  "nav.settings": "Налаштування",
   "nav.login": "Увійти",
   "nav.login.tooltip": "Потрібно лише для синхронізації між пристроями",
   "nav.account.menuAriaLabel": "Акаунт",
@@ -8,8 +9,21 @@
   "nav.account.syncing": "Синхронізація...",
   "nav.account.logout": "Вийти",
 
+  "shell.offline.label": "Офлайн",
+  "shell.offline.tooltip": "Немає з'єднання з мережею. Бібліотека і редагування працюють, синк і пошук — недоступні.",
+
+  "pwa.updateAvailable": "Доступна нова версія WatchList.",
+  "pwa.updateAction": "Оновити",
+
   "sync.summary": "Синхронізовано: ↓{{pulled}} ↑{{pushed}}, конфліктів: {{conflicts}}",
   "sync.error": "Не вдалося синхронізувати. Спробуйте пізніше.",
+  "sync.indicator.syncing": "Синхронізація...",
+  "sync.indicator.error": "Помилка синхронізації. Натисніть, щоб повторити.",
+  "sync.indicator.conflicts": "Є конфлікти для вирішення: {{count}}. Натисніть, щоб відкрити.",
+  "sync.indicator.neverSynced": "Ще не синхронізовано. Натисніть, щоб синхронізувати.",
+  "sync.indicator.synced": "Останній синк: {{time}}",
+  "sync.indicator.justNow": "щойно",
+  "sync.indicator.minutesAgo": "{{minutes}} хв тому",
   "sync.merge.title": "Конфлікт {{current}} з {{total}}",
   "sync.merge.thisDevice": "На цьому пристрої",
   "sync.merge.cloud": "У хмарі",
@@ -152,6 +166,8 @@
   "item.metadata.lastUpdated": "Востаннє оновлено: {{date}}",
 
   "search.title": "Пошук TMDB",
+  "search.offline.title": "Пошук недоступний офлайн",
+  "search.offline.description": "Для пошуку фільмів і серіалів потрібне з'єднання з мережею. Бібліотека і редагування працюють без мережі.",
   "search.placeholder": "Введіть назву фільму чи серіалу (мін. 2 символи)...",
   "search.hint": "Введіть щонайменше 2 символи, щоб почати пошук.",
   "search.loading": "Шукаємо...",
@@ -191,5 +207,21 @@
   "auth.errors.invalidCredentials": "Невірний email або пароль",
   "auth.errors.tooManyRequests": "Забагато спроб. Спробуйте пізніше.",
   "auth.errors.unknown": "Щось пішло не так. Спробуйте ще раз.",
-  "auth.sessionExpired": "Сесію завершено. Увійдіть знову."
+  "auth.sessionExpired": "Сесію завершено. Увійдіть знову.",
+
+  "settings.title": "Налаштування",
+  "settings.backup.title": "Бекап",
+  "settings.backup.hint": "У бібліотеці {{count}} айтемів.",
+  "settings.backup.export": "Експортувати JSON",
+  "settings.backup.import.chooseFile": "Обрати файл для імпорту",
+  "settings.backup.import.errors.invalidFile": "Не вдалося прочитати файл. Перевірте, що це бекап WatchList (JSON).",
+  "settings.backup.import.preview.total": "У файлі: {{count}} айтемів.",
+  "settings.backup.import.preview.new": "Нових (яких ще немає в бібліотеці): {{count}}.",
+  "settings.backup.import.preview.matching": "Збігаються по id з наявними: {{count}}.",
+  "settings.backup.import.confirm": "Імпортувати",
+  "settings.backup.import.importing": "Імпортуємо...",
+  "settings.backup.import.success": "Імпортовано: {{imported}}, пропущено (конфлікт): {{skipped}}.",
+  "settings.appearance.title": "Вигляд",
+  "settings.appearance.themeDark": "Темна",
+  "settings.appearance.themeLight": "Світла"
 }

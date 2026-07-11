@@ -61,8 +61,10 @@
 
 .shell__actions {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: var(--space-3);
+  justify-content: flex-end;
+  gap: var(--space-2) var(--space-3);
 }
 
 .shell__login-link {
@@ -87,6 +89,86 @@
     outline: 2px solid var(--color-primary);
     outline-offset: -2px;
   }
+}
+
+.shell__offline {
+  display: inline-flex;
+  align-items: center;
+  height: 36px;
+  padding: 0 var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-s);
+  background: var(--color-surface-2);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-s);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.shell__sync-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  flex: 0 0 auto;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-s);
+  background: transparent;
+  color: var(--color-success);
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+
+  &:hover:not(:disabled) {
+    background: var(--color-surface-2);
+  }
+
+  &:disabled {
+    cursor: default;
+    opacity: 0.7;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+
+  &--error {
+    color: var(--color-danger);
+  }
+}
+
+.shell__sync-icon--spin {
+  color: var(--color-text-muted);
+  animation: shell-sync-spin 900ms linear infinite;
+}
+
+@keyframes shell-sync-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.shell__sync-badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  border-radius: 999px;
+  background: var(--color-danger);
+  color: var(--color-primary-contrast);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
 }
 
 .shell__account-btn {
@@ -190,5 +272,9 @@
 
   .shell__content {
     padding: var(--space-3);
+  }
+
+  .shell__account-btn {
+    max-width: 120px;
   }
 }

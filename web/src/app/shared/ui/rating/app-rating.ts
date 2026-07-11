@@ -1,5 +1,7 @@
 import { Component, computed, input, model, signal } from '@angular/core';
 
+export type RatingDisplay = 'full' | 'compact';
+
 @Component({
   selector: 'app-rating',
   imports: [],
@@ -10,6 +12,8 @@ export class AppRating {
   readonly value = model(0);
   readonly isReadonly = input(false);
   readonly ariaLabel = input<string | null>(null);
+  /** compact = одна зірка + число («★ 8»), для карток бібліотеки (step-09, задача 4б). */
+  readonly display = input<RatingDisplay>('full');
 
   protected readonly stars = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
   private readonly hovered = signal<number | null>(null);

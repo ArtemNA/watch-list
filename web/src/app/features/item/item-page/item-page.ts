@@ -60,6 +60,10 @@ export class ItemPage {
   protected readonly notesSaveState = signal<'idle' | 'saving' | 'saved'>('idle');
   private notesTimer: ReturnType<typeof setTimeout> | null = null;
   private loadedNotesForId: string | null = null;
+  // Останнє значення нотаток, яке ми самі показали в драфті (з айтема чи після
+  // власного збереження) — щоб відрізнити «прийшла зміна ззовні» (інша вкладка/
+  // синк) від «юзер саме друкує». Step 09, задача 4в.
+  private lastKnownNotes = '';
 
   protected readonly isAddingLink = signal(false);
   protected readonly editingLinkId = signal<string | null>(null);
@@ -75,17 +79,20 @@ export class ItemPage {
     if (!ratings) {
       return [];
     }
+    // Перевіряємо тип, а не `!== undefined`: після синку/санітизації поля
+    // можуть приходити як null (JSON не має undefined), і `null.toFixed()`
+    // кидав би помилку — саме це ламало сторінку айтема після синку.
     const entries: RatingEntry[] = [];
-    if (ratings.tmdb !== undefined) {
+    if (typeof ratings.tmdb === 'number') {
       entries.push({ key: 'tmdb', value: ratings.tmdb.toFixed(1) });
     }
-    if (ratings.imdb !== undefined) {
+    if (typeof ratings.imdb === 'number') {
       entries.push({ key: 'imdb', value: ratings.imdb.toFixed(1) });
     }
-    if (ratings.rottenTomatoes !== undefined) {
+    if (ratings.rottenTomatoes) {
       entries.push({ key: 'rottenTomatoes', value: ratings.rottenTomatoes });
     }
-    if (ratings.metacritic !== undefined) {
+    if (typeof ratings.metacritic === 'number') {
       entries.push({ key: 'metacritic', value: String(ratings.metacritic) });
     }
     return entries;
@@ -94,11 +101,25 @@ export class ItemPage {
   constructor() {
     effect(() => {
       const current = this.item();
-      if (current && current.id !== this.loadedNotesForId) {
+      if (!current) {
+        return;
+      }
+      if (current.id !== this.loadedNotesForId) {
         this.loadedNotesForId = current.id;
-        this.notesDraft.set(current.notes ?? '');
+        this.lastKnownNotes = current.notes ?? '';
+        this.notesDraft.set(this.lastKnownNotes);
         this.notesSaveState.set('idle');
         this.cancelLinkForm();
+        return;
+      }
+      // Той самий айтем, але нотатки в repo відрізняються від того, що ми показували
+      // (зовнішня зміна — синк/інша вкладка): підхопити, ТІЛЬКИ якщо юзер зараз не
+      // друкує (немає активного debounce-таймера і збереження не в процесі) —
+      // інакше перетерли б те, що він саме вводить.
+      const incoming = current.notes ?? '';
+      if (incoming !== this.lastKnownNotes && !this.notesTimer && this.notesSaveState() !== 'saving') {
+        this.lastKnownNotes = incoming;
+        this.notesDraft.set(incoming);
       }
     });
 
@@ -137,7 +158,10 @@ export class ItemPage {
     if (this.notesTimer) {
       clearTimeout(this.notesTimer);
     }
-    this.notesTimer = setTimeout(() => void this.saveNotes(), NOTES_DEBOUNCE_MS);
+    this.notesTimer = setTimeout(() => {
+      this.notesTimer = null;
+      void this.saveNotes();
+    }, NOTES_DEBOUNCE_MS);
   }
 
   startAddLink(): void {
@@ -189,7 +213,6 @@ export class ItemPage {
 
   openDeleteConfirm(item: MediaItem): void {
     const ref = this.dialog.open(DeleteConfirmDialog, {
-      width: 'min(420px, calc(100vw - 32px))',
       data: { title: item.title },
     });
     ref.afterClosed().subscribe((confirmed: boolean | undefined) => {
@@ -239,7 +262,9 @@ export class ItemPage {
       return;
     }
     this.notesSaveState.set('saving');
-    await this.repo.update(item.id, { notes: this.notesDraft() });
+    const notes = this.notesDraft();
+    await this.repo.update(item.id, { notes });
+    this.lastKnownNotes = notes;
     this.notesSaveState.set('saved');
   }
 

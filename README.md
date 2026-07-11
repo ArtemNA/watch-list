@@ -51,4 +51,49 @@ npm start
 - `npm test` — юніт-тести Angular-апки.
 - `npm run lint:api` — лінт `api/*.ts`.
 - `npm run typecheck:api` — перевірка типів `api/*.ts`.
+- `npm run test:api` — юніт-тести `api/*.ts`.
 - `npm run dev:api` — dev-сервер для `api/*.ts` на `:3000` (без Vercel CLI).
+
+## Деплой на Vercel
+
+Один репозиторій → один Vercel-проект (фронт як static output + `api/*.ts` як
+serverless-функції), конфіг уже готовий у `vercel.json` (`buildCommand`,
+`outputDirectory: web/dist/web/browser`, SPA-rewrite на `index.html`).
+
+1. **Atlas: дозволити доступ з Vercel.** Serverless-функції запускаються з
+   непередбачуваних IP, тому в MongoDB Atlas → Network Access додай
+   `0.0.0.0/0` (Allow access from anywhere). Це прийнятно для персонального
+   проекту з окремим БД-юзером (не адмін) і паролем, який більше ніде не
+   використовується.
+2. **Імпорт репозиторію у Vercel:**
+   - [vercel.com/new](https://vercel.com/new) → Import Git Repository → обрати
+     цей репозиторій (потрібен push у GitHub/GitLab/Bitbucket).
+   - Framework Preset: Vercel зазвичай сам розпізнає `vercel.json`; якщо
+     запитає — Other/без пресету, білд-команду і output directory брати з
+     `vercel.json` (нічого руками міняти не треба).
+   - Root Directory лишити кореневим (не `web/`) — і `api/`, і `web/`
+     мають бути в одному деплої.
+3. **Env vars** (Project Settings → Environment Variables), значення — з
+   локального `.env.local` (список — `.env.example`):
+   - `TMDB_API_KEY`
+   - `OMDB_API_KEY`
+   - `MONGODB_URI`
+   - `JWT_SECRET`
+
+   Додати для Production (і Preview, якщо будуть перевірятись PR-деплої).
+4. **Deploy.** Перший деплой запускається автоматично після імпорту; наступні —
+   на кожен push у гілку, підключену як Production (зазвичай `main`).
+5. **Перевірка прод-деплою:**
+   - `https://<project>.vercel.app/api/health` → `{ ok: true, ts: ... }`.
+   - Відкрити сайт, зареєструвати тестового юзера (`/auth`), перевірити, що
+     в MongoDB Atlas (колекція `users`) з'явився запис з `passwordHash`
+     (не plain-текстом).
+   - Пошук фільму на `/search` (перевіряє `TMDB_API_KEY` на бекенді).
+   - Додати айтем у бібліотеку, зайти під тим самим юзером з іншого
+     пристрою/браузера, натиснути на індикатор синку в хедері — айтем має
+     з'явитись.
+   - PWA: на телефоні відкрити сайт у Chrome/Safari → «Додати на головний
+     екран»; вимкнути мережу (airplane mode) → бібліотека і редагування досі
+     працюють, пошук показує «Пошук недоступний офлайн».
+   - Lighthouse (Chrome DevTools) на проді: PWA installable, Performance ≥ 85
+     на сторінці бібліотеки.

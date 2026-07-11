@@ -3,114 +3,139 @@
     <h1 class="search-page__title">{{ 'search.title' | t }}</h1>
   </header>
 
-  @if (linkItemId(); as itemId) {
-    <div class="search-page__linking-banner">
-      <span>{{ 'search.linking.banner' | t }}</span>
-      <a [routerLink]="['/item', itemId]">{{ 'search.linking.cancel' | t }}</a>
-    </div>
-  }
-
-  <app-input
-    class="search-page__input"
-    [placeholder]="'search.placeholder' | t"
-    [value]="queryDraft()"
-    (valueChange)="onQueryInput($event)"
-  />
-
-  @if (status() === 'loading') {
-    <div class="search-page__spinner" role="status" [attr.aria-label]="'search.loading' | t">
-      <span class="search-page__spinner-circle"></span>
-      <span>{{ 'search.loading' | t }}</span>
-    </div>
-  } @else if (status() === 'error') {
-    <app-empty-state [title]="'search.error.title' | t">
-      <app-button action (click)="retry()">{{ 'search.error.retry' | t }}</app-button>
-    </app-empty-state>
-  } @else if (!hasSearched()) {
-    <p class="search-page__hint">{{ 'search.hint' | t }}</p>
-  } @else if (results().length === 0) {
+  @if (!online.isOnline()) {
     <app-empty-state
-      [title]="'search.noResults.title' | t"
-      [description]="'search.noResults.description' | t"
-    />
+      [title]="'search.offline.title' | t"
+      [description]="'search.offline.description' | t"
+    >
+      <svg
+        icon
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <line x1="1" y1="1" x2="23" y2="23" />
+        <path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55" />
+        <path d="M5 12.55a10.94 10.94 0 0 1 5.17-2.39" />
+        <path d="M10.71 5.05A16 16 0 0 1 22.58 9" />
+        <path d="M1.42 9a15.91 15.91 0 0 1 4.7-2.88" />
+        <path d="M8.53 16.11a6 6 0 0 1 6.95 0" />
+        <line x1="12" y1="20" x2="12.01" y2="20" />
+      </svg>
+    </app-empty-state>
   } @else {
-    <div class="search-page__grid">
-      @for (result of results(); track result.kind + ':' + result.id) {
-        <div class="search-card">
-          <div class="search-card__poster">
-            @if (result.posterUrl) {
-              <img class="search-card__poster-img" [src]="result.posterUrl" [alt]="result.title" loading="lazy" />
-            } @else {
-              <div class="search-card__poster-placeholder">
-                <svg
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="1.5"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                >
-                  <rect x="3" y="5" width="18" height="15" rx="2" />
-                  <path d="M7 5v15M17 5v15M3 10h4M17 10h4M3 15h4M17 15h4" />
-                </svg>
-              </div>
-            }
-          </div>
+    @if (linkItemId(); as itemId) {
+      <div class="search-page__linking-banner">
+        <span>{{ 'search.linking.banner' | t }}</span>
+        <a [routerLink]="['/item', itemId]">{{ 'search.linking.cancel' | t }}</a>
+      </div>
+    }
 
-          <div class="search-card__body">
-            <div class="search-card__meta">
-              <app-chip>{{ ('kind.' + result.kind) | t }}</app-chip>
-              @if (result.voteAverage) {
-                <span class="search-card__rating">★ {{ result.voteAverage.toFixed(1) }}</span>
+    <app-input
+      class="search-page__input"
+      [placeholder]="'search.placeholder' | t"
+      [value]="queryDraft()"
+      (valueChange)="onQueryInput($event)"
+    />
+
+    @if (status() === 'loading') {
+      <div class="search-page__spinner" role="status" [attr.aria-label]="'search.loading' | t">
+        <span class="search-page__spinner-circle"></span>
+        <span>{{ 'search.loading' | t }}</span>
+      </div>
+    } @else if (status() === 'error') {
+      <app-empty-state [title]="'search.error.title' | t">
+        <app-button action (click)="retry()">{{ 'search.error.retry' | t }}</app-button>
+      </app-empty-state>
+    } @else if (!hasSearched()) {
+      <p class="search-page__hint">{{ 'search.hint' | t }}</p>
+    } @else if (results().length === 0) {
+      <app-empty-state
+        [title]="'search.noResults.title' | t"
+        [description]="'search.noResults.description' | t"
+      />
+    } @else {
+      <div class="search-page__grid">
+        @for (result of results(); track result.kind + ':' + result.id) {
+          <div class="search-card">
+            <div class="search-card__poster">
+              @if (result.posterUrl) {
+                <img class="search-card__poster-img" [src]="result.posterUrl" [alt]="result.title" loading="lazy" />
+              } @else {
+                <div class="search-card__poster-placeholder">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <rect x="3" y="5" width="18" height="15" rx="2" />
+                    <path d="M7 5v15M17 5v15M3 10h4M17 10h4M3 15h4M17 15h4" />
+                  </svg>
+                </div>
               }
             </div>
 
-            <h3 class="search-card__title">{{ result.title }}</h3>
-            @if (result.originalTitle) {
-              <span class="search-card__original-title">{{ result.originalTitle }}</span>
-            }
-            @if (result.year) {
-              <span class="search-card__year">{{ result.year }}</span>
-            }
+            <div class="search-card__body">
+              <div class="search-card__meta">
+                <app-chip>{{ ('kind.' + result.kind) | t }}</app-chip>
+                @if (result.voteAverage) {
+                  <span class="search-card__rating">★ {{ result.voteAverage.toFixed(1) }}</span>
+                }
+              </div>
 
-            <div class="search-card__actions">
-              @if (linkItemId()) {
-                @if (result.inLibrary) {
+              <h3 class="search-card__title">{{ result.title }}</h3>
+              @if (result.originalTitle) {
+                <span class="search-card__original-title">{{ result.originalTitle }}</span>
+              }
+              @if (result.year) {
+                <span class="search-card__year">{{ result.year }}</span>
+              }
+
+              <div class="search-card__actions">
+                @if (linkItemId()) {
+                  @if (result.inLibrary) {
+                    <a [routerLink]="['/item', result.existingItemId]">
+                      <app-chip tone="watched">{{ 'search.card.inLibrary' | t }}</app-chip>
+                    </a>
+                  } @else {
+                    <app-button size="s" [disabled]="addingIds().has(result.id)" (click)="linkItem(result)">
+                      {{ 'search.linking.linkAction' | t }}
+                    </app-button>
+                  }
+                } @else if (result.inLibrary) {
                   <a [routerLink]="['/item', result.existingItemId]">
                     <app-chip tone="watched">{{ 'search.card.inLibrary' | t }}</app-chip>
                   </a>
                 } @else {
-                  <app-button size="s" [disabled]="addingIds().has(result.id)" (click)="linkItem(result)">
-                    {{ 'search.linking.linkAction' | t }}
-                  </app-button>
+                  <app-split-button
+                    [disabled]="addingIds().has(result.id)"
+                    [options]="addAsOptions()"
+                    [menuAriaLabel]="'search.card.addAsMenuLabel' | t"
+                    (primaryClick)="addItem(result)"
+                    (optionSelected)="addItemAs(result, $event)"
+                  >
+                    {{ 'search.card.add' | t }}
+                  </app-split-button>
                 }
-              } @else if (result.inLibrary) {
-                <a [routerLink]="['/item', result.existingItemId]">
-                  <app-chip tone="watched">{{ 'search.card.inLibrary' | t }}</app-chip>
-                </a>
-              } @else {
-                <app-split-button
-                  [disabled]="addingIds().has(result.id)"
-                  [options]="addAsOptions()"
-                  [menuAriaLabel]="'search.card.addAsMenuLabel' | t"
-                  (primaryClick)="addItem(result)"
-                  (optionSelected)="addItemAs(result, $event)"
-                >
-                  {{ 'search.card.add' | t }}
-                </app-split-button>
-              }
+              </div>
             </div>
           </div>
+        }
+      </div>
+
+      @if (hasMore()) {
+        <div class="search-page__load-more">
+          <app-button variant="ghost" [disabled]="status() === 'loadingMore'" (click)="loadMore()">
+            {{ (status() === 'loadingMore' ? 'search.loadingMore' : 'search.loadMore') | t }}
+          </app-button>
         </div>
       }
-    </div>
-
-    @if (hasMore()) {
-      <div class="search-page__load-more">
-        <app-button variant="ghost" [disabled]="status() === 'loadingMore'" (click)="loadMore()">
-          {{ (status() === 'loadingMore' ? 'search.loadingMore' : 'search.loadMore') | t }}
-        </app-button>
-      </div>
     }
   }
 </div>

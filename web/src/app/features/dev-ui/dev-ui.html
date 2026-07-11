@@ -61,6 +61,7 @@
     <div class="dev-ui__row dev-ui__row--stack">
       <app-rating [(value)]="rating" [ariaLabel]="editableRatingLabel()" />
       <app-rating [value]="8" [isReadonly]="true" [ariaLabel]="readonlyRatingLabel()" />
+      <app-rating [value]="8" [isReadonly]="true" display="compact" [ariaLabel]="readonlyRatingLabel()" />
     </div>
   </section>
 

@@ -105,7 +105,7 @@ export class LibraryPage {
   }
 
   openAddDialog(): void {
-    this.dialog.open(AddItemDialog, { width: 'min(480px, calc(100vw - 32px))' });
+    this.dialog.open(AddItemDialog);
   }
 
   protected ratingAriaLabel(item: MediaItem): string {

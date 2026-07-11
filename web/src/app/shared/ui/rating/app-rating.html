@@ -1,4 +1,9 @@
-@if (isReadonly()) {
+@if (display() === 'compact') {
+  <span class="app-rating app-rating--compact" role="img" [attr.aria-label]="ariaLabel()">
+    <span class="app-rating__compact-star" aria-hidden="true">★</span>
+    <span class="app-rating__compact-value">{{ value() }}</span>
+  </span>
+} @else if (isReadonly()) {
   <div class="app-rating" role="img" [attr.aria-label]="ariaLabel()">
     @for (star of stars; track star) {
       <span class="app-rating__star" [class.app-rating__star--filled]="star <= displayed()">★</span>
