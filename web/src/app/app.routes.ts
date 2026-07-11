@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 
+import { DevData } from './features/dev-data/dev-data';
 import { DevUi } from './features/dev-ui/dev-ui';
 import { Shell } from './shell/shell';
 
@@ -11,6 +12,7 @@ export const routes: Routes = [
       // Тимчасово: поки немає бібліотеки (Step 03–04), '' веде на демо дизайн-системи.
       { path: '', redirectTo: 'dev/ui', pathMatch: 'full' },
       { path: 'dev/ui', component: DevUi },
+      { path: 'dev/data', component: DevData },
     ],
   },
 ];

@@ -36,5 +36,21 @@
   "devUi.input.error": "Це поле обов'язкове",
   "devUi.textarea.label": "Нотатки",
   "devUi.card.title": "Приклад картки",
-  "devUi.card.body": "Короткий текст всередині картки для перевірки токенів поверхні й тіні."
+  "devUi.card.body": "Короткий текст всередині картки для перевірки токенів поверхні й тіні.",
+
+  "devData.title": "Демо шару даних",
+  "devData.form.title": "Додати айтем",
+  "devData.form.name": "Назва",
+  "devData.form.namePlaceholder": "Введіть назву...",
+  "devData.form.kind": "Тип",
+  "devData.form.status": "Статус",
+  "devData.form.add": "Додати",
+  "devData.kind.movie": "Фільм",
+  "devData.kind.tv": "Серіал",
+  "devData.list.title": "Бібліотека",
+  "devData.list.empty": "Поки що порожньо — додайте айтем вище.",
+  "devData.list.delete": "Видалити",
+  "devData.trash.title": "Смітник (tombstones)",
+  "devData.trash.empty": "Смітник порожній.",
+  "devData.trash.restore": "Відновити"
 }

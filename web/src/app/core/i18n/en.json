@@ -36,5 +36,21 @@
   "devUi.input.error": "This field is required",
   "devUi.textarea.label": "Notes",
   "devUi.card.title": "Sample card",
-  "devUi.card.body": "A short piece of text inside a card to check surface and shadow tokens."
+  "devUi.card.body": "A short piece of text inside a card to check surface and shadow tokens.",
+
+  "devData.title": "Data layer demo",
+  "devData.form.title": "Add item",
+  "devData.form.name": "Title",
+  "devData.form.namePlaceholder": "Enter a title...",
+  "devData.form.kind": "Kind",
+  "devData.form.status": "Status",
+  "devData.form.add": "Add",
+  "devData.kind.movie": "Movie",
+  "devData.kind.tv": "TV show",
+  "devData.list.title": "Library",
+  "devData.list.empty": "No items yet — add one above.",
+  "devData.list.delete": "Delete",
+  "devData.trash.title": "Trash (tombstones)",
+  "devData.trash.empty": "Trash is empty.",
+  "devData.trash.restore": "Restore"
 }
