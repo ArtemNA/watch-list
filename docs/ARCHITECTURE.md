@@ -63,6 +63,8 @@ interface MediaItem {
     tmdb?: number; imdb?: number; rottenTomatoes?: string; metacritic?: number;
   };
   metadataUpdatedAt?: string; // ISO; коли востаннє тягнули з API
+  metadataLang?: 'uk' | 'en'; // мова, якою кешовано title/overview/genres
+                              // (додано після Step 05; оновлення — Step 06)
 
   // Мої дані (найцінніше — саме це merge'иться найобережніше)
   myRating?: number;          // 1..10
@@ -132,8 +134,13 @@ db.version(1).stores({
 - Стратегія пошуку в апці: один запит з `language = поточна мова UI`
   (uk-UA або en-US). Якщо 0 результатів — повторити з `language=en-US`
   (fallback). Дедуплікація результатів за `(media_type, id)`.
-- Деталі: `GET /movie/{id}` або `/tv/{id}` з `append_to_response=external_ids,watch/providers,translations`.
-  Звідти: imdbId, укр назва (translations), провайдери перегляду по регіону UA.
+- Деталі: `GET /movie/{id}` або `/tv/{id}` з `append_to_response=external_ids,watch/providers,translations`
+  і **ОБОВ'ЯЗКОВО `language` = поточна мова UI** (інакше TMDB віддає en-US і
+  кешовані title/overview/genres будуть англійськими при укр. інтерфейсі —
+  реальний баг, знайдений власником після Step 05). Мова кешу зберігається в
+  `metadataLang`; при відкритті айтема з `metadataLang !== мова UI` метадані
+  перезавантажуються (Step 06). Звідти: imdbId, укр назва (translations),
+  провайдери перегляду по регіону UA.
 - Постери: `https://image.tmdb.org/t/p/w342{poster_path}`.
 - Ліміти: безкоштовно для некомерційного, ~50 req/s — за наші потреби безмежно.
 
