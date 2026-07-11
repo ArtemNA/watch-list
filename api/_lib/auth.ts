@@ -1,18 +1,24 @@
 import type { VercelRequest } from '@vercel/node';
 import bcrypt from 'bcryptjs';
-import { SignJWT, jwtVerify } from 'jose';
+import { createHmac, timingSafeEqual } from 'node:crypto';
 
 import { HttpError } from './http';
 
 const BCRYPT_COST = 10;
-const JWT_TTL = '30d';
+const JWT_TTL_SECONDS = 30 * 24 * 60 * 60; // 30 днів
 
-function getSecret(): Uint8Array {
+// JWT (HS256) реалізовано вручну на node:crypto замість бібліотеки jose:
+// jose@6 — ESM-only, а @vercel/node компілює .ts-функції у CommonJS, через що
+// всі функції з jose падали на проді з FUNCTION_INVOCATION_FAILED ще на
+// завантаженні модуля. HS256 — це один HMAC, формат токенів стандартний і
+// сумісний з раніше виданими jose-токенами.
+
+function getSecret(): string {
   const secret = process.env['JWT_SECRET'];
   if (!secret) {
     throw new Error('JWT_SECRET is not configured');
   }
-  return new TextEncoder().encode(secret);
+  return secret;
 }
 
 export function hashPassword(password: string): Promise<string> {
@@ -33,21 +39,57 @@ export function getDummyHash(): Promise<string> {
   return dummyHashPromise;
 }
 
-export async function signJwt(userId: string): Promise<string> {
-  return new SignJWT({})
-    .setProtectedHeader({ alg: 'HS256' })
-    .setSubject(userId)
-    .setIssuedAt()
-    .setExpirationTime(JWT_TTL)
-    .sign(getSecret());
+function b64urlJson(value: unknown): string {
+  return Buffer.from(JSON.stringify(value)).toString('base64url');
 }
 
-async function verifyJwt(token: string): Promise<string> {
-  const { payload } = await jwtVerify(token, getSecret());
-  if (typeof payload.sub !== 'string') {
+function hmac(data: string): Buffer {
+  return createHmac('sha256', getSecret()).update(data).digest();
+}
+
+export async function signJwt(userId: string): Promise<string> {
+  const header = b64urlJson({ alg: 'HS256', typ: 'JWT' });
+  const now = Math.floor(Date.now() / 1000);
+  const payload = b64urlJson({ sub: userId, iat: now, exp: now + JWT_TTL_SECONDS });
+  const signature = hmac(`${header}.${payload}`).toString('base64url');
+  return `${header}.${payload}.${signature}`;
+}
+
+export function verifyJwt(token: string): string {
+  const parts = token.split('.');
+  if (parts.length !== 3) {
     throw new HttpError(401, 'UNAUTHORIZED');
   }
-  return payload.sub;
+  const [header, payload, signature] = parts;
+
+  const expected = hmac(`${header}.${payload}`);
+  let actual: Buffer;
+  try {
+    actual = Buffer.from(signature, 'base64url');
+  } catch {
+    throw new HttpError(401, 'UNAUTHORIZED');
+  }
+  if (actual.length !== expected.length || !timingSafeEqual(actual, expected)) {
+    throw new HttpError(401, 'UNAUTHORIZED');
+  }
+
+  let claims: { sub?: unknown; exp?: unknown };
+  try {
+    claims = JSON.parse(Buffer.from(payload, 'base64url').toString('utf8')) as {
+      sub?: unknown;
+      exp?: unknown;
+    };
+  } catch {
+    throw new HttpError(401, 'UNAUTHORIZED');
+  }
+  if (
+    typeof claims.sub !== 'string' ||
+    typeof claims.exp !== 'number' ||
+    claims.exp * 1000 <= Date.now()
+  ) {
+    throw new HttpError(401, 'UNAUTHORIZED');
+  }
+  return claims.sub;
 }
 
 /** userId з валідного Bearer JWT, або кидає HttpError(401, 'UNAUTHORIZED'). */
@@ -58,9 +100,5 @@ export async function requireAuth(req: VercelRequest): Promise<string> {
   if (!token) {
     throw new HttpError(401, 'UNAUTHORIZED');
   }
-  try {
-    return await verifyJwt(token);
-  } catch {
-    throw new HttpError(401, 'UNAUTHORIZED');
-  }
+  return verifyJwt(token);
 }

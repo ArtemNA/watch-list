@@ -72,7 +72,7 @@ export class ItemPage {
   protected readonly linkFormError = signal<string | null>(null);
 
   protected readonly refreshingMetadata = signal(false);
-  private autoRefreshedForId: string | null = null;
+  private autoRefreshedForKey: string | null = null;
 
   protected readonly ratingEntries = computed<RatingEntry[]>(() => {
     const ratings = this.item()?.externalRatings;
@@ -123,14 +123,18 @@ export class ItemPage {
       }
     });
 
-    // Автооновлення метаданих при відкритті сторінки (Step 06, задача 3) — раз на завантажений
-    // айтем, щоб repo.update() усередині refresh() не спричиняв повторний виклик по колу.
+    // Автооновлення метаданих при відкритті сторінки (Step 06, задача 3).
+    // Guard-ключ — id+мова (не лише id!): раз на пару, щоб repo.update()
+    // усередині refresh() не крутив ефект по колу, АЛЕ щоб повторне
+    // перемикання мови на відкритій сторінці (en→uk→en) знову тригерило
+    // довантаження — з ключем лише по id друге перемикання блокувалось.
     effect(() => {
       const current = this.item();
-      if (!current || this.autoRefreshedForId === current.id || !this.metadataService.shouldRefresh(current)) {
+      const key = current ? `${current.id}:${this.i18n.lang()}` : null;
+      if (!current || !key || this.autoRefreshedForKey === key || !this.metadataService.shouldRefresh(current)) {
         return;
       }
-      this.autoRefreshedForId = current.id;
+      this.autoRefreshedForKey = key;
       void this.refreshMetadata(current);
     });
   }
