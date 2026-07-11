@@ -82,9 +82,9 @@
 
 - [x] **TMDB API key** — отримано, лежить у `.env.local` (перевірений живим запитом 2026-07-11)
 - [x] **OMDb API key** — отримано, лежить у `.env.local` (перевірений живим запитом 2026-07-11: Dune → IMDb 8.0, RT 83%, MC 74)
-- [ ] **MongoDB Atlas** — кластер M0 + connection string (до Step 07)
+- [x] **MongoDB Atlas** — кластер M0 (Cluster0), юзер watchlist, `MONGODB_URI` у `.env.local` (ping перевірений 2026-07-11). Увага: M0 автопаузиться після довгої неактивності — якщо конекшн таймаутить, зайти в Atlas і натиснути Resume
 - [ ] **Vercel-акаунт** + прив'язаний git-репозиторій (до першого деплою; локально можна без нього)
-- [ ] Згенерувати `JWT_SECRET` (будь-який довгий випадковий рядок) (до Step 07)
+- [x] **`JWT_SECRET`** — згенерований (62 симв.), у `.env.local`
 
 Локально ключі кладуться в `.env.local` (в `.gitignore`!), на Vercel — в Environment Variables.
 
