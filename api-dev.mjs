@@ -65,7 +65,9 @@ function readJsonBody(req) {
 async function main() {
   loadEnvLocal();
 
-  const tmdbHandler = (await import('./api/tmdb/[...path].ts')).default;
+  // На Vercel /api/tmdb/* → rewrite на api/tmdb-proxy.ts (catch-all [...path]
+  // у zero-config API-роутах не матеріалізувався на проді — див. vercel.json).
+  const tmdbHandler = (await import('./api/tmdb-proxy.ts')).default;
   const omdbHandler = (await import('./api/omdb.ts')).default;
   const healthHandler = (await import('./api/health.ts')).default;
   const registerHandler = (await import('./api/auth/register.ts')).default;

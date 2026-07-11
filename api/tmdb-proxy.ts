@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 
-import { TmdbError, tmdbFetch } from '../_lib/tmdb';
+import { TmdbError, tmdbFetch } from './_lib/tmdb';
 
 const EXACT_ALLOWED_PATHS = new Set(['search/multi', 'search/movie', 'search/tv']);
 const PREFIX_ALLOWED_PATHS = ['movie/', 'tv/'];
