@@ -80,7 +80,7 @@
 
 Реєстрації/ключі (всі безкоштовні), потрібні НЕ одразу, а перед відповідним кроком:
 
-- [ ] **TMDB API key** — https://www.themoviedb.org/settings/api (потрібен до Step 05)
+- [x] **TMDB API key** — отримано, лежить у `.env.local` (перевірений живим запитом 2026-07-11)
 - [ ] **OMDb API key** — https://www.omdbapi.com/apikey.aspx, free 1000 req/день (до Step 06)
 - [ ] **MongoDB Atlas** — кластер M0 + connection string (до Step 07)
 - [ ] **Vercel-акаунт** + прив'язаний git-репозиторій (до першого деплою; локально можна без нього)
