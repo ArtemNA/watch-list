@@ -1,0 +1,31 @@
+<div class="app-input">
+  @if (label()) {
+    <label class="app-input__label" [for]="controlId">{{ label() }}</label>
+  }
+
+  @if (multiline()) {
+    <textarea
+      [id]="controlId"
+      class="app-input__control app-input__control--textarea"
+      [class.app-input__control--invalid]="!!errorText()"
+      [value]="value()"
+      [placeholder]="placeholder()"
+      rows="4"
+      (input)="onInput($event)"
+    ></textarea>
+  } @else {
+    <input
+      [id]="controlId"
+      class="app-input__control"
+      [class.app-input__control--invalid]="!!errorText()"
+      type="text"
+      [value]="value()"
+      [placeholder]="placeholder()"
+      (input)="onInput($event)"
+    />
+  }
+
+  @if (errorText()) {
+    <span class="app-input__error">{{ errorText() }}</span>
+  }
+</div>

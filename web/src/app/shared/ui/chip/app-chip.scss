@@ -1,0 +1,32 @@
+.app-chip {
+  display: inline-flex;
+  align-items: center;
+  height: 28px;
+  padding: 0 var(--space-3);
+  border-radius: var(--radius-l);
+  font-size: var(--font-size-s);
+  font-weight: 600;
+  white-space: nowrap;
+  background: var(--color-surface-2);
+  color: var(--color-text-muted);
+
+  &[data-tone='want'] {
+    background: color-mix(in srgb, var(--color-status-want) 18%, var(--color-surface));
+    color: var(--color-status-want);
+  }
+
+  &[data-tone='watching'] {
+    background: color-mix(in srgb, var(--color-status-watching) 18%, var(--color-surface));
+    color: var(--color-status-watching);
+  }
+
+  &[data-tone='watched'] {
+    background: color-mix(in srgb, var(--color-status-watched) 18%, var(--color-surface));
+    color: var(--color-status-watched);
+  }
+
+  &[data-tone='dropped'] {
+    background: color-mix(in srgb, var(--color-status-dropped) 18%, var(--color-surface));
+    color: var(--color-status-dropped);
+  }
+}

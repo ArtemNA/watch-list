@@ -1,1 +1,24 @@
-/* You can add global styles to this file, and also import other style files */
+// Глобальні стилі: токени → тема Material → базовий reset.
+@use './app/design/tokens';
+@use './app/design/material-overrides';
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-family);
+  font-size: var(--font-size-m);
+  transition:
+    background-color var(--transition-fast),
+    color var(--transition-fast);
+}
+

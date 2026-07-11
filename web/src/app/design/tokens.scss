@@ -1,0 +1,84 @@
+// Дизайн-токени WatchList — див. docs/ARCHITECTURE.md §8.
+// Дефолт — м'яка темна тема (:root). [data-theme='light'] перевизначає кольори.
+// Ніяких чистих #000/#fff — всюди приглушені, тоновані значення.
+
+:root {
+  color-scheme: dark;
+
+  // --- Кольори: поверхні ---
+  --color-bg: #181a20;
+  --color-surface: #1f222a;
+  --color-surface-2: #272b35;
+  --color-border: rgba(255, 255, 255, 0.08);
+
+  // --- Кольори: текст ---
+  --color-text: #e7e5e2;
+  --color-text-muted: #9fa0a8;
+
+  // --- Кольори: акценти ---
+  --color-primary: #8da9d8;
+  --color-primary-contrast: #14161b;
+  --color-accent: #caa06c;
+  --color-danger: #d17a7a;
+  --color-success: #7fbf8f;
+
+  // --- Кольори: статуси айтемів ---
+  --color-status-want: #7f9cc4;
+  --color-status-watching: #d1a860;
+  --color-status-watched: #7fbf8f;
+  --color-status-dropped: #b98080;
+
+  // --- Форма ---
+  --radius-s: 8px;
+  --radius-m: 14px;
+  --radius-l: 22px;
+
+  // --- Відступи ---
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+
+  // --- Тіні (м'які, розлиті) ---
+  --shadow-1: 0 2px 8px rgba(0, 0, 0, 0.24);
+  --shadow-2: 0 8px 28px rgba(0, 0, 0, 0.32);
+
+  // --- Типографіка ---
+  --font-family:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-size-s: 13px;
+  --font-size-m: 15px;
+  --font-size-l: 19px;
+  --font-size-xl: 25px;
+
+  // --- Рух ---
+  --transition-fast: 150ms ease;
+}
+
+:root[data-theme='light'] {
+  color-scheme: light;
+
+  --color-bg: #f5f4f1;
+  --color-surface: #fbfaf8;
+  --color-surface-2: #edece8;
+  --color-border: rgba(0, 0, 0, 0.08);
+
+  --color-text: #262830;
+  --color-text-muted: #6b6d74;
+
+  --color-primary: #3d5480;
+  --color-primary-contrast: #f7f6f3;
+  --color-accent: #8a6535;
+  --color-danger: #a83f3f;
+  --color-success: #3f7a52;
+
+  --color-status-want: #45608c;
+  --color-status-watching: #8a6a28;
+  --color-status-watched: #3f7a52;
+  --color-status-dropped: #8a4f4f;
+
+  --shadow-1: 0 2px 8px rgba(30, 25, 15, 0.1);
+  --shadow-2: 0 8px 28px rgba(30, 25, 15, 0.14);
+}

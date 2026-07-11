@@ -1,0 +1,35 @@
+.app-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--space-2);
+  padding: var(--space-6) var(--space-4);
+  color: var(--color-text);
+}
+
+.app-empty-state__icon {
+  display: flex;
+  color: var(--color-text-muted);
+
+  ::ng-deep svg {
+    width: 48px;
+    height: 48px;
+  }
+}
+
+.app-empty-state__title {
+  margin: 0;
+  font-size: var(--font-size-l);
+}
+
+.app-empty-state__description {
+  margin: 0;
+  max-width: 40ch;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-m);
+}
+
+.app-empty-state__action {
+  margin-top: var(--space-2);
+}

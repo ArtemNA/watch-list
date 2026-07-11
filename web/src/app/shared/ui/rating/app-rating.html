@@ -1,0 +1,23 @@
+@if (isReadonly()) {
+  <div class="app-rating" role="img" [attr.aria-label]="ariaLabel()">
+    @for (star of stars; track star) {
+      <span class="app-rating__star" [class.app-rating__star--filled]="star <= displayed()">★</span>
+    }
+  </div>
+} @else {
+  <div class="app-rating" role="radiogroup" [attr.aria-label]="ariaLabel()">
+    @for (star of stars; track star) {
+      <button
+        type="button"
+        class="app-rating__star app-rating__star--interactive"
+        [class.app-rating__star--filled]="star <= displayed()"
+        role="radio"
+        [attr.aria-checked]="star === value()"
+        [attr.aria-label]="star"
+        (mouseenter)="onEnter(star)"
+        (mouseleave)="onLeave()"
+        (click)="onClick(star)"
+      >★</button>
+    }
+  </div>
+}

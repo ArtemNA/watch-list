@@ -1,0 +1,10 @@
+<button
+  class="app-button"
+  [class.app-button--ghost]="variant() === 'ghost'"
+  [class.app-button--danger]="variant() === 'danger'"
+  [class.app-button--s]="size() === 's'"
+  [type]="type()"
+  [disabled]="disabled()"
+>
+  <ng-content />
+</button>

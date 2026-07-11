@@ -1,0 +1,40 @@
+{
+  "app.title": "WatchList",
+  "shell.theme.label": "Тема",
+  "shell.theme.toggleToDark": "Перемкнути на темну тему",
+  "shell.theme.toggleToLight": "Перемкнути на світлу тему",
+  "shell.lang.label": "Мова",
+
+  "rating.ariaLabel": "Рейтинг: {{value}}/10",
+
+  "status.want": "Хочу подивитись",
+  "status.watching": "Дивлюсь",
+  "status.watched": "Подивився",
+  "status.dropped": "Покинув",
+
+  "common.buttonPrimary": "Основна",
+  "common.buttonGhost": "Прозора",
+  "common.buttonDanger": "Небезпечна",
+
+  "devUi.title": "Демо дизайн-системи",
+  "devUi.section.buttons": "Кнопки",
+  "devUi.section.inputs": "Поля вводу",
+  "devUi.section.cards": "Картки",
+  "devUi.section.chips": "Чіпи (статуси)",
+  "devUi.section.rating": "Рейтинг",
+  "devUi.section.emptyState": "Порожній стан",
+  "devUi.section.dialog": "Material-діалог",
+  "devUi.openDialog": "Відкрити тестовий діалог",
+  "devUi.dialog.title": "Тестовий діалог",
+  "devUi.dialog.body": "Якщо тема Material узгоджена з токенами, цей діалог виглядає так само м'яко і темно, як решта апки.",
+  "devUi.dialog.close": "Закрити",
+  "devUi.emptyState.title": "Тут поки що порожньо",
+  "devUi.emptyState.description": "Додайте перший фільм чи серіал, щоб почати.",
+  "devUi.emptyState.action": "Додати",
+  "devUi.input.label": "Назва",
+  "devUi.input.placeholder": "Введіть назву...",
+  "devUi.input.error": "Це поле обов'язкове",
+  "devUi.textarea.label": "Нотатки",
+  "devUi.card.title": "Приклад картки",
+  "devUi.card.body": "Короткий текст всередині картки для перевірки токенів поверхні й тіні."
+}

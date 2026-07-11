@@ -1,0 +1,37 @@
+.dev-ui {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.dev-ui__title {
+  margin: 0;
+  font-size: var(--font-size-xl);
+}
+
+.dev-ui__section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+
+  h2 {
+    margin: 0;
+    font-size: var(--font-size-l);
+    color: var(--color-text-muted);
+  }
+}
+
+.dev-ui__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+
+  &--stack {
+    flex-direction: column;
+    align-items: stretch;
+    max-width: 400px;
+  }
+}

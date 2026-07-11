@@ -1,0 +1,77 @@
+// Прив'язка Angular Material (M3) до наших токенів — див. docs/ARCHITECTURE.md §8.
+//
+// Спосіб (Material 21, обрано і задокументовано в step-02):
+//   `mat.theme()` генерує повний набір system-level CSS-змінних `--mat-sys-*`
+//   на основі палітри-заглушки (тут — violet, вона ніде не проявляється).
+//   `mat.theme-overrides()` одразу перезаписує саме ті `--mat-sys-*`, які
+//   реально бачить юзер, значеннями `var(--color-*)` з tokens.scss. Оскільки
+//   це живі CSS custom properties (а не Sass-константи), Material-компоненти
+//   (MatDialog, MatAutocomplete, MatMenu, MatSnackBar, MatTooltip) автоматично
+//   перемикаються між темами разом з рештою апки, коли ThemeService міняє
+//   `data-theme` на <html> — без окремого дублювання теми для Material.
+//
+// inverse-surface/inverse-on-surface (їх типово використовує MatSnackBar/
+// MatTooltip для контрастної "спливаючої" бульбашки) навмисно прирівняні до
+// звичайних surface/on-surface — щоб не зʼявлялась різка інвертована пляма
+// кольору, що суперечило б "м'якому" напряму дизайну (ARCHITECTURE §8).
+@use '@angular/material' as mat;
+
+$app-font-stack:
+  '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif';
+
+html {
+  @include mat.theme(
+    (
+      color: mat.$violet-palette,
+      typography: (
+        plain-family: $app-font-stack,
+        brand-family: $app-font-stack,
+      ),
+      density: 0,
+    )
+  );
+
+  @include mat.theme-overrides(
+    (
+      // поверхні та фон
+      background: var(--color-bg),
+      on-background: var(--color-text),
+      surface: var(--color-surface),
+      surface-dim: var(--color-bg),
+      surface-bright: var(--color-surface-2),
+      surface-container-lowest: var(--color-bg),
+      surface-container-low: var(--color-surface),
+      surface-container: var(--color-surface-2),
+      surface-container-high: var(--color-surface-2),
+      surface-container-highest: var(--color-surface-2),
+      on-surface: var(--color-text),
+      on-surface-variant: var(--color-text-muted),
+      outline: var(--color-border),
+      outline-variant: var(--color-border),
+      inverse-surface: var(--color-surface-2),
+      inverse-on-surface: var(--color-text),
+
+      // акценти
+      primary: var(--color-primary),
+      on-primary: var(--color-primary-contrast),
+      primary-container: var(--color-primary),
+      on-primary-container: var(--color-primary-contrast),
+      secondary: var(--color-accent),
+      on-secondary: var(--color-primary-contrast),
+      secondary-container: var(--color-accent),
+      on-secondary-container: var(--color-primary-contrast),
+      tertiary: var(--color-accent),
+      on-tertiary: var(--color-primary-contrast),
+      error: var(--color-danger),
+      on-error: var(--color-primary-contrast),
+      error-container: var(--color-danger),
+      on-error-container: var(--color-primary-contrast),
+
+      // форма — узгоджуємо радіуси з нашими токенами
+      corner-small: var(--radius-s),
+      corner-medium: var(--radius-m),
+      corner-large: var(--radius-l),
+      corner-extra-large: var(--radius-l)
+    )
+  );
+}

@@ -1,0 +1,40 @@
+{
+  "app.title": "WatchList",
+  "shell.theme.label": "Theme",
+  "shell.theme.toggleToDark": "Switch to dark theme",
+  "shell.theme.toggleToLight": "Switch to light theme",
+  "shell.lang.label": "Language",
+
+  "rating.ariaLabel": "Rating: {{value}}/10",
+
+  "status.want": "Want to watch",
+  "status.watching": "Watching",
+  "status.watched": "Watched",
+  "status.dropped": "Dropped",
+
+  "common.buttonPrimary": "Primary",
+  "common.buttonGhost": "Ghost",
+  "common.buttonDanger": "Danger",
+
+  "devUi.title": "Design system demo",
+  "devUi.section.buttons": "Buttons",
+  "devUi.section.inputs": "Inputs",
+  "devUi.section.cards": "Cards",
+  "devUi.section.chips": "Chips (statuses)",
+  "devUi.section.rating": "Rating",
+  "devUi.section.emptyState": "Empty state",
+  "devUi.section.dialog": "Material dialog",
+  "devUi.openDialog": "Open test dialog",
+  "devUi.dialog.title": "Test dialog",
+  "devUi.dialog.body": "If the Material theme matches the tokens, this dialog looks just as soft and dark as the rest of the app.",
+  "devUi.dialog.close": "Close",
+  "devUi.emptyState.title": "Nothing here yet",
+  "devUi.emptyState.description": "Add your first movie or show to get started.",
+  "devUi.emptyState.action": "Add",
+  "devUi.input.label": "Title",
+  "devUi.input.placeholder": "Enter a title...",
+  "devUi.input.error": "This field is required",
+  "devUi.textarea.label": "Notes",
+  "devUi.card.title": "Sample card",
+  "devUi.card.body": "A short piece of text inside a card to check surface and shadow tokens."
+}
