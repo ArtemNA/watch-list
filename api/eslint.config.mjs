@@ -1,12 +1,14 @@
 // @ts-check
-// ESM (не CJS): корінь має "type": "module" — потрібно, щоб Vercel збирав
-// функції як ESM (jose@6 — ESM-only і падав у CJS-збірці з ERR_REQUIRE_ESM).
+// .mjs: ESM-синтаксис без type:module у корені. type:module у package.json
+// НЕ МОЖНА: @vercel/node компілює функції з залежностями у CJS (.js з
+// exports), і під type:module Node виконує їх як ESM → "exports is not
+// defined in ES module scope" на проді.
 import eslint from '@eslint/js';
 import prettier from 'eslint-config-prettier';
 import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
-  { ignores: ['eslint.config.js'] },
+  { ignores: ['eslint.config.mjs'] },
   eslint.configs.recommended,
   tseslint.configs.recommended,
   prettier,
