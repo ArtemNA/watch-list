@@ -172,9 +172,12 @@
 }
 
 .shell__account-btn {
-  display: inline-flex;
-  align-items: center;
+  // НЕ flex: text-overflow: ellipsis не працює на flex-контейнерах (текст стає
+  // анонімним flex-айтемом і обрізається без «…»). Вертикальне центрування —
+  // через line-height = висота мінус бордери.
+  display: inline-block;
   height: 36px;
+  line-height: 34px;
   max-width: 160px;
   padding: 0 var(--space-3);
   border: 1px solid var(--color-border);
