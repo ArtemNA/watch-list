@@ -41,16 +41,39 @@ function toVercelResponse(res) {
   return res;
 }
 
+function readJsonBody(req) {
+  return new Promise((resolve, reject) => {
+    let data = '';
+    req.on('data', (chunk) => {
+      data += chunk;
+    });
+    req.on('end', () => {
+      if (!data) {
+        resolve(undefined);
+        return;
+      }
+      try {
+        resolve(JSON.parse(data));
+      } catch (error) {
+        reject(error);
+      }
+    });
+    req.on('error', reject);
+  });
+}
+
 async function main() {
   loadEnvLocal();
 
   const tmdbHandler = (await import('./api/tmdb/[...path].ts')).default;
   const omdbHandler = (await import('./api/omdb.ts')).default;
   const healthHandler = (await import('./api/health.ts')).default;
+  const registerHandler = (await import('./api/auth/register.ts')).default;
+  const loginHandler = (await import('./api/auth/login.ts')).default;
 
   const port = Number(process.env['PORT']) || 3000;
 
-  const server = createServer((req, res) => {
+  const server = createServer(async (req, res) => {
     const url = new URL(req.url ?? '/', `http://localhost:${port}`);
     const query = Object.fromEntries(url.searchParams.entries());
     res = toVercelResponse(res);
@@ -71,6 +94,19 @@ async function main() {
     if (url.pathname === '/api/omdb') {
       req.query = query;
       void omdbHandler(req, res);
+      return;
+    }
+
+    if (url.pathname === '/api/auth/register' || url.pathname === '/api/auth/login') {
+      req.query = query;
+      try {
+        req.body = await readJsonBody(req);
+      } catch {
+        res.status(400).json({ error: 'INVALID_JSON' });
+        return;
+      }
+      const handler = url.pathname === '/api/auth/register' ? registerHandler : loginHandler;
+      void handler(req, res);
       return;
     }
 

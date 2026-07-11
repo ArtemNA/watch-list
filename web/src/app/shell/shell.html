@@ -8,6 +8,29 @@
   </nav>
 
   <div class="shell__actions">
+    @if (auth.isLoggedIn()) {
+      <button
+        type="button"
+        class="shell__account-btn"
+        [matMenuTriggerFor]="accountMenu"
+        [attr.aria-label]="'nav.account.menuAriaLabel' | t"
+      >
+        {{ auth.email() }}
+      </button>
+      <mat-menu #accountMenu="matMenu">
+        <button mat-menu-item type="button" disabled>{{ 'nav.account.sync' | t }}</button>
+        <button mat-menu-item type="button" (click)="logout()">{{ 'nav.account.logout' | t }}</button>
+      </mat-menu>
+    } @else {
+      <a
+        class="shell__login-link"
+        routerLink="/auth"
+        [matTooltip]="'nav.login.tooltip' | t"
+      >
+        {{ 'nav.login' | t }}
+      </a>
+    }
+
     <div class="shell__lang" role="group" [attr.aria-label]="'shell.lang.label' | t">
       <button
         type="button"

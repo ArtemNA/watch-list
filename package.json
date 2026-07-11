@@ -2,7 +2,9 @@
   "name": "watchlist",
   "version": "0.0.0",
   "private": true,
-  "workspaces": ["web"],
+  "workspaces": [
+    "web"
+  ],
   "scripts": {
     "start": "npm run start --workspace=web -- --proxy-config proxy.conf.json",
     "dev:api": "tsx api-dev.mjs",
@@ -10,7 +12,8 @@
     "lint": "npm run lint --workspace=web",
     "test": "npm run test --workspace=web",
     "lint:api": "eslint api",
-    "typecheck:api": "tsc --noEmit -p api/tsconfig.json"
+    "typecheck:api": "tsc --noEmit -p api/tsconfig.json",
+    "test:api": "vitest run"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
@@ -21,6 +24,12 @@
     "prettier": "^3.8.1",
     "tsx": "^4.20.6",
     "typescript": "~5.9.2",
-    "typescript-eslint": "8.59.2"
+    "typescript-eslint": "8.59.2",
+    "vitest": "^4.1.10"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "jose": "^6.2.3",
+    "mongodb": "^7.5.0"
   }
 }

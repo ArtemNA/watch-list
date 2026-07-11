@@ -18,7 +18,7 @@
       [id]="controlId"
       class="app-input__control"
       [class.app-input__control--invalid]="!!errorText()"
-      type="text"
+      [type]="type()"
       [value]="value()"
       [placeholder]="placeholder()"
       (input)="onInput($event)"

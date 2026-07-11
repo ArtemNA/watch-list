@@ -24,6 +24,7 @@ export class DevUi {
 
   protected readonly rating = signal(6);
   protected readonly noteValue = signal('');
+  protected readonly passwordValue = signal('');
   protected readonly splitButtonChoice = signal('want');
 
   protected readonly editableRatingLabel = computed(() =>

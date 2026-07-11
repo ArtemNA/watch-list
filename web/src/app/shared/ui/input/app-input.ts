@@ -1,5 +1,7 @@
 import { Component, input, model } from '@angular/core';
 
+export type InputType = 'text' | 'email' | 'password';
+
 let nextId = 0;
 
 @Component({
@@ -13,6 +15,7 @@ export class AppInput {
   readonly placeholder = input('');
   readonly errorText = input<string | null>(null);
   readonly multiline = input(false);
+  readonly type = input<InputType>('text');
   readonly value = model('');
 
   protected readonly controlId = `app-input-${nextId++}`;

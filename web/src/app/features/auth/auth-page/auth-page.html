@@ -1,0 +1,57 @@
+<div class="auth-page">
+  <app-card>
+    <div class="auth-page__tabs" role="tablist">
+      <button
+        type="button"
+        role="tab"
+        class="auth-page__tab"
+        [class.auth-page__tab--active]="tab() === 'login'"
+        [attr.aria-selected]="tab() === 'login'"
+        (click)="setTab('login')"
+      >
+        {{ 'auth.tabs.login' | t }}
+      </button>
+      <button
+        type="button"
+        role="tab"
+        class="auth-page__tab"
+        [class.auth-page__tab--active]="tab() === 'register'"
+        [attr.aria-selected]="tab() === 'register'"
+        (click)="setTab('register')"
+      >
+        {{ 'auth.tabs.register' | t }}
+      </button>
+    </div>
+
+    <form class="auth-page__form" novalidate (submit)="submit($event)">
+      <app-input
+        type="email"
+        [label]="'auth.fields.email' | t"
+        [(value)]="email"
+        [errorText]="emailError()"
+      />
+      <app-input
+        type="password"
+        [label]="'auth.fields.password' | t"
+        [(value)]="password"
+        [errorText]="passwordError()"
+      />
+      @if (tab() === 'register') {
+        <app-input
+          type="password"
+          [label]="'auth.fields.passwordConfirm' | t"
+          [(value)]="passwordConfirm"
+          [errorText]="passwordConfirmError()"
+        />
+      }
+
+      @if (serverErrorKey(); as errorKey) {
+        <p class="auth-page__server-error">{{ errorKey | t }}</p>
+      }
+
+      <app-button type="submit" [disabled]="pending()">
+        {{ (tab() === 'login' ? 'auth.submit.login' : 'auth.submit.register') | t }}
+      </app-button>
+    </form>
+  </app-card>
+</div>
