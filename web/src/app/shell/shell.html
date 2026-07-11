@@ -1,5 +1,12 @@
 <header class="shell__header">
-  <a class="shell__logo" routerLink="/">{{ 'app.title' | t }}</a>
+  <a class="shell__logo" routerLink="/" [attr.aria-label]="'app.title' | t">
+    <img
+      class="shell__logo-img"
+      [src]="theme.theme() === 'dark' ? 'brand/logo-dark.png' : 'brand/logo-light.png'"
+      alt="WatchList"
+      height="32"
+    />
+  </a>
 
   <nav class="shell__nav">
     <a class="shell__nav-link" routerLink="/search" routerLinkActive="shell__nav-link--active">

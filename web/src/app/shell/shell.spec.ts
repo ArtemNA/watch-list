@@ -33,9 +33,15 @@ describe('Shell', () => {
     expect(component).toBeTruthy();
   });
 
-  it('renders the app title', () => {
-    const text = (fixture.nativeElement as HTMLElement).textContent ?? '';
-    expect(text).toContain('WatchList');
+  it('renders the brand logo linking home', () => {
+    // Лого — зображення (бренд власника), а не текст: перевіряємо alt і те,
+    // що воно перемикається за темою (dark → світлий wordmark і навпаки).
+    const logo = (fixture.nativeElement as HTMLElement).querySelector<HTMLImageElement>('.shell__logo-img');
+    expect(logo).toBeTruthy();
+    expect(logo!.alt).toBe('WatchList');
+    expect(logo!.getAttribute('src')).toContain(
+      component['theme'].theme() === 'dark' ? 'logo-dark' : 'logo-light',
+    );
   });
 
   it('switches the language via the header language dropdown, including ru', async () => {

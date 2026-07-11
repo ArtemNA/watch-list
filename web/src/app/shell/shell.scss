@@ -16,14 +16,31 @@
 }
 
 .shell__logo {
-  font-size: var(--font-size-l);
-  font-weight: 700;
-  color: var(--color-text);
-  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
   text-decoration: none;
+  border-radius: var(--radius-s);
+  transition: opacity var(--transition-fast);
 
   &:hover {
-    color: var(--color-primary);
+    opacity: 0.85;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+}
+
+.shell__logo-img {
+  display: block;
+  height: 32px;
+  width: auto;
+}
+
+@media (max-width: 400px) {
+  .shell__logo-img {
+    height: 28px;
   }
 }
 
