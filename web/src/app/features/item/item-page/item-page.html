@@ -1,0 +1,184 @@
+@if (item(); as it) {
+  <div class="item-page">
+    <div class="item-page__topbar">
+      <a class="item-page__back" routerLink="/">{{ 'item.backToLibrary' | t }}</a>
+      <app-button variant="danger" size="s" (click)="openDeleteConfirm(it)">
+        {{ 'item.delete.action' | t }}
+      </app-button>
+    </div>
+
+    <header class="item-page__header">
+      <div class="item-page__poster">
+        @if (it.posterUrl) {
+          <img class="item-page__poster-img" [src]="it.posterUrl" [alt]="it.title" />
+        } @else {
+          <div class="item-page__poster-placeholder">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <rect x="3" y="5" width="18" height="15" rx="2" />
+              <path d="M7 5v15M17 5v15M3 10h4M17 10h4M3 15h4M17 15h4" />
+            </svg>
+          </div>
+        }
+      </div>
+
+      <div class="item-page__info">
+        <h1 class="item-page__title">{{ it.title }}</h1>
+        @if (it.originalTitle && it.originalTitle !== it.title) {
+          <p class="item-page__original-title">{{ it.originalTitle }}</p>
+        }
+
+        <div class="item-page__meta">
+          @if (it.year) {
+            <span>{{ it.year }}</span>
+          }
+          <span>{{ ('kind.' + it.kind) | t }}</span>
+        </div>
+
+        @if (it.genres && it.genres.length > 0) {
+          <div class="item-page__genres">
+            @for (genre of it.genres; track genre) {
+              <app-chip>{{ genre }}</app-chip>
+            }
+          </div>
+        }
+
+        @if (it.overview) {
+          <p class="item-page__overview">{{ it.overview }}</p>
+        }
+      </div>
+    </header>
+
+    <app-card class="item-page__section" [title]="'item.my.title' | t">
+      <div class="item-page__field">
+        <span class="item-page__field-label">{{ 'item.my.status' | t }}</span>
+        <div class="item-page__status-row">
+          @for (status of statuses; track status) {
+            <app-button
+              size="s"
+              [variant]="it.status === status ? 'primary' : 'ghost'"
+              (click)="setStatus(it, status)"
+            >
+              {{ ('status.' + status) | t }}
+            </app-button>
+          }
+        </div>
+      </div>
+
+      <div class="item-page__field">
+        <span class="item-page__field-label">{{ 'item.my.rating' | t }}</span>
+        <div class="item-page__rating-row">
+          <app-rating
+            [value]="it.myRating ?? 0"
+            [ariaLabel]="ratingAriaLabel(it)"
+            (valueChange)="onRatingChange(it, $event)"
+          />
+          @if (it.myRating) {
+            <span class="item-page__rating-value">{{ it.myRating }}/10</span>
+          }
+        </div>
+      </div>
+
+      @if (it.status === 'watched') {
+        <div class="item-page__field">
+          <label class="item-page__field-label" for="item-watched-at">{{ 'item.my.watchedAt' | t }}</label>
+          <input
+            id="item-watched-at"
+            type="date"
+            class="item-page__date-input"
+            [value]="it.watchedAt?.slice(0, 10) ?? ''"
+            (change)="onWatchedAtChange(it, $event)"
+          />
+        </div>
+      }
+
+      <div class="item-page__field">
+        <app-input
+          [label]="'item.my.notes' | t"
+          [multiline]="true"
+          [value]="notesDraft()"
+          (valueChange)="onNotesInput($event)"
+        />
+        <span class="item-page__save-indicator">
+          @if (notesSaveState() === 'saving') {
+            {{ 'item.my.notesSaving' | t }}
+          } @else if (notesSaveState() === 'saved') {
+            {{ 'item.my.notesSaved' | t }}
+          }
+        </span>
+      </div>
+    </app-card>
+
+    <app-card class="item-page__section" [title]="'item.links.title' | t">
+      @if (it.links.length === 0 && !isAddingLink()) {
+        <p class="item-page__links-empty">{{ 'item.links.empty' | t }}</p>
+      }
+
+      <ul class="item-page__links-list">
+        @for (link of it.links; track link.id) {
+          @if (editingLinkId() === link.id) {
+            <li class="item-page__link-form">
+              <app-input [label]="'item.links.label' | t" [(value)]="linkLabelDraft" />
+              <app-input [label]="'item.links.url' | t" [(value)]="linkUrlDraft" />
+              @if (linkFormError()) {
+                <span class="item-page__link-error">{{ linkFormError() }}</span>
+              }
+              <div class="item-page__link-form-actions">
+                <app-button size="s" variant="ghost" (click)="cancelLinkForm()">
+                  {{ 'common.cancel' | t }}
+                </app-button>
+                <app-button size="s" (click)="saveLink(it)">{{ 'common.save' | t }}</app-button>
+              </div>
+            </li>
+          } @else {
+            <li class="item-page__link">
+              <img class="item-page__link-favicon" [src]="faviconFor(link.url)" alt="" width="16" height="16" />
+              <a class="item-page__link-anchor" [href]="link.url" target="_blank" rel="noopener noreferrer">
+                {{ link.label }}
+              </a>
+              <div class="item-page__link-actions">
+                <app-button size="s" variant="ghost" (click)="startEditLink(link)">
+                  {{ 'common.edit' | t }}
+                </app-button>
+                <app-button size="s" variant="danger" (click)="deleteLink(it, link.id)">
+                  {{ 'common.delete' | t }}
+                </app-button>
+              </div>
+            </li>
+          }
+        }
+
+        @if (isAddingLink()) {
+          <li class="item-page__link-form">
+            <app-input [label]="'item.links.label' | t" [(value)]="linkLabelDraft" />
+            <app-input [label]="'item.links.url' | t" [(value)]="linkUrlDraft" />
+            @if (linkFormError()) {
+              <span class="item-page__link-error">{{ linkFormError() }}</span>
+            }
+            <div class="item-page__link-form-actions">
+              <app-button size="s" variant="ghost" (click)="cancelLinkForm()">
+                {{ 'common.cancel' | t }}
+              </app-button>
+              <app-button size="s" (click)="saveLink(it)">{{ 'common.save' | t }}</app-button>
+            </div>
+          </li>
+        }
+      </ul>
+
+      @if (!isAddingLink() && editingLinkId() === null) {
+        <app-button size="s" variant="ghost" (click)="startAddLink()">{{ 'item.links.add' | t }}</app-button>
+      }
+    </app-card>
+  </div>
+} @else {
+  <div class="item-page__not-found">
+    <p>{{ 'item.notFound' | t }}</p>
+    <a routerLink="/">{{ 'item.backToLibrary' | t }}</a>
+  </div>
+}

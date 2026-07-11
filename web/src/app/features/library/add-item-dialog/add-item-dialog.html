@@ -1,0 +1,50 @@
+<h2 mat-dialog-title>{{ 'addItem.title' | t }}</h2>
+<form (submit)="submit($event)">
+  <mat-dialog-content class="add-item-dialog__content">
+    <app-input
+      [label]="'addItem.fields.title' | t"
+      [placeholder]="'addItem.fields.titlePlaceholder' | t"
+      [(value)]="title"
+      [errorText]="titleError()"
+    />
+
+    <div class="add-item-dialog__field">
+      <label class="add-item-dialog__label" for="add-item-kind">{{ 'addItem.fields.kind' | t }}</label>
+      <select
+        id="add-item-kind"
+        class="add-item-dialog__select"
+        [value]="kind()"
+        (change)="onKindChange($event)"
+      >
+        @for (k of kinds; track k) {
+          <option [value]="k">{{ ('kind.' + k) | t }}</option>
+        }
+      </select>
+    </div>
+
+    <app-input
+      [label]="'addItem.fields.year' | t"
+      [placeholder]="'addItem.fields.yearPlaceholder' | t"
+      [(value)]="year"
+    />
+
+    <div class="add-item-dialog__field">
+      <label class="add-item-dialog__label" for="add-item-status">{{ 'addItem.fields.status' | t }}</label>
+      <select
+        id="add-item-status"
+        class="add-item-dialog__select"
+        [value]="status()"
+        (change)="onStatusChange($event)"
+      >
+        @for (s of statuses; track s) {
+          <option [value]="s">{{ ('status.' + s) | t }}</option>
+        }
+      </select>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <app-button type="button" variant="ghost" (click)="close()">{{ 'common.cancel' | t }}</app-button>
+    <app-button type="submit">{{ 'addItem.submit' | t }}</app-button>
+  </mat-dialog-actions>
+</form>

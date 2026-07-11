@@ -1,0 +1,8 @@
+<h2 mat-dialog-title>{{ 'item.delete.confirmTitle' | t }}</h2>
+<mat-dialog-content>
+  <p>{{ 'item.delete.confirmBody' | t: { title: data.title } }}</p>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <app-button variant="ghost" (click)="cancel()">{{ 'common.cancel' | t }}</app-button>
+  <app-button variant="danger" (click)="confirm()">{{ 'item.delete.confirmAction' | t }}</app-button>
+</mat-dialog-actions>

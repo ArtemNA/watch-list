@@ -1,0 +1,136 @@
+<div class="library-page">
+  <header class="library-page__header">
+    <h1 class="library-page__title">{{ 'library.title' | t }}</h1>
+    <app-button (click)="openAddDialog()">{{ 'library.addManually' | t }}</app-button>
+  </header>
+
+  <div class="library-page__filters">
+    <div class="library-page__tabs" role="group" [attr.aria-label]="'library.filters.status' | t">
+      <app-button
+        size="s"
+        [variant]="filters().status === 'all' ? 'primary' : 'ghost'"
+        (click)="setStatus('all')"
+      >
+        {{ 'library.filters.all' | t }} ({{ totalCount() }})
+      </app-button>
+      @for (status of statuses; track status) {
+        <app-button
+          size="s"
+          [variant]="filters().status === status ? 'primary' : 'ghost'"
+          (click)="setStatus(status)"
+        >
+          {{ ('status.' + status) | t }} ({{ counts()[status] }})
+        </app-button>
+      }
+    </div>
+
+    <div class="library-page__row">
+      <div class="library-page__kind" role="group" [attr.aria-label]="'library.filters.kind' | t">
+        <app-button
+          size="s"
+          [variant]="filters().kind === 'all' ? 'primary' : 'ghost'"
+          (click)="setKind('all')"
+        >
+          {{ 'library.filters.allKinds' | t }}
+        </app-button>
+        @for (kind of kinds; track kind) {
+          <app-button
+            size="s"
+            [variant]="filters().kind === kind ? 'primary' : 'ghost'"
+            (click)="setKind(kind)"
+          >
+            {{ ('kind.' + kind) | t }}
+          </app-button>
+        }
+      </div>
+
+      <app-input
+        class="library-page__search"
+        [placeholder]="'library.filters.searchPlaceholder' | t"
+        [value]="searchDraft()"
+        (valueChange)="onSearchInput($event)"
+      />
+
+      <div class="library-page__sort-field">
+        <label class="library-page__sort-label" for="library-sort">{{ 'library.filters.sort' | t }}</label>
+        <select
+          id="library-sort"
+          class="library-page__sort"
+          [value]="filters().sort"
+          (change)="onSortChange($event)"
+        >
+          @for (sort of sorts; track sort) {
+            <option [value]="sort">{{ ('library.sort.' + sort) | t }}</option>
+          }
+        </select>
+      </div>
+    </div>
+  </div>
+
+  @if (totalCount() === 0) {
+    <app-empty-state
+      [title]="'library.empty.title' | t"
+      [description]="'library.empty.description' | t"
+    >
+      <svg
+        icon
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <rect x="3" y="5" width="18" height="15" rx="2" />
+        <path d="M7 5v15M17 5v15M3 10h4M17 10h4M3 15h4M17 15h4" />
+      </svg>
+      <app-button action (click)="openAddDialog()">{{ 'library.addManually' | t }}</app-button>
+    </app-empty-state>
+  } @else if (visibleItems().length === 0) {
+    <app-empty-state
+      [title]="'library.noResults.title' | t"
+      [description]="'library.noResults.description' | t"
+    />
+  } @else {
+    <div class="library-page__grid">
+      @for (item of visibleItems(); track item.id) {
+        <a class="library-card" [routerLink]="['/item', item.id]">
+          <div class="library-card__poster">
+            @if (item.posterUrl) {
+              <img class="library-card__poster-img" [src]="item.posterUrl" [alt]="item.title" loading="lazy" />
+            } @else {
+              <div class="library-card__poster-placeholder">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <rect x="3" y="5" width="18" height="15" rx="2" />
+                  <path d="M7 5v15M17 5v15M3 10h4M17 10h4M3 15h4M17 15h4" />
+                </svg>
+              </div>
+            }
+          </div>
+          <div class="library-card__body">
+            <app-chip [tone]="item.status">{{ ('status.' + item.status) | t }}</app-chip>
+            <h3 class="library-card__title">{{ item.title }}</h3>
+            @if (item.year) {
+              <span class="library-card__year">{{ item.year }}</span>
+            }
+            @if (item.myRating) {
+              <app-rating
+                class="library-card__rating"
+                [value]="item.myRating"
+                [isReadonly]="true"
+                [ariaLabel]="ratingAriaLabel(item)"
+              />
+            }
+          </div>
+        </a>
+      }
+    </div>
+  }
+</div>

@@ -20,6 +20,11 @@
   font-weight: 700;
   color: var(--color-text);
   white-space: nowrap;
+  text-decoration: none;
+
+  &:hover {
+    color: var(--color-primary);
+  }
 }
 
 .shell__actions {
