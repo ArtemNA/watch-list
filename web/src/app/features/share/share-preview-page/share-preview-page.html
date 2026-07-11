@@ -1,0 +1,10 @@
+@if (status() === 'loading') {
+  <div class="share-preview-page__spinner" role="status" [attr.aria-label]="'share.page.loading' | t">
+    <span class="share-preview-page__spinner-circle"></span>
+    <span>{{ 'share.page.loading' | t }}</span>
+  </div>
+} @else if (status() === 'error') {
+  <app-empty-state [title]="'share.page.notFound.title' | t" [description]="'share.page.notFound.description' | t" />
+} @else if (payload(); as p) {
+  <app-shared-list-preview [payload]="p" (listAdded)="onListAdded($event)" (discarded)="onDiscarded()" />
+}

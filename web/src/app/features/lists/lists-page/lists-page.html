@@ -1,28 +1,47 @@
 <div class="lists-page">
   <header class="lists-page__header">
     <h1 class="lists-page__title">{{ 'lists.title' | t }}</h1>
-    <app-button (click)="openCreateDialog()">{{ 'lists.new' | t }}</app-button>
+    <div class="lists-page__header-actions">
+      <app-button variant="ghost" (click)="openImportByCodeDialog()">{{ 'share.import.action' | t }}</app-button>
+      <app-button (click)="openCreateDialog()">{{ 'lists.new' | t }}</app-button>
+    </div>
   </header>
 
   <section class="lists-page__section">
     <h2 class="lists-page__section-title">{{ 'lists.derived.sectionTitle' | t }}</h2>
     <div class="lists-page__grid">
       @for (list of derivedLists(); track list.key) {
-        <a class="list-card" routerLink="/" [queryParams]="derivedListQueryParams(list.key)">
-          <div class="list-card__cover">
-            @if (derivedListCover(list).length > 0) {
-              @for (poster of derivedListCover(list); track poster) {
-                <img class="list-card__cover-img" [src]="poster" alt="" loading="lazy" />
+        <div class="list-card">
+          <a class="list-card__link" routerLink="/" [queryParams]="derivedListQueryParams(list.key)">
+            <div class="list-card__cover">
+              @if (derivedListCover(list).length > 0) {
+                @for (poster of derivedListCover(list); track poster) {
+                  <img class="list-card__cover-img" [src]="poster" alt="" loading="lazy" />
+                }
+              } @else {
+                <div class="list-card__cover-placeholder"></div>
               }
-            } @else {
-              <div class="list-card__cover-placeholder"></div>
-            }
-          </div>
-          <div class="list-card__body">
-            <h3 class="list-card__title">{{ list.titleKey | t }}</h3>
-            <span class="list-card__count">{{ 'lists.itemCount' | t: { count: list.items.length } }}</span>
-          </div>
-        </a>
+            </div>
+            <div class="list-card__body">
+              <h3 class="list-card__title">{{ list.titleKey | t }}</h3>
+              <span class="list-card__count">{{ 'lists.itemCount' | t: { count: list.items.length } }}</span>
+            </div>
+          </a>
+          <button
+            type="button"
+            class="list-card__share-btn"
+            [attr.aria-label]="'lists.share.ariaLabel' | t"
+            (click)="openShareDialogForDerived(list)"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
+              <circle cx="18" cy="5" r="3" />
+              <circle cx="6" cy="12" r="3" />
+              <circle cx="18" cy="19" r="3" />
+              <line x1="8.6" y1="10.6" x2="15.4" y2="6.4" />
+              <line x1="8.6" y1="13.4" x2="15.4" y2="17.6" />
+            </svg>
+          </button>
+        </div>
       }
     </div>
   </section>
@@ -84,6 +103,9 @@
             <mat-menu #listMenu="matMenu">
               <button mat-menu-item type="button" (click)="openRenameDialog(list)">
                 {{ 'lists.menu.rename' | t }}
+              </button>
+              <button mat-menu-item type="button" (click)="openShareDialogForList(list)">
+                {{ 'lists.menu.share' | t }}
               </button>
               <button mat-menu-item type="button" (click)="openDeleteConfirm(list)">
                 {{ 'lists.menu.delete' | t }}

@@ -9,6 +9,7 @@ import { ListsPage } from './features/lists/lists-page/lists-page';
 import { PreviewPage } from './features/preview/preview-page/preview-page';
 import { SearchPage } from './features/search/search-page/search-page';
 import { SettingsPage } from './features/settings/settings-page/settings-page';
+import { SharePreviewPage } from './features/share/share-preview-page/share-preview-page';
 import { devOnlyGuard } from './core/dev-only.guard';
 import { Shell } from './shell/shell';
 
@@ -25,6 +26,8 @@ export const routes: Routes = [
       // Превью з пошуку БЕЗ додавання в бібліотеку (Step 13) — дані живуть тільки
       // в пам'яті сторінки, нічого не пишеться в IndexedDB.
       { path: 'preview/:kind/:tmdbId', component: PreviewPage },
+      // Шер списку (Step 12) — превью working і для незалогіненого відвідувача.
+      { path: 'share/:code', component: SharePreviewPage },
       { path: 'auth', component: AuthPage },
       { path: 'settings', component: SettingsPage },
       // /dev/ui — постійна демо-сторінка дизайн-системи (CLAUDE.md, DECISIONS #14),

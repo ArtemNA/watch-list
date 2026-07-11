@@ -142,6 +142,26 @@
       </mat-menu>
     </app-card>
 
+    @if (sharedNotesEntries().length > 0) {
+      <app-card class="item-page__section" [title]="'lists.detail.sharedNotesToggle' | t">
+        @for (row of sharedNotesEntries(); track row.list.id) {
+          <details class="item-page__shared-notes">
+            <summary>{{ row.list.name }}</summary>
+            @if (row.entry.sharedNotes) {
+              <p>{{ row.entry.sharedNotes }}</p>
+            }
+            @if (row.entry.sharedLinks) {
+              <ul>
+                @for (link of row.entry.sharedLinks; track link.id) {
+                  <li><a [href]="link.url" target="_blank" rel="noopener noreferrer">{{ link.label }}</a></li>
+                }
+              </ul>
+            }
+          </details>
+        }
+      </app-card>
+    }
+
     <app-card class="item-page__section" [title]="'item.links.title' | t">
       @if (it.links.length === 0 && !isAddingLink()) {
         <p class="item-page__links-empty">{{ 'item.links.empty' | t }}</p>

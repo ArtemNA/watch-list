@@ -254,7 +254,8 @@ function sanitizeOrigin(value: unknown): SyncListOrigin | null | undefined {
   return { sharedBy, sharedAt: origin['sharedAt'] as string };
 }
 
-function sanitizeListEntry(raw: unknown): SyncListEntry | null {
+/** Експортується — Step 12 (`share-validate.ts`) валідує entries шеру тим самим форматом ListEntry. */
+export function sanitizeListEntry(raw: unknown): SyncListEntry | null {
   if (raw === null || typeof raw !== 'object') {
     return null;
   }

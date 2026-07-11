@@ -1,0 +1,20 @@
+<h2 mat-dialog-title>{{ 'share.import.title' | t }}</h2>
+
+@if (phase() === 'input') {
+  <mat-dialog-content>
+    <app-input
+      [label]="'share.import.codeLabel' | t"
+      [multiline]="true"
+      [(value)]="code"
+      [errorText]="invalid() ? ('share.import.invalidCode' | t) : null"
+    />
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <app-button type="button" variant="ghost" (click)="dialogRef.close()">{{ 'common.cancel' | t }}</app-button>
+    <app-button type="button" (click)="submit()">{{ 'share.import.submit' | t }}</app-button>
+  </mat-dialog-actions>
+} @else if (payload(); as p) {
+  <mat-dialog-content class="import-by-code-dialog__preview">
+    <app-shared-list-preview [payload]="p" (listAdded)="onListAdded($event)" (discarded)="onDiscarded()" />
+  </mat-dialog-content>
+}

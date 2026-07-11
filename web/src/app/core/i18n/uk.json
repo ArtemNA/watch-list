@@ -209,6 +209,10 @@
   "lists.detail.addToLibrary": "+ У бібліотеку",
   "lists.detail.removeEntry": "Прибрати зі списку",
   "lists.detail.notFound": "Список не знайдено.",
+  "lists.menu.share": "Поділитися",
+  "lists.share.ariaLabel": "Поділитися списком",
+  "lists.detail.originBadge": "від {{sharedBy}}",
+  "lists.detail.sharedNotesToggle": "Нотатки того, хто поділився",
 
   "search.title": "Пошук TMDB",
   "search.offline.title": "Пошук недоступний офлайн",
@@ -277,5 +281,38 @@
   "preview.offline.description": "Для завантаження даних потрібне з'єднання з мережею.",
   "preview.notFound.title": "Це посилання не працює",
   "preview.notFound.description": "Адреса пошкоджена або запису більше не існує.",
-  "preview.add.label": "Додати в бібліотеку"
+  "preview.add.label": "Додати в бібліотеку",
+
+  "share.dialog.title": "Поділитися списком",
+  "share.dialog.includeNotes": "Поділитись моїми нотатками",
+  "share.dialog.includeLinks": "Поділитись моїми посиланнями",
+  "share.dialog.tabLink": "Посилання",
+  "share.dialog.tabCode": "Код для офлайну",
+  "share.dialog.copy": "Копіювати",
+  "share.dialog.copied": "Скопійовано",
+  "share.dialog.expiresHint": "Це посилання діє 30 днів.",
+  "share.dialog.createLink": "Створити посилання",
+  "share.dialog.creating": "Створюємо...",
+  "share.dialog.createError": "Не вдалося створити посилання. Перевірте з'єднання або скористайтесь офлайн-кодом.",
+  "share.dialog.snapshotNote": "Це знімок списку. Зміни, внесені після шеру, не передадуться.",
+
+  "share.import.action": "Імпортувати за кодом",
+  "share.import.title": "Імпорт списку за кодом",
+  "share.import.codeLabel": "Вставте отриманий код",
+  "share.import.invalidCode": "Код не розпізнано.",
+  "share.import.submit": "Переглянути",
+
+  "share.preview.headline": "{{sharedBy}} поділився(-лась) з вами списком «{{name}}»",
+  "share.preview.counts": "{{total}} записів, {{inLibrary}} вже у вашій бібліотеці",
+  "share.preview.empty.title": "Цей список порожній",
+  "share.preview.hasNotes": "Є нотатки від відправника",
+  "share.preview.discard": "Відхилити",
+  "share.preview.addList": "Додати список",
+  "share.preview.adding": "Додаємо...",
+  "share.preview.addSuccess": "«{{name}}» додано у ваші списки.",
+  "share.preview.importedName": "«{{name}}» — від {{sharedBy}}",
+
+  "share.page.loading": "Завантажуємо список, яким поділились...",
+  "share.page.notFound.title": "Це посилання не працює",
+  "share.page.notFound.description": "Код пошкоджений або протух (посилання діють 30 днів)."
 }

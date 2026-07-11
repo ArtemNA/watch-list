@@ -1,0 +1,65 @@
+<h2 mat-dialog-title>{{ 'share.dialog.title' | t }}</h2>
+
+<mat-dialog-content class="share-list-dialog__content">
+  <label class="share-list-dialog__checkbox">
+    <input type="checkbox" [checked]="includeNotes()" (change)="onIncludeNotesChange($event)" />
+    {{ 'share.dialog.includeNotes' | t }}
+  </label>
+  <label class="share-list-dialog__checkbox">
+    <input type="checkbox" [checked]="includeLinks()" (change)="onIncludeLinksChange($event)" />
+    {{ 'share.dialog.includeLinks' | t }}
+  </label>
+
+  <div class="share-list-dialog__tabs" role="tablist">
+    <button
+      type="button"
+      role="tab"
+      class="share-list-dialog__tab"
+      [class.share-list-dialog__tab--active]="tab() === 'link'"
+      (click)="setTab('link')"
+    >
+      {{ 'share.dialog.tabLink' | t }}
+    </button>
+    <button
+      type="button"
+      role="tab"
+      class="share-list-dialog__tab"
+      [class.share-list-dialog__tab--active]="tab() === 'code'"
+      (click)="setTab('code')"
+    >
+      {{ 'share.dialog.tabCode' | t }}
+    </button>
+  </div>
+
+  @if (tab() === 'link') {
+    @if (link(); as url) {
+      <div class="share-list-dialog__result">
+        <input class="share-list-dialog__result-input" type="text" readonly [value]="url" />
+        <app-button size="s" (click)="copy(url, 'link')">
+          {{ (copied() === 'link' ? 'share.dialog.copied' : 'share.dialog.copy') | t }}
+        </app-button>
+      </div>
+      <p class="share-list-dialog__hint">{{ 'share.dialog.expiresHint' | t }}</p>
+    } @else {
+      <app-button [disabled]="creating() || !sharedBy()" (click)="createLink()">
+        {{ (creating() ? 'share.dialog.creating' : 'share.dialog.createLink') | t }}
+      </app-button>
+      @if (createError()) {
+        <p class="share-list-dialog__error">{{ 'share.dialog.createError' | t }}</p>
+      }
+    }
+  } @else {
+    <div class="share-list-dialog__result">
+      <textarea class="share-list-dialog__code" readonly rows="4" [value]="offlineCode()"></textarea>
+      <app-button size="s" (click)="copy(offlineCode(), 'code')">
+        {{ (copied() === 'code' ? 'share.dialog.copied' : 'share.dialog.copy') | t }}
+      </app-button>
+    </div>
+  }
+
+  <p class="share-list-dialog__note">{{ 'share.dialog.snapshotNote' | t }}</p>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <app-button type="button" variant="ghost" (click)="close()">{{ 'common.cancel' | t }}</app-button>
+</mat-dialog-actions>

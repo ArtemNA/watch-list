@@ -1,0 +1,60 @@
+@if (payload(); as p) {
+  <div class="shared-list-preview">
+    <header class="shared-list-preview__header">
+      <h1 class="shared-list-preview__title">
+        {{ 'share.preview.headline' | t: { sharedBy: p.sharedBy, name: p.name } }}
+      </h1>
+      <p class="shared-list-preview__meta">
+        {{ 'share.preview.counts' | t: { total: p.entries.length, inLibrary: matchCount() } }}
+      </p>
+      <p class="shared-list-preview__snapshotNote">{{ 'share.dialog.snapshotNote' | t }}</p>
+    </header>
+
+    @if (p.entries.length === 0) {
+      <app-empty-state [title]="'share.preview.empty.title' | t" />
+    } @else {
+      <div class="shared-list-preview__grid">
+        @for (entry of p.entries; track entry.id) {
+          <div class="shared-entry-card">
+            <div class="shared-entry-card__poster">
+              @if (entry.snapshot.posterUrl) {
+                <img
+                  class="shared-entry-card__poster-img"
+                  [src]="entry.snapshot.posterUrl"
+                  [alt]="entry.snapshot.title"
+                  loading="lazy"
+                />
+              } @else {
+                <div class="shared-entry-card__poster-placeholder"></div>
+              }
+            </div>
+            <div class="shared-entry-card__body">
+              @if (resolvedStatus(entry); as status) {
+                <app-chip [tone]="status">{{ ('status.' + status) | t }}</app-chip>
+              }
+              <h3 class="shared-entry-card__title">{{ entry.snapshot.title }}</h3>
+              <span class="shared-entry-card__meta">
+                {{ ('kind.' + entry.kind) | t }}
+                @if (entry.snapshot.year) {
+                  · {{ entry.snapshot.year }}
+                }
+              </span>
+              @if (hasSharedExtras(entry)) {
+                <span class="shared-entry-card__has-notes">{{ 'share.preview.hasNotes' | t }}</span>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    }
+
+    <div class="shared-list-preview__actions">
+      <app-button variant="ghost" [disabled]="adding()" (click)="discard()">
+        {{ 'share.preview.discard' | t }}
+      </app-button>
+      <app-button [disabled]="adding()" (click)="addList()">
+        {{ (adding() ? 'share.preview.adding' : 'share.preview.addList') | t }}
+      </app-button>
+    </div>
+  </div>
+}

@@ -3,6 +3,7 @@
   "outputDirectory": "web/dist/web/browser",
   "rewrites": [
     { "source": "/api/tmdb/:path*", "destination": "/api/tmdb-proxy?path=:path*" },
+    { "source": "/api/share/:code", "destination": "/api/share-code?code=:code" },
     { "source": "/((?!api/).*)", "destination": "/index.html" }
   ]
 }

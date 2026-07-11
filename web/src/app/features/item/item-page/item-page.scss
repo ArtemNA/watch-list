@@ -218,6 +218,36 @@
   color: var(--color-text-muted);
 }
 
+.item-page__shared-notes {
+  margin: 0 0 var(--space-3);
+  font-size: var(--font-size-s);
+  color: var(--color-text-muted);
+
+  summary {
+    cursor: pointer;
+    color: var(--color-primary);
+
+    &:focus-visible {
+      outline: 2px solid var(--color-primary);
+      outline-offset: 2px;
+    }
+  }
+
+  p {
+    margin: var(--space-1) 0 0;
+    white-space: pre-wrap;
+  }
+
+  ul {
+    margin: var(--space-1) 0 0;
+    padding-left: var(--space-4);
+  }
+
+  a {
+    color: var(--color-primary);
+  }
+}
+
 .item-page__not-found {
   display: flex;
   flex-direction: column;

@@ -27,6 +27,10 @@ function ensureIndexes(db: Db): Promise<void> {
       db.collection('items').createIndex({ userId: 1, id: 1 }, { unique: true }),
       // Step 11: колекція lists — той самий unique index, що items (DECISIONS §9).
       db.collection('lists').createIndex({ userId: 1, id: 1 }, { unique: true }),
+      // Step 12: shares — код невгадуваний і унікальний; TTL-індекс сам стирає
+      // документ через 30 днів після createdAt (ARCHITECTURE §9).
+      db.collection('shares').createIndex({ code: 1 }, { unique: true }),
+      db.collection('shares').createIndex({ createdAt: 1 }, { expireAfterSeconds: 60 * 60 * 24 * 30 }),
     ]).then(() => undefined);
   }
   return globalThis.__mongoIndexesPromise;

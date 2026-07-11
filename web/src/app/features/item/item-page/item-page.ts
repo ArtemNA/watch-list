@@ -14,7 +14,7 @@ import { ListsRepository } from '../../../core/data/lists.repository';
 import { I18nService } from '../../../core/i18n/i18n.service';
 import { TPipe } from '../../../core/i18n/t.pipe';
 import type { CustomLink, MediaItem, MediaStatus } from '../../../core/models/media-item.model';
-import type { MediaList } from '../../../core/models/media-list.model';
+import type { ListEntry, MediaList } from '../../../core/models/media-list.model';
 import { AppButton } from '../../../shared/ui/button/app-button';
 import { AppCard } from '../../../shared/ui/card/app-card';
 import { AppFavoriteToggle } from '../../../shared/ui/favorite-toggle/app-favorite-toggle';
@@ -85,6 +85,29 @@ export class ItemPage {
   protected readonly listsAvailableToAdd = computed<MediaList[]>(() => {
     const already = new Set(this.listsForItem().map((list) => list.id));
     return this.listsRepo.lists().filter((list) => !already.has(list.id));
+  });
+
+  /**
+   * Нотатки/лінки відправника (Step 12, задача 9) — ОКРЕМА картка, не всередині
+   * «У списках»: членство в списках і читабельна інформація про фільм від
+   * відправника — різні речі, змішувати в одному блоці плутає (знайдено живою
+   * перевіркою власником). Список зі списком+entry, а не просто entry, — щоб
+   * підписати кожен блок назвою списку (айтем теоретично може бути в кількох
+   * імпортованих списках одразу).
+   */
+  protected readonly sharedNotesEntries = computed<{ list: MediaList; entry: ListEntry }[]>(() => {
+    const current = this.item();
+    if (!current) {
+      return [];
+    }
+    const result: { list: MediaList; entry: ListEntry }[] = [];
+    for (const list of this.listsForItem()) {
+      const entry = this.entryFor(current, list);
+      if (entry && this.hasSharedExtras(entry)) {
+        result.push({ list, entry });
+      }
+    }
+    return result;
   });
 
   // Нотатки: локальний драфт з debounce-автозбереженням, не читаємо напряму з item()
@@ -275,10 +298,19 @@ export class ItemPage {
     void this.listsRepo.addEntry(list.id, entryFromItem(item));
   }
 
+  /** Entry поточного айтема в даному списку (той самий ключ, що listsForItem). */
+  private entryFor(item: MediaItem, list: MediaList): ListEntry | undefined {
+    const key = entryKey({ id: item.id, tmdbId: item.tmdbId });
+    return list.entries.find((candidate) => entryKey(candidate) === key);
+  }
+
+  private hasSharedExtras(entry: ListEntry): boolean {
+    return !!entry.sharedNotes || !!(entry.sharedLinks && entry.sharedLinks.length > 0);
+  }
+
   /** Хрестик на чіпі списку (item-page): видаляє тільки entry, статус айтема не чіпає. */
   removeFromList(item: MediaItem, list: MediaList): void {
-    const key = entryKey({ id: item.id, tmdbId: item.tmdbId });
-    const entry = list.entries.find((candidate) => entryKey(candidate) === key);
+    const entry = this.entryFor(item, list);
     if (!entry) {
       return;
     }

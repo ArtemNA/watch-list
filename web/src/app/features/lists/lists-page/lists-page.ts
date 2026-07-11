@@ -15,7 +15,10 @@ import { AppEmptyState } from '../../../shared/ui/empty-state/app-empty-state';
 import { DeleteListConfirmDialog } from '../delete-list-confirm-dialog/delete-list-confirm-dialog';
 import type { DerivedList, DerivedListKey } from '../derived-lists';
 import { buildDerivedLists } from '../derived-lists';
+import { ImportByCodeDialog } from '../import-by-code-dialog/import-by-code-dialog';
 import { ListFormDialog, type ListFormDialogResult } from '../list-form-dialog/list-form-dialog';
+import { shareSourceFromDerived, shareSourceFromList } from '../share-source';
+import { ShareListDialog } from '../share-list-dialog/share-list-dialog';
 
 @Component({
   selector: 'app-lists-page',
@@ -80,6 +83,18 @@ export class ListsPage {
     if (result.description !== (list.description ?? '')) {
       await this.listsRepo.updateDescription(list.id, result.description);
     }
+  }
+
+  openShareDialogForList(list: MediaList): void {
+    this.dialog.open(ShareListDialog, { data: { source: shareSourceFromList(list) } });
+  }
+
+  openShareDialogForDerived(list: DerivedList): void {
+    this.dialog.open(ShareListDialog, { data: { source: shareSourceFromDerived(list, this.i18n) } });
+  }
+
+  openImportByCodeDialog(): void {
+    this.dialog.open(ImportByCodeDialog);
   }
 
   openDeleteConfirm(list: MediaList): void {

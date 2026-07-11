@@ -115,6 +115,22 @@ describe('ListsRepository', () => {
     expect(visibleAfterRestore.some((l) => l.id === list.id)).toBe(true);
   });
 
+  it('createImported creates a new list with entries and origin already set (Step 12 import — never overwrites by name)', async () => {
+    const entries = [{ ...entry({ id: 'e1', tmdbId: 1 }), addedAt: '2026-01-01T00:00:00.000Z' }];
+    const origin = { sharedBy: 'friend@example.com', sharedAt: '2026-01-02T00:00:00.000Z' };
+
+    const a = await repo.createImported('«Watched» — від friend@example.com', entries, origin);
+    const b = await repo.createImported('«Watched» — від friend@example.com', entries, origin);
+
+    expect(a.id).not.toBe(b.id);
+    expect(a.entries).toEqual(entries);
+    expect(a.origin).toEqual(origin);
+    expect(a.createdAt).toBe(a.updatedAt);
+
+    const stored = await repo.getById(a.id);
+    expect(stored).toEqual(a);
+  });
+
   it('changedSince filters lists updated after the given timestamp', async () => {
     const before = new Date().toISOString();
     await delay(5);

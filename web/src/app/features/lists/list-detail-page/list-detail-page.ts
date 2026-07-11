@@ -17,6 +17,8 @@ import { AppChip } from '../../../shared/ui/chip/app-chip';
 import { AppEmptyState } from '../../../shared/ui/empty-state/app-empty-state';
 import { DeleteListConfirmDialog } from '../delete-list-confirm-dialog/delete-list-confirm-dialog';
 import { ListFormDialog, type ListFormDialogResult } from '../list-form-dialog/list-form-dialog';
+import { shareSourceFromList } from '../share-source';
+import { ShareListDialog } from '../share-list-dialog/share-list-dialog';
 
 @Component({
   selector: 'app-list-detail-page',
@@ -73,6 +75,16 @@ export class ListDetailPage {
     return this.resolvedItem(entry)?.year ?? entry.snapshot.year;
   }
 
+  /**
+   * Компактний бейдж замість повного тексту нотаток/лінків відправника — картка
+   * в гріді завузька для розгортайки (знайдено власником). Повний текст читабельний
+   * на item-page (блок «У списках»); для ще-не-доданих entries він з'явиться там
+   * лише ПІСЛЯ додавання в бібліотеку — свідомий компроміс простоти UI.
+   */
+  hasSharedExtras(entry: ListEntry): boolean {
+    return !!entry.sharedNotes || !!(entry.sharedLinks && entry.sharedLinks.length > 0);
+  }
+
   async addToLibrary(entry: ListEntry): Promise<void> {
     const list = this.list();
     if (!list) {
@@ -101,6 +113,14 @@ export class ListDetailPage {
       return;
     }
     void this.listsRepo.removeEntry(list.id, entry.id);
+  }
+
+  openShareDialog(): void {
+    const list = this.list();
+    if (!list) {
+      return;
+    }
+    this.dialog.open(ShareListDialog, { data: { source: shareSourceFromList(list) } });
   }
 
   async openRenameDialog(): Promise<void> {

@@ -68,6 +68,15 @@
   color: var(--color-text-muted);
 }
 
+.list-detail-page__origin-badge {
+  align-self: flex-start;
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-s);
+  background: var(--color-surface-2);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-s);
+}
+
 .list-detail-page__grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
@@ -141,6 +150,11 @@
 
 .entry-card__body app-button {
   margin-top: var(--space-1);
+}
+
+.entry-card__has-notes {
+  font-size: var(--font-size-s);
+  color: var(--color-primary);
 }
 
 .entry-card__remove {

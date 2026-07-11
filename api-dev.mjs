@@ -74,6 +74,8 @@ async function main() {
   const loginHandler = (await import('./api/auth/login.ts')).default;
   const syncItemsHandler = (await import('./api/sync/items.ts')).default;
   const syncListsHandler = (await import('./api/sync/lists.ts')).default;
+  const shareHandler = (await import('./api/share.ts')).default;
+  const shareCodeHandler = (await import('./api/share-code.ts')).default;
 
   const port = Number(process.env['PORT']) || 3000;
 
@@ -113,6 +115,29 @@ async function main() {
       }
       const handler = url.pathname === '/api/sync/items' ? syncItemsHandler : syncListsHandler;
       void handler(req, res);
+      return;
+    }
+
+    // /api/share/:code (GET) мімікрує rewrite з vercel.json — перевіряємо ПЕРЕД
+    // точним /api/share, бо це префікс.
+    if (url.pathname === '/api/share') {
+      req.query = query;
+      if (req.method === 'POST') {
+        try {
+          req.body = await readJsonBody(req);
+        } catch {
+          res.status(400).json({ error: 'INVALID_JSON' });
+          return;
+        }
+      }
+      void shareHandler(req, res);
+      return;
+    }
+
+    if (url.pathname.startsWith('/api/share/')) {
+      const code = url.pathname.slice('/api/share/'.length);
+      req.query = { ...query, code };
+      void shareCodeHandler(req, res);
       return;
     }
 

@@ -12,6 +12,12 @@
   gap: var(--space-3);
 }
 
+.lists-page__header-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
 .lists-page__title {
   margin: 0;
   font-size: var(--font-size-xl);
@@ -66,16 +72,6 @@
   }
 }
 
-a.list-card {
-  color: inherit;
-  text-decoration: none;
-
-  &:focus-visible {
-    outline: 2px solid var(--color-primary);
-    outline-offset: 2px;
-  }
-}
-
 .list-card__cover {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -121,7 +117,8 @@ a.list-card {
   color: var(--color-text-muted);
 }
 
-.list-card__menu-btn {
+.list-card__menu-btn,
+.list-card__share-btn {
   position: absolute;
   top: var(--space-2);
   right: var(--space-2);

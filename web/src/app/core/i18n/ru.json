@@ -209,6 +209,10 @@
   "lists.detail.addToLibrary": "+ В библиотеку",
   "lists.detail.removeEntry": "Убрать из списка",
   "lists.detail.notFound": "Список не найден.",
+  "lists.menu.share": "Поделиться",
+  "lists.share.ariaLabel": "Поделиться списком",
+  "lists.detail.originBadge": "от {{sharedBy}}",
+  "lists.detail.sharedNotesToggle": "Заметки того, кто поделился",
 
   "search.title": "Поиск TMDB",
   "search.offline.title": "Поиск недоступен офлайн",
@@ -277,5 +281,38 @@
   "preview.offline.description": "Для загрузки данных нужно соединение с сетью.",
   "preview.notFound.title": "Эта ссылка не работает",
   "preview.notFound.description": "Адрес повреждён или записи больше не существует.",
-  "preview.add.label": "Добавить в библиотеку"
+  "preview.add.label": "Добавить в библиотеку",
+
+  "share.dialog.title": "Поделиться списком",
+  "share.dialog.includeNotes": "Поделиться моими заметками",
+  "share.dialog.includeLinks": "Поделиться моими ссылками",
+  "share.dialog.tabLink": "Ссылка",
+  "share.dialog.tabCode": "Код для офлайна",
+  "share.dialog.copy": "Копировать",
+  "share.dialog.copied": "Скопировано",
+  "share.dialog.expiresHint": "Эта ссылка действует 30 дней.",
+  "share.dialog.createLink": "Создать ссылку",
+  "share.dialog.creating": "Создаём...",
+  "share.dialog.createError": "Не удалось создать ссылку. Проверьте соединение или используйте офлайн-код.",
+  "share.dialog.snapshotNote": "Это снимок списка. Изменения, внесённые после отправки, не передадутся.",
+
+  "share.import.action": "Импортировать по коду",
+  "share.import.title": "Импорт списка по коду",
+  "share.import.codeLabel": "Вставьте полученный код",
+  "share.import.invalidCode": "Код не распознан.",
+  "share.import.submit": "Просмотреть",
+
+  "share.preview.headline": "{{sharedBy}} поделился(-ась) с вами списком «{{name}}»",
+  "share.preview.counts": "{{total}} записей, {{inLibrary}} уже в вашей библиотеке",
+  "share.preview.empty.title": "Этот список пуст",
+  "share.preview.hasNotes": "Есть заметки от отправителя",
+  "share.preview.discard": "Отклонить",
+  "share.preview.addList": "Добавить список",
+  "share.preview.adding": "Добавляем...",
+  "share.preview.addSuccess": "«{{name}}» добавлен в ваши списки.",
+  "share.preview.importedName": "«{{name}}» — от {{sharedBy}}",
+
+  "share.page.loading": "Загружаем список, которым поделились...",
+  "share.page.notFound.title": "Эта ссылка не работает",
+  "share.page.notFound.description": "Код повреждён или истёк (ссылки действуют 30 дней)."
 }

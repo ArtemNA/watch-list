@@ -17,6 +17,7 @@
         </button>
         <mat-menu #listMenu="matMenu">
           <button mat-menu-item type="button" (click)="openRenameDialog()">{{ 'lists.menu.rename' | t }}</button>
+          <button mat-menu-item type="button" (click)="openShareDialog()">{{ 'lists.menu.share' | t }}</button>
           <button mat-menu-item type="button" (click)="openDeleteConfirm()">{{ 'lists.menu.delete' | t }}</button>
         </mat-menu>
       </div>
@@ -28,6 +29,11 @@
         <p class="list-detail-page__description">{{ l.description }}</p>
       }
       <span class="list-detail-page__count">{{ 'lists.itemCount' | t: { count: l.entries.length } }}</span>
+      @if (l.origin) {
+        <span class="list-detail-page__origin-badge">
+          {{ 'lists.detail.originBadge' | t: { sharedBy: l.origin.sharedBy } }}
+        </span>
+      }
     </header>
 
     @if (l.entries.length === 0) {
@@ -74,6 +80,9 @@
                   @if (yearFor(entry)) {
                     <span class="entry-card__year">{{ yearFor(entry) }}</span>
                   }
+                  @if (hasSharedExtras(entry)) {
+                    <span class="entry-card__has-notes">{{ 'share.preview.hasNotes' | t }}</span>
+                  }
                 </div>
               </a>
             } @else {
@@ -90,6 +99,9 @@
                   <h3 class="entry-card__title">{{ titleFor(entry) }}</h3>
                   @if (yearFor(entry)) {
                     <span class="entry-card__year">{{ yearFor(entry) }}</span>
+                  }
+                  @if (hasSharedExtras(entry)) {
+                    <span class="entry-card__has-notes">{{ 'share.preview.hasNotes' | t }}</span>
                   }
                   <app-button size="s" (click)="addToLibrary(entry)">
                     {{ 'lists.detail.addToLibrary' | t }}

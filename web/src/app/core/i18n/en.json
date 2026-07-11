@@ -209,6 +209,10 @@
   "lists.detail.addToLibrary": "+ To library",
   "lists.detail.removeEntry": "Remove from list",
   "lists.detail.notFound": "List not found.",
+  "lists.menu.share": "Share",
+  "lists.share.ariaLabel": "Share list",
+  "lists.detail.originBadge": "from {{sharedBy}}",
+  "lists.detail.sharedNotesToggle": "Notes from whoever shared this",
 
   "search.title": "TMDB search",
   "search.offline.title": "Search is unavailable offline",
@@ -277,5 +281,38 @@
   "preview.offline.description": "Loading title details needs a network connection.",
   "preview.notFound.title": "This link doesn't work",
   "preview.notFound.description": "The address is malformed or the title no longer exists.",
-  "preview.add.label": "Add to your library"
+  "preview.add.label": "Add to your library",
+
+  "share.dialog.title": "Share list",
+  "share.dialog.includeNotes": "Share my notes",
+  "share.dialog.includeLinks": "Share my links",
+  "share.dialog.tabLink": "Link",
+  "share.dialog.tabCode": "Offline code",
+  "share.dialog.copy": "Copy",
+  "share.dialog.copied": "Copied",
+  "share.dialog.expiresHint": "This link is valid for 30 days.",
+  "share.dialog.createLink": "Create link",
+  "share.dialog.creating": "Creating...",
+  "share.dialog.createError": "Couldn't create a link. Check your connection, or use the offline code instead.",
+  "share.dialog.snapshotNote": "This is a snapshot of the list. Changes made after sharing won't be included.",
+
+  "share.import.action": "Import by code",
+  "share.import.title": "Import a shared list",
+  "share.import.codeLabel": "Paste the code you received",
+  "share.import.invalidCode": "Couldn't recognize this code.",
+  "share.import.submit": "Preview",
+
+  "share.preview.headline": "{{sharedBy}} shared the list \"{{name}}\" with you",
+  "share.preview.counts": "{{total}} titles, {{inLibrary}} already in your library",
+  "share.preview.empty.title": "This shared list is empty",
+  "share.preview.hasNotes": "Has notes from the sender",
+  "share.preview.discard": "Discard",
+  "share.preview.addList": "Add list",
+  "share.preview.adding": "Adding...",
+  "share.preview.addSuccess": "\"{{name}}\" added to your lists.",
+  "share.preview.importedName": "\"{{name}}\" — from {{sharedBy}}",
+
+  "share.page.loading": "Loading the shared list...",
+  "share.page.notFound.title": "This link doesn't work",
+  "share.page.notFound.description": "The code is malformed or has expired (share links last 30 days)."
 }

@@ -4,7 +4,7 @@ import { liveQuery } from 'dexie';
 import { from } from 'rxjs';
 
 import { AppDb } from '../db/app-db';
-import type { ListEntry, MediaList } from '../models/media-list.model';
+import type { ListEntry, MediaList, MediaListOrigin } from '../models/media-list.model';
 import { entryKey } from './list-entry';
 
 const EMPTY_LISTS: MediaList[] = [];
@@ -35,6 +35,22 @@ export class ListsRepository {
       name,
       ...(description ? { description } : {}),
       entries: [],
+      createdAt: now,
+      updatedAt: now,
+    };
+    await this.db.lists.add(list);
+    this.mutationSeq.update((n) => n + 1);
+    return list;
+  }
+
+  /** Імпорт шеру (Step 12): ЗАВЖДИ новий список з entries і origin відразу — ніколи не перезаписує існуючий по назві. */
+  async createImported(name: string, entries: ListEntry[], origin: MediaListOrigin): Promise<MediaList> {
+    const now = new Date().toISOString();
+    const list: MediaList = {
+      id: crypto.randomUUID(),
+      name,
+      origin,
+      entries,
       createdAt: now,
       updatedAt: now,
     };
