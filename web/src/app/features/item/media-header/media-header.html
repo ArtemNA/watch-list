@@ -1,0 +1,59 @@
+@if (media(); as m) {
+  <header class="media-header">
+    <div class="media-header__poster">
+      @if (m.posterUrl) {
+        <img class="media-header__poster-img" [src]="m.posterUrl" [alt]="m.title" />
+      } @else {
+        <div class="media-header__poster-placeholder">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <rect x="3" y="5" width="18" height="15" rx="2" />
+            <path d="M7 5v15M17 5v15M3 10h4M17 10h4M3 15h4M17 15h4" />
+          </svg>
+        </div>
+      }
+    </div>
+
+    <div class="media-header__info">
+      <h1 class="media-header__title">{{ m.title }}</h1>
+      @if (m.originalTitle && m.originalTitle !== m.title) {
+        <p class="media-header__original-title">{{ m.originalTitle }}</p>
+      }
+
+      <div class="media-header__meta">
+        @if (m.year) {
+          <span>{{ m.year }}</span>
+        }
+        <span>{{ ('kind.' + m.kind) | t }}</span>
+        @if (tmdbLink(); as link) {
+          <a class="media-header__external-link" [href]="link" target="_blank" rel="noopener noreferrer">
+            TMDB ↗
+          </a>
+        }
+        @if (imdbLink(); as link) {
+          <a class="media-header__external-link" [href]="link" target="_blank" rel="noopener noreferrer">
+            IMDb ↗
+          </a>
+        }
+      </div>
+
+      @if (m.genres && m.genres.length > 0) {
+        <div class="media-header__genres">
+          @for (genre of m.genres; track genre) {
+            <app-chip>{{ genre }}</app-chip>
+          }
+        </div>
+      }
+
+      @if (m.overview) {
+        <p class="media-header__overview">{{ m.overview }}</p>
+      }
+    </div>
+  </header>
+}

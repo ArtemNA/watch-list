@@ -57,6 +57,18 @@ export class SearchPage {
     ADD_AS_STATUSES.map((status) => ({ value: status, label: this.i18n.t(`status.${status}`) })),
   );
 
+  /**
+   * Роут для кліку по постеру/назві картки (Step 13): вже в бібліотеці — на item-page
+   * (як і чіп «У бібліотеці»), інакше — на превью. У режимі linkItemId (Step 06 —
+   * лінкування ручного айтема) картка НЕ клікабельна — там свій флоу «Обрати».
+   */
+  protected previewLink(result: SearchResult): (string | number | undefined)[] | null {
+    if (this.linkItemId()) {
+      return null;
+    }
+    return result.inLibrary ? ['/item', result.existingItemId] : ['/preview', result.kind, result.id];
+  }
+
   private searchTimer: ReturnType<typeof setTimeout> | null = null;
   private requestToken = 0;
 

@@ -1,0 +1,56 @@
+@if (providers(); as wp) {
+  <app-card [title]="'item.watch.title' | t">
+    @if (wp.flatrate?.length) {
+      <div class="media-watch-providers__group">
+        <span class="media-watch-providers__group-label">{{ 'item.watch.flatrate' | t }}</span>
+        <div class="media-watch-providers__list">
+          @for (provider of wp.flatrate; track provider.providerId) {
+            <img
+              class="media-watch-providers__logo"
+              [src]="provider.logoUrl"
+              [alt]="provider.providerName"
+              [title]="provider.providerName"
+              width="40"
+              height="40"
+            />
+          }
+        </div>
+      </div>
+    }
+    @if (wp.rent?.length) {
+      <div class="media-watch-providers__group">
+        <span class="media-watch-providers__group-label">{{ 'item.watch.rent' | t }}</span>
+        <div class="media-watch-providers__list">
+          @for (provider of wp.rent; track provider.providerId) {
+            <img
+              class="media-watch-providers__logo"
+              [src]="provider.logoUrl"
+              [alt]="provider.providerName"
+              [title]="provider.providerName"
+              width="40"
+              height="40"
+            />
+          }
+        </div>
+      </div>
+    }
+    @if (wp.buy?.length) {
+      <div class="media-watch-providers__group">
+        <span class="media-watch-providers__group-label">{{ 'item.watch.buy' | t }}</span>
+        <div class="media-watch-providers__list">
+          @for (provider of wp.buy; track provider.providerId) {
+            <img
+              class="media-watch-providers__logo"
+              [src]="provider.logoUrl"
+              [alt]="provider.providerName"
+              [title]="provider.providerName"
+              width="40"
+              height="40"
+            />
+          }
+        </div>
+      </div>
+    }
+    <p class="media-watch-providers__attribution">{{ 'item.watch.attribution' | t }}</p>
+  </app-card>
+}

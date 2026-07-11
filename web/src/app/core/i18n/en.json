@@ -223,5 +223,14 @@
   "settings.backup.import.success": "Imported: {{imported}}, skipped (conflict): {{skipped}}.",
   "settings.appearance.title": "Appearance",
   "settings.appearance.themeDark": "Dark",
-  "settings.appearance.themeLight": "Light"
+  "settings.appearance.themeLight": "Light",
+
+  "preview.back": "Back to search",
+  "preview.loading": "Loading...",
+  "preview.error.title": "Couldn't load this title",
+  "preview.offline.title": "Preview is unavailable offline",
+  "preview.offline.description": "Loading title details needs a network connection.",
+  "preview.notFound.title": "This link doesn't work",
+  "preview.notFound.description": "The address is malformed or the title no longer exists.",
+  "preview.add.label": "Add to your library"
 }

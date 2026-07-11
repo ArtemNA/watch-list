@@ -4,6 +4,7 @@ import { AuthPage } from './features/auth/auth-page/auth-page';
 import { DevUi } from './features/dev-ui/dev-ui';
 import { ItemPage } from './features/item/item-page/item-page';
 import { LibraryPage } from './features/library/library-page/library-page';
+import { PreviewPage } from './features/preview/preview-page/preview-page';
 import { SearchPage } from './features/search/search-page/search-page';
 import { SettingsPage } from './features/settings/settings-page/settings-page';
 import { devOnlyGuard } from './core/dev-only.guard';
@@ -17,6 +18,9 @@ export const routes: Routes = [
       { path: '', component: LibraryPage },
       { path: 'search', component: SearchPage },
       { path: 'item/:id', component: ItemPage },
+      // Превью з пошуку БЕЗ додавання в бібліотеку (Step 13) — дані живуть тільки
+      // в пам'яті сторінки, нічого не пишеться в IndexedDB.
+      { path: 'preview/:kind/:tmdbId', component: PreviewPage },
       { path: 'auth', component: AuthPage },
       { path: 'settings', component: SettingsPage },
       // /dev/ui — постійна демо-сторінка дизайн-системи (CLAUDE.md, DECISIONS #14),

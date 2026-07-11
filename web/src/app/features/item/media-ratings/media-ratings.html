@@ -1,0 +1,12 @@
+@if (entries().length > 0) {
+  <app-card [title]="'item.ratings.title' | t">
+    <div class="media-ratings__list">
+      @for (entry of entries(); track entry.key) {
+        <div class="media-ratings__entry">
+          <span class="media-ratings__entry-label">{{ ('item.ratings.' + entry.key) | t }}</span>
+          <span class="media-ratings__entry-value">{{ entry.value }}</span>
+        </div>
+      }
+    </div>
+  </app-card>
+}

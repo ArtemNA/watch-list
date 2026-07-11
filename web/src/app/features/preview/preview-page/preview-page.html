@@ -1,0 +1,64 @@
+@if (kind() === null || tmdbId() === null) {
+  <app-empty-state [title]="'preview.notFound.title' | t" [description]="'preview.notFound.description' | t" />
+} @else if (existingItemId()) {
+  <!-- Вже в бібліотеці — редірект відбувається в конструкторі, тут нічого не рендеримо. -->
+} @else if (!online.isOnline()) {
+  <app-empty-state
+    [title]="'preview.offline.title' | t"
+    [description]="'preview.offline.description' | t"
+  >
+    <svg
+      icon
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.5"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    >
+      <line x1="1" y1="1" x2="23" y2="23" />
+      <path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55" />
+      <path d="M5 12.55a10.94 10.94 0 0 1 5.17-2.39" />
+      <path d="M10.71 5.05A16 16 0 0 1 22.58 9" />
+      <path d="M1.42 9a15.91 15.91 0 0 1 4.7-2.88" />
+      <path d="M8.53 16.11a6 6 0 0 1 6.95 0" />
+      <line x1="12" y1="20" x2="12.01" y2="20" />
+    </svg>
+  </app-empty-state>
+} @else {
+  <div class="preview-page">
+    <div class="preview-page__topbar">
+      <button type="button" class="preview-page__back" (click)="goBack()">{{ 'preview.back' | t }}</button>
+    </div>
+
+    @if (status() === 'loading') {
+      <div class="preview-page__spinner" role="status" [attr.aria-label]="'preview.loading' | t">
+        <span class="preview-page__spinner-circle"></span>
+        <span>{{ 'preview.loading' | t }}</span>
+      </div>
+    } @else if (status() === 'error') {
+      <app-empty-state [title]="'preview.error.title' | t">
+        <app-button action (click)="retry()">{{ 'search.error.retry' | t }}</app-button>
+      </app-empty-state>
+    } @else if (data(); as previewData) {
+      <app-media-header [media]="previewData" />
+      <app-media-ratings [ratings]="previewData.externalRatings" />
+      <app-media-watch-providers [providers]="previewData.watchProviders" />
+
+      <app-card>
+        <div class="preview-page__add">
+          <span class="preview-page__add-label">{{ 'preview.add.label' | t }}</span>
+          <app-split-button
+            [disabled]="adding()"
+            [options]="addAsOptions()"
+            [menuAriaLabel]="'search.card.addAsMenuLabel' | t"
+            (primaryClick)="addToLibrary()"
+            (optionSelected)="addToLibraryAs($event)"
+          >
+            {{ 'search.card.add' | t }}
+          </app-split-button>
+        </div>
+      </app-card>
+    }
+  </div>
+}

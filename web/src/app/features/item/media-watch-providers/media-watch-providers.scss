@@ -1,0 +1,36 @@
+:host {
+  display: contents;
+}
+
+.media-watch-providers__group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+
+  &:last-of-type {
+    margin-bottom: var(--space-3);
+  }
+}
+
+.media-watch-providers__group-label {
+  font-size: var(--font-size-s);
+  color: var(--color-text-muted);
+}
+
+.media-watch-providers__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.media-watch-providers__logo {
+  border-radius: var(--radius-s);
+  box-shadow: var(--shadow-1);
+}
+
+.media-watch-providers__attribution {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-s);
+}

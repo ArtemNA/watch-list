@@ -13,24 +13,32 @@ import { TPipe } from '../../../core/i18n/t.pipe';
 import type { CustomLink, MediaItem, MediaStatus } from '../../../core/models/media-item.model';
 import { AppButton } from '../../../shared/ui/button/app-button';
 import { AppCard } from '../../../shared/ui/card/app-card';
-import { AppChip } from '../../../shared/ui/chip/app-chip';
 import { AppInput } from '../../../shared/ui/input/app-input';
 import { AppRating } from '../../../shared/ui/rating/app-rating';
 import { DeleteConfirmDialog } from '../delete-confirm-dialog/delete-confirm-dialog';
 import { faviconUrl, normalizeUrl } from '../link-utils';
+import { MediaHeader } from '../media-header/media-header';
+import { MediaRatings } from '../media-ratings/media-ratings';
+import { MediaWatchProviders } from '../media-watch-providers/media-watch-providers';
 import { MetadataService } from '../metadata.service';
 
 const STATUSES: MediaStatus[] = ['want', 'watching', 'watched', 'dropped'];
 const NOTES_DEBOUNCE_MS = 800;
 
-interface RatingEntry {
-  key: 'tmdb' | 'imdb' | 'rottenTomatoes' | 'metacritic';
-  value: string;
-}
-
 @Component({
   selector: 'app-item-page',
-  imports: [RouterLink, TPipe, AppButton, AppCard, AppChip, AppInput, AppRating, MatTooltipModule],
+  imports: [
+    RouterLink,
+    TPipe,
+    AppButton,
+    AppCard,
+    AppInput,
+    AppRating,
+    MatTooltipModule,
+    MediaHeader,
+    MediaRatings,
+    MediaWatchProviders,
+  ],
   templateUrl: './item-page.html',
   styleUrl: './item-page.scss',
 })
@@ -74,30 +82,6 @@ export class ItemPage {
 
   protected readonly refreshingMetadata = signal(false);
   private autoRefreshedForKey: string | null = null;
-
-  protected readonly ratingEntries = computed<RatingEntry[]>(() => {
-    const ratings = this.item()?.externalRatings;
-    if (!ratings) {
-      return [];
-    }
-    // Перевіряємо тип, а не `!== undefined`: після синку/санітизації поля
-    // можуть приходити як null (JSON не має undefined), і `null.toFixed()`
-    // кидав би помилку — саме це ламало сторінку айтема після синку.
-    const entries: RatingEntry[] = [];
-    if (typeof ratings.tmdb === 'number') {
-      entries.push({ key: 'tmdb', value: ratings.tmdb.toFixed(1) });
-    }
-    if (typeof ratings.imdb === 'number') {
-      entries.push({ key: 'imdb', value: ratings.imdb.toFixed(1) });
-    }
-    if (ratings.rottenTomatoes) {
-      entries.push({ key: 'rottenTomatoes', value: ratings.rottenTomatoes });
-    }
-    if (typeof ratings.metacritic === 'number') {
-      entries.push({ key: 'metacritic', value: String(ratings.metacritic) });
-    }
-    return entries;
-  });
 
   constructor() {
     effect(() => {
@@ -250,14 +234,6 @@ export class ItemPage {
 
   openTmdbLinkSearch(item: MediaItem): void {
     void this.router.navigate(['/search'], { queryParams: { linkItemId: item.id, q: item.title } });
-  }
-
-  tmdbUrl(item: MediaItem): string {
-    return `https://www.themoviedb.org/${item.kind}/${item.tmdbId}`;
-  }
-
-  imdbUrl(item: MediaItem): string {
-    return `https://www.imdb.com/title/${item.imdbId}`;
   }
 
   private async saveNotes(): Promise<void> {

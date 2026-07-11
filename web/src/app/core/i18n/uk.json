@@ -223,5 +223,14 @@
   "settings.backup.import.success": "Імпортовано: {{imported}}, пропущено (конфлікт): {{skipped}}.",
   "settings.appearance.title": "Вигляд",
   "settings.appearance.themeDark": "Темна",
-  "settings.appearance.themeLight": "Світла"
+  "settings.appearance.themeLight": "Світла",
+
+  "preview.back": "Назад до пошуку",
+  "preview.loading": "Завантаження...",
+  "preview.error.title": "Не вдалося завантажити дані",
+  "preview.offline.title": "Превью недоступне офлайн",
+  "preview.offline.description": "Для завантаження даних потрібне з'єднання з мережею.",
+  "preview.notFound.title": "Це посилання не працює",
+  "preview.notFound.description": "Адреса пошкоджена або запису більше не існує.",
+  "preview.add.label": "Додати в бібліотеку"
 }

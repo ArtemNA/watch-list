@@ -223,5 +223,14 @@
   "settings.backup.import.success": "Импортировано: {{imported}}, пропущено (конфликт): {{skipped}}.",
   "settings.appearance.title": "Внешний вид",
   "settings.appearance.themeDark": "Тёмная",
-  "settings.appearance.themeLight": "Светлая"
+  "settings.appearance.themeLight": "Светлая",
+
+  "preview.back": "Назад к поиску",
+  "preview.loading": "Загрузка...",
+  "preview.error.title": "Не удалось загрузить данные",
+  "preview.offline.title": "Превью недоступно офлайн",
+  "preview.offline.description": "Для загрузки данных нужно соединение с сетью.",
+  "preview.notFound.title": "Эта ссылка не работает",
+  "preview.notFound.description": "Адрес повреждён или записи больше не существует.",
+  "preview.add.label": "Добавить в библиотеку"
 }
