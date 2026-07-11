@@ -1,0 +1,24 @@
+{
+  "name": "watchlist",
+  "version": "0.0.0",
+  "private": true,
+  "workspaces": ["web"],
+  "scripts": {
+    "start": "npm run start --workspace=web -- --proxy-config proxy.conf.json",
+    "build": "npm run build --workspace=web",
+    "lint": "npm run lint --workspace=web",
+    "test": "npm run test --workspace=web",
+    "lint:api": "eslint api",
+    "typecheck:api": "tsc --noEmit -p api/tsconfig.json"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^20.19.0",
+    "@vercel/node": "^5.8.23",
+    "eslint": "^10.3.0",
+    "eslint-config-prettier": "^10.1.8",
+    "prettier": "^3.8.1",
+    "typescript": "~5.9.2",
+    "typescript-eslint": "8.59.2"
+  }
+}

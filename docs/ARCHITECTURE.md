@@ -1,0 +1,246 @@
+# WatchList — архітектура
+
+> Читати разом із `docs/PLAN.md`. Зміни архітектури — тільки через архітектора,
+> з записом у `docs/DECISIONS.md`.
+
+## 1. Структура репозиторію
+
+```
+/
+├── CLAUDE.md                  # інструкції для агентів
+├── docs/                      # план, архітектура, кроки
+├── api/                       # Vercel Serverless Functions (TypeScript)
+│   ├── _lib/                  # спільний код api (db, auth, tmdb-клієнт) — не стає ендпоінтом
+│   ├── tmdb/[...path].ts      # proxy до TMDB (ховає ключ)
+│   ├── omdb.ts                # proxy до OMDb
+│   ├── auth/register.ts
+│   ├── auth/login.ts
+│   └── sync/items.ts          # pull/push синхронізація
+├── web/                       # Angular-апка
+│   └── src/app/
+│       ├── core/              # синглтон-сервіси: db, i18n, auth, sync, api-клієнти
+│       ├── shared/            # перевикористовувані компоненти/пайпи/директиви
+│       ├── features/
+│       │   ├── library/       # список, фільтри, картки
+│       │   ├── item/          # сторінка айтема (деталі + мої дані)
+│       │   ├── search/        # пошук по TMDB
+│       │   ├── auth/          # логін/реєстрація
+│       │   └── sync/          # merge-UI
+│       └── design/            # токени, теми, стилі (scss)
+├── vercel.json                # роутинг: /api/* → функції, решта → web/dist
+└── package.json               # корінь: скрипти-оркестратори
+```
+
+Чому монорепо з `api/` в корені: Vercel автоматично робить кожен файл в `api/`
+serverless-ендпоінтом, а Angular білдиться як static output — один деплой на push.
+Локальна розробка: `vercel dev` (підіймає і функції, і статику) або `ng serve`
+з proxy-конфігом на `vercel dev`-порт для `/api/*`.
+
+## 2. Модель даних
+
+### MediaItem (основна сутність, зберігається в IndexedDB і в Mongo)
+
+```ts
+interface MediaItem {
+  id: string;                 // uuid v4, генерується на клієнті — ключ синку
+  kind: 'movie' | 'tv';
+  status: 'want' | 'watching' | 'watched' | 'dropped';
+
+  // Ідентифікатори зовнішніх API (для дедуплікаціі та збагачення)
+  tmdbId?: number;
+  imdbId?: string;            // 'tt1234567' — місток TMDB↔OMDb
+
+  // Кешований знімок метаданих (щоб список працював офлайн)
+  title: string;              // головна назва для відображення
+  originalTitle?: string;
+  titleUk?: string;           // українська назва, якщо TMDB її має
+  year?: number;
+  posterUrl?: string;         // повний URL TMDB-постера (w342)
+  overview?: string;
+  genres?: string[];
+  runtime?: number;           // хв (для tv — епізод)
+  externalRatings?: {         // знімок на момент останнього оновлення
+    tmdb?: number; imdb?: number; rottenTomatoes?: string; metacritic?: number;
+  };
+  metadataUpdatedAt?: string; // ISO; коли востаннє тягнули з API
+
+  // Мої дані (найцінніше — саме це merge'иться найобережніше)
+  myRating?: number;          // 1..10
+  notes?: string;             // plain text / markdown
+  links: CustomLink[];        // { id: string; label: string; url: string }
+  watchedAt?: string;         // ISO-дата коли подивився
+
+  // Службове
+  createdAt: string;          // ISO
+  updatedAt: string;          // ISO — оновлюється при БУДЬ-ЯКІЙ зміні; основа синку
+  deletedAt?: string | null;  // tombstone: видалені не стираються, а позначаються
+}
+```
+
+Правила:
+
+- `id` — клієнтський uuid, ніколи не змінюється, однаковий локально і в Mongo.
+- Будь-яка мутація айтема йде через репозиторій, який сам ставить `updatedAt`.
+- Видалення = `deletedAt = now` (tombstone). Фізичне стирання — тільки локальний
+  «вакуум» айтемів, у яких tombstone старший за 90 днів І які синкнуті.
+
+### User (тільки Mongo)
+
+```ts
+interface User {
+  _id: ObjectId;
+  email: string;              // lowercase, unique index
+  passwordHash: string;       // bcrypt, cost 10
+  createdAt: Date;
+}
+```
+
+### Mongo-колекції
+
+- `users` — як вище.
+- `items` — документи `MediaItem & { userId: ObjectId }`, unique index `(userId, id)`.
+
+## 3. Локальне сховище (Dexie)
+
+```ts
+// core/db/app-db.ts
+class AppDb extends Dexie {
+  items!: Table<MediaItem, string>;   // primary key: id
+  meta!: Table<{ key: string; value: unknown }, string>; // lastSyncAt, settings, тощо
+}
+db.version(1).stores({
+  items: 'id, status, kind, updatedAt, tmdbId',
+  meta: 'key',
+});
+```
+
+Доступ до Dexie — ТІЛЬКИ через `ItemsRepository` (core/data/items.repository.ts).
+Компоненти працюють із сигналами репозиторію, не з Dexie напряму. liveQuery Dexie
+обгортаємо в signal через `toSignal`/власний адаптер.
+
+## 4. Зовнішні API та стратегія пошуку
+
+Ключі API живуть ТІЛЬКИ на бекенді (Vercel env vars); фронт ходить у `/api/tmdb/*`
+і `/api/omdb`. Це і безпека ключів, і місце для кешу/rate-limit у майбутньому.
+
+### TMDB — основне джерело (пошук + метадані + «де подивитись»)
+
+- Пошук: `GET /search/multi?query=...&language=uk-UA&include_adult=false`.
+  TMDB шукає по всіх перекладах і альтернативних назвах → запит українською
+  чи російською знаходить фільм незалежно від `language`. Параметр `language`
+  впливає лише на мову ПОЛІВ відповіді. Легкі одруки TMDB частково пробачає.
+- Стратегія пошуку в апці: один запит з `language = поточна мова UI`
+  (uk-UA або en-US). Якщо 0 результатів — повторити з `language=en-US`
+  (fallback). Дедуплікація результатів за `(media_type, id)`.
+- Деталі: `GET /movie/{id}` або `/tv/{id}` з `append_to_response=external_ids,watch/providers,translations`.
+  Звідти: imdbId, укр назва (translations), провайдери перегляду по регіону UA.
+- Постери: `https://image.tmdb.org/t/p/w342{poster_path}`.
+- Ліміти: безкоштовно для некомерційного, ~50 req/s — за наші потреби безмежно.
+
+### OMDb — збагачення рейтингами (Step 06)
+
+- `GET https://www.omdbapi.com/?i={imdbId}&apikey=...` → рейтинги IMDb,
+  Rotten Tomatoes, Metacritic. Викликається ТІЛЬКИ по imdbId (ніколи пошуком
+  по назві — так гарантовано нема дублікатів: TMDB дав imdbId → OMDb дав рейтинг
+  того самого фільму).
+- Free tier 1000 req/день → кешуємо `externalRatings` в айтемі
+  (`metadataUpdatedAt`), оновлюємо не частіше ніж раз на 7 днів або по кнопці.
+
+### Дедуплікація між API
+
+Канонічний ідентифікатор — `tmdbId`. Результати пошуку — тільки з TMDB (одне
+джерело → дублікатів у видачі нема). Інші API під'єднуються на сторінці деталей
+через `imdbId`, тобто «злиття» відбувається не в пошуку, а на сторінці айтема —
+одна сторінка, дані з кількох джерел, кожне в своїй секції.
+
+### Опційно, потім (не в кроках 01–09)
+
+- TVMaze (без ключа) — розклад епізодів серіалів.
+- kinopoisk.dev (неофіційний) — рейтинг КП, назви ru. Додається так само через
+  окремий proxy + матчинг по imdbId.
+
+## 5. Бекенд (Vercel Functions)
+
+- Runtime: Node 20+, TypeScript. Кожен файл `api/**/*.ts` (крім `api/_lib/`) — ендпоінт.
+- `api/_lib/db.ts` — MongoClient із кешуванням з'єднання в глобальній змінній
+  (стандартний паттерн для serverless, інакше вичерпаються конекшени Atlas M0).
+- `api/_lib/auth.ts` — `hashPassword`, `verifyPassword` (bcryptjs), `signJwt`,
+  `requireAuth(req)` → userId або 401.
+- JWT: HS256, `JWT_SECRET` з env, TTL 30 днів, зберігається в localStorage.
+  (Для персональної апки достатньо; не ускладнюємо refresh-токенами.)
+- Env vars: `TMDB_API_KEY`, `OMDB_API_KEY`, `MONGODB_URI`, `JWT_SECRET`.
+
+### Ендпоінти
+
+| Метод | Шлях | Опис |
+|---|---|---|
+| GET | `/api/tmdb/*` | proxy до api.themoviedb.org/3/* (whitelist шляхів: search/, movie/, tv/) |
+| GET | `/api/omdb?i=tt...` | proxy до OMDb по imdbId |
+| POST | `/api/auth/register` | { email, password } → { token } |
+| POST | `/api/auth/login` | { email, password } → { token } |
+| GET | `/api/sync/items?since=ISO` | всі айтеми юзера з updatedAt > since (включно з tombstones) |
+| POST | `/api/sync/items` | масив айтемів → upsert по (userId, id); повертає прийняті/відхилені |
+
+## 6. Синхронізація і merge (найважливіша логіка — Step 08)
+
+### Принципи
+
+1. Джерело правди для «моїх даних» — юзер, не сервер. Нічого не губимо мовчки.
+2. Одиниця синку — цілий `MediaItem`; порівняння конфліктів — по полях.
+3. `updatedAt` — головний маркер. `lastSyncAt` зберігається локально в `meta`.
+
+### Алгоритм синку (кнопка «Синхронізувати» + автозапуск після логіну)
+
+1. `pull`: `GET /api/sync/items?since=lastSyncAt` → remoteChanged[].
+2. `localChanged[]` = локальні айтеми з `updatedAt > lastSyncAt`.
+3. Класифікація по `id`:
+   - тільки remote → застосувати локально (тихо);
+   - тільки local → відправити на сервер (тихо);
+   - в ОБОХ списках → **конфлікт** → у чергу merge-UI.
+4. Показати merge-UI (якщо є конфлікти), після рішень юзера — `POST` фінальні версії.
+5. `lastSyncAt = max(updatedAt застосованих)`; зберегти.
+
+### Merge-UI (для не-девелоперів)
+
+Діалог по одному конфлікту за раз: постер + назва, далі ТІЛЬКИ поля, які
+відрізняються, у два стовпці «На цьому пристрої» / «У хмарі», людськими назвами
+(«Оцінка: 8 ↔ 7», «Нотатки: …»). Для кожного поля — вибір значення кліком;
+зверху кнопки «Взяти все локальне» / «Взяти все з хмари». Результат — злитий
+айтем з новим `updatedAt`. Спецвипадки:
+
+- видалено там / змінено тут → питання «Відновити чи видалити?»;
+- поле пусте з одного боку і заповнене з іншого → НЕ конфлікт, автоматично
+  береться заповнене (це «мовчазний» мердж, який просили — нічого не губимо);
+- ідентичні значення → поле не показується.
+
+## 7. i18n (uk/en)
+
+Власний легкий сервіс (без ngx-translate):
+
+- `core/i18n/`: `uk.json`, `en.json` (плоскі ключі `"library.title": "Бібліотека"`),
+  `I18nService` з `lang = signal<'uk'|'en'>`, метод `t(key, params?)`,
+  пайп `| t` (impure не потрібен — сигнал тригерить CD).
+- Вибір зберігається в `meta` (IndexedDB) + `localStorage` для миттєвого старту.
+- Мова UI також визначає `language`-параметр TMDB-запитів.
+
+## 8. Дизайн-система (Step 02)
+
+- Всі кольори/відступи/радіуси/шрифти — CSS custom properties у `web/src/design/tokens.scss`:
+  `--color-bg`, `--color-surface`, `--color-text`, `--color-text-muted`,
+  `--color-primary`, `--color-accent`, `--radius-s/m/l`, `--space-1..6`,
+  `--font-size-s/m/l/xl`, тіні, transitions.
+- Теми: `:root` (dark — основна) і `[data-theme='light']` перевизначає токени.
+- Angular Material: підключаємо ТІЛЬКИ функціональні компоненти (MatDialog,
+  MatAutocomplete, MatMenu, MatSnackBar, MatSlideToggle). Тема Material
+  генерується з наших токенів (M3 theming через `--mat-*`/`--mdc-*` змінні
+  прив'язуємо до наших `--color-*`). Ніяких дефолтних Material-стилів у видимому
+  дизайні: кнопки, інпути, картки, чіпи — власні компоненти/стилі на токенах.
+- Іконки — Material Symbols або власний мінімальний svg-набір.
+
+## 9. Тестування та якість
+
+- Unit-тести (Vitest/Karma — що дасть Angular CLI за замовчуванням) обов'язкові для:
+  merge-логіки синку, репозиторію, i18n-сервісу, dedup-логіки пошуку.
+- E2E не робимо (персональний проект), замість цього — чеклісти ручної перевірки
+  в кожному step-файлі.
+- ESLint + Prettier з першого кроку; `npm run build` без warnings — критерій готовності.
