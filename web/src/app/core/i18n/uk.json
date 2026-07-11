@@ -1,5 +1,6 @@
 {
   "app.title": "WatchList",
+  "nav.search": "Пошук",
   "shell.theme.label": "Тема",
   "shell.theme.toggleToDark": "Перемкнути на темну тему",
   "shell.theme.toggleToLight": "Перемкнути на світлу тему",
@@ -46,6 +47,7 @@
   "devUi.card.body": "Короткий текст всередині картки для перевірки токенів поверхні й тіні.",
 
   "library.title": "Бібліотека",
+  "library.searchTmdb": "Пошук",
   "library.addManually": "Додати вручну",
   "library.filters.status": "Фільтр за статусом",
   "library.filters.all": "Усі",
@@ -94,5 +96,22 @@
   "item.links.label": "Назва",
   "item.links.url": "URL",
   "item.links.errors.required": "Назва і URL обов'язкові",
-  "item.links.add": "Додати посилання"
+  "item.links.add": "Додати посилання",
+
+  "search.title": "Пошук TMDB",
+  "search.placeholder": "Введіть назву фільму чи серіалу (мін. 2 символи)...",
+  "search.hint": "Введіть щонайменше 2 символи, щоб почати пошук.",
+  "search.loading": "Шукаємо...",
+  "search.error.title": "Не вдалося виконати пошук",
+  "search.error.retry": "Повторити",
+  "search.noResults.title": "Нічого не знайдено",
+  "search.noResults.description": "Спробуйте інший запит.",
+  "search.loadMore": "Показати ще",
+  "search.loadingMore": "Завантаження...",
+  "search.card.inLibrary": "У бібліотеці",
+  "search.card.add": "Додати",
+  "search.add.success": "«{{title}}» додано в бібліотеку.",
+  "search.add.alreadyInLibrary": "«{{title}}» вже в бібліотеці.",
+  "search.add.viewAction": "Переглянути",
+  "search.add.error": "Не вдалося додати. Спробуйте ще раз."
 }

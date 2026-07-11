@@ -1,6 +1,12 @@
 <header class="shell__header">
   <a class="shell__logo" routerLink="/">{{ 'app.title' | t }}</a>
 
+  <nav class="shell__nav">
+    <a class="shell__nav-link" routerLink="/search" routerLinkActive="shell__nav-link--active">
+      {{ 'nav.search' | t }}
+    </a>
+  </nav>
+
   <div class="shell__actions">
     <div class="shell__lang" role="group" [attr.aria-label]="'shell.lang.label' | t">
       <button

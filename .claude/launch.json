@@ -4,7 +4,7 @@
     {
       "name": "web",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "start", "--workspace=web", "--", "--port", "4201"],
+      "runtimeArgs": ["run", "start", "--workspace=web", "--", "--port", "4201", "--proxy-config", "proxy.conf.json"],
       "port": 4201
     }
   ]

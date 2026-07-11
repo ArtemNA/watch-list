@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { RouterLink, RouterOutlet } from '@angular/router';
+import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 
 import { I18nService, Lang } from '../core/i18n/i18n.service';
 import { TPipe } from '../core/i18n/t.pipe';
@@ -7,7 +7,7 @@ import { ThemeService } from '../core/theme/theme.service';
 
 @Component({
   selector: 'app-shell',
-  imports: [RouterLink, RouterOutlet, TPipe],
+  imports: [RouterLink, RouterLinkActive, RouterOutlet, TPipe],
   templateUrl: './shell.html',
   styleUrl: './shell.scss',
 })

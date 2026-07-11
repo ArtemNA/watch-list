@@ -1,7 +1,10 @@
 <div class="library-page">
   <header class="library-page__header">
     <h1 class="library-page__title">{{ 'library.title' | t }}</h1>
-    <app-button (click)="openAddDialog()">{{ 'library.addManually' | t }}</app-button>
+    <div class="library-page__header-actions">
+      <app-button variant="ghost" routerLink="/search">{{ 'library.searchTmdb' | t }}</app-button>
+      <app-button (click)="openAddDialog()">{{ 'library.addManually' | t }}</app-button>
+    </div>
   </header>
 
   <div class="library-page__filters">

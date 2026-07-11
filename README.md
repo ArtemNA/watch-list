@@ -19,14 +19,27 @@ npm start
 
 Відкриє `ng serve` на `http://localhost:4200`.
 
-Разом з `api/*`-функціями (потрібен [Vercel CLI](https://vercel.com/docs/cli)):
+Разом з `api/*`-функціями — два способи:
 
-```bash
-npm install
-npx vercel dev
-```
+1. **`api-dev.mjs`** (обрано за замовчуванням, не потребує Vercel-акаунта):
 
-Піднімає і статику, і serverless-функції на одному порту (за замовчуванням `:3000`).
+   ```bash
+   npm run dev:api   # піднімає api/*.ts на http://localhost:3000
+   npm start         # ng serve з проксі /api/* -> :3000
+   ```
+
+   Крихітний dev-сервер на `node:http`, викликає ті самі handler-функції
+   `api/*.ts` через тонкий адаптер req/res (запускається через `tsx`, бо
+   Node сам не виконує TypeScript). Автоматично читає `.env.local`.
+
+2. **`vercel dev`** (альтернатива, потрібен [Vercel CLI](https://vercel.com/docs/cli)):
+
+   ```bash
+   npm install
+   npx vercel dev
+   ```
+
+   Піднімає і статику, і serverless-функції на одному порту (за замовчуванням `:3000`).
 
 Секрети (TMDB/OMDb ключі, MongoDB URI, JWT secret) — у `.env.local` в корені
 (див. `.env.example` для переліку змінних). Файл у `.gitignore`, ніколи не комітиться.
@@ -38,3 +51,4 @@ npx vercel dev
 - `npm test` — юніт-тести Angular-апки.
 - `npm run lint:api` — лінт `api/*.ts`.
 - `npm run typecheck:api` — перевірка типів `api/*.ts`.
+- `npm run dev:api` — dev-сервер для `api/*.ts` на `:3000` (без Vercel CLI).

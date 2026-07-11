@@ -1,5 +1,6 @@
 {
   "app.title": "WatchList",
+  "nav.search": "Search",
   "shell.theme.label": "Theme",
   "shell.theme.toggleToDark": "Switch to dark theme",
   "shell.theme.toggleToLight": "Switch to light theme",
@@ -46,6 +47,7 @@
   "devUi.card.body": "A short piece of text inside a card to check surface and shadow tokens.",
 
   "library.title": "Library",
+  "library.searchTmdb": "Search",
   "library.addManually": "Add manually",
   "library.filters.status": "Status filter",
   "library.filters.all": "All",
@@ -94,5 +96,22 @@
   "item.links.label": "Label",
   "item.links.url": "URL",
   "item.links.errors.required": "Label and URL are required",
-  "item.links.add": "Add link"
+  "item.links.add": "Add link",
+
+  "search.title": "TMDB search",
+  "search.placeholder": "Enter a movie or show title (min. 2 characters)...",
+  "search.hint": "Enter at least 2 characters to start searching.",
+  "search.loading": "Searching...",
+  "search.error.title": "Search failed",
+  "search.error.retry": "Retry",
+  "search.noResults.title": "No matches",
+  "search.noResults.description": "Try a different search term.",
+  "search.loadMore": "Show more",
+  "search.loadingMore": "Loading...",
+  "search.card.inLibrary": "In library",
+  "search.card.add": "Add",
+  "search.add.success": "\"{{title}}\" added to your library.",
+  "search.add.alreadyInLibrary": "\"{{title}}\" is already in your library.",
+  "search.add.viewAction": "View",
+  "search.add.error": "Couldn't add it. Please try again."
 }
