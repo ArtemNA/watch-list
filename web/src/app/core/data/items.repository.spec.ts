@@ -1,6 +1,6 @@
-import 'fake-indexeddb/auto';
-
 import { TestBed } from '@angular/core/testing';
+import Dexie from 'dexie';
+import { IDBFactory, IDBKeyRange } from 'fake-indexeddb';
 
 import { AppDb } from '../db/app-db';
 import type { MediaItemPatch } from './items.repository';
@@ -14,12 +14,27 @@ describe('ItemsRepository', () => {
   let repo: ItemsRepository;
   let db: AppDb;
 
+  beforeAll(() => {
+    // Даємо Dexie fake-IndexedDB через ЙОГО точку впровадження (не globalThis:
+    // `indexedDB` там read-only, а vi.stubGlobal авто-скидається між тестами,
+    // ламаючи leaked liveQuery). ОДНА стабільна фабрика на весь файл; ізоляцію
+    // даних забезпечує `db.delete()` в afterEach.
+    Dexie.dependencies.indexedDB = new IDBFactory();
+    Dexie.dependencies.IDBKeyRange = IDBKeyRange;
+  });
+
   beforeEach(() => {
     repo = TestBed.inject(ItemsRepository);
     db = TestBed.inject(AppDb);
   });
 
   afterEach(async () => {
+    // Знищуємо інжектор (toSignal відписує liveQuery) і чистимо базу для
+    // ізоляції наступного тесту. Примітка: у повному прогоні кілька liveQuery-
+    // сповіщень можуть долетіти під час крос-файлового тіру-дауну воркера й
+    // осісти як "unhandled" — це відома взаємодія Dexie+vitest (див. step-05/06),
+    // усі тести лишаються детермінованими.
+    TestBed.resetTestingModule();
     await db.delete();
   });
 

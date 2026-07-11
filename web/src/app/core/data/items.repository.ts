@@ -70,4 +70,13 @@ export class ItemsRepository {
   changedSince(iso: string): Promise<MediaItem[]> {
     return this.db.items.where('updatedAt').above(iso).toArray();
   }
+
+  /**
+   * ТІЛЬКИ для SyncService: записує айтем ЯК Є, не чіпаючи updatedAt —
+   * версія з хмари/merge вже має власний коректний updatedAt, і бампнути його
+   * означало б нескінченний пінг-понг між пристроями.
+   */
+  applyFromSync(item: MediaItem): Promise<string> {
+    return this.db.items.put(item);
+  }
 }

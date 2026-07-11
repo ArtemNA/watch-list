@@ -70,6 +70,7 @@ async function main() {
   const healthHandler = (await import('./api/health.ts')).default;
   const registerHandler = (await import('./api/auth/register.ts')).default;
   const loginHandler = (await import('./api/auth/login.ts')).default;
+  const syncItemsHandler = (await import('./api/sync/items.ts')).default;
 
   const port = Number(process.env['PORT']) || 3000;
 
@@ -94,6 +95,20 @@ async function main() {
     if (url.pathname === '/api/omdb') {
       req.query = query;
       void omdbHandler(req, res);
+      return;
+    }
+
+    if (url.pathname === '/api/sync/items') {
+      req.query = query;
+      if (req.method === 'POST') {
+        try {
+          req.body = await readJsonBody(req);
+        } catch {
+          res.status(400).json({ error: 'INVALID_JSON' });
+          return;
+        }
+      }
+      void syncItemsHandler(req, res);
       return;
     }
 

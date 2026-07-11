@@ -18,7 +18,9 @@
         {{ auth.email() }}
       </button>
       <mat-menu #accountMenu="matMenu">
-        <button mat-menu-item type="button" disabled>{{ 'nav.account.sync' | t }}</button>
+        <button mat-menu-item type="button" [disabled]="sync.isSyncing()" (click)="runSync()">
+          {{ (sync.isSyncing() ? 'nav.account.syncing' : 'nav.account.sync') | t }}
+        </button>
         <button mat-menu-item type="button" (click)="logout()">{{ 'nav.account.logout' | t }}</button>
       </mat-menu>
     } @else {
