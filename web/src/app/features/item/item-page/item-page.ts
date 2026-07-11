@@ -6,6 +6,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { map } from 'rxjs';
 
+import { languageForUi } from '../../../core/api/tmdb-language';
 import { ItemsRepository } from '../../../core/data/items.repository';
 import { I18nService } from '../../../core/i18n/i18n.service';
 import { TPipe } from '../../../core/i18n/t.pipe';
@@ -243,8 +244,7 @@ export class ItemPage {
     if (!item.metadataUpdatedAt) {
       return this.i18n.t('item.metadata.neverUpdated');
     }
-    const locale = this.i18n.lang() === 'uk' ? 'uk-UA' : 'en-US';
-    const date = new Date(item.metadataUpdatedAt).toLocaleString(locale);
+    const date = new Date(item.metadataUpdatedAt).toLocaleString(languageForUi(this.i18n.lang()));
     return this.i18n.t('item.metadata.lastUpdated', { date });
   }
 

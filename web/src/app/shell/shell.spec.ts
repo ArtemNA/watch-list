@@ -1,3 +1,4 @@
+import { OverlayContainer } from '@angular/cdk/overlay';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
@@ -8,8 +9,11 @@ import { Shell } from './shell';
 describe('Shell', () => {
   let component: Shell;
   let fixture: ComponentFixture<Shell>;
+  let overlayContainer: OverlayContainer;
 
   beforeEach(async () => {
+    localStorage.clear();
+
     await TestBed.configureTestingModule({
       imports: [Shell],
       providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting()],
@@ -17,7 +21,12 @@ describe('Shell', () => {
 
     fixture = TestBed.createComponent(Shell);
     component = fixture.componentInstance;
+    overlayContainer = TestBed.inject(OverlayContainer);
     await fixture.whenStable();
+  });
+
+  afterEach(() => {
+    overlayContainer.ngOnDestroy();
   });
 
   it('should create', () => {
@@ -29,14 +38,26 @@ describe('Shell', () => {
     expect(text).toContain('WatchList');
   });
 
-  it('switches the language when a language button is clicked', () => {
-    const buttons = (fixture.nativeElement as HTMLElement).querySelectorAll('.shell__lang-btn');
-    const enButton = buttons[1] as HTMLButtonElement;
+  it('switches the language via the header language dropdown, including ru', async () => {
+    expect(component['i18n'].lang()).toBe('en'); // Step 10: new-visitor default
 
-    enButton.click();
+    const trigger = (fixture.nativeElement as HTMLElement).querySelector(
+      '.shell__lang-btn',
+    ) as HTMLButtonElement;
+    trigger.click();
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    const items = Array.from(
+      overlayContainer.getContainerElement().querySelectorAll<HTMLButtonElement>('.shell__lang-menu-item'),
+    );
+    expect(items).toHaveLength(3);
+
+    const ruItem = items.find((item) => item.textContent?.includes('Русский'));
+    ruItem?.click();
     fixture.detectChanges();
 
-    expect(component['i18n'].lang()).toBe('en');
+    expect(component['i18n'].lang()).toBe('ru');
   });
 
   it('toggles the theme when the theme button is clicked', () => {

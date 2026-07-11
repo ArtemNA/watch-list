@@ -1,14 +1,19 @@
 import { Injectable, signal } from '@angular/core';
 
 import en from './en.json';
+import ru from './ru.json';
 import uk from './uk.json';
 
-export type Lang = 'uk' | 'en';
+export type Lang = 'uk' | 'en' | 'ru';
 
 const STORAGE_KEY = 'watchlist.lang';
-const DEFAULT_LANG: Lang = 'uk';
+// Дефолт для НОВИХ відвідувачів — англійська (Step 10). Свідомо без
+// автодетекту navigator.language: збережений вибір у localStorage завжди
+// пріоритетніший, тож існуючі юзери (uk) нічого не помітять.
+const DEFAULT_LANG: Lang = 'en';
+const LANGS: Lang[] = ['uk', 'en', 'ru'];
 
-const dictionaries: Record<Lang, Record<string, string>> = { uk, en };
+const dictionaries: Record<Lang, Record<string, string>> = { uk, en, ru };
 
 @Injectable({ providedIn: 'root' })
 export class I18nService {
@@ -37,6 +42,6 @@ export class I18nService {
 
   private resolveInitialLang(): Lang {
     const stored = localStorage.getItem(STORAGE_KEY);
-    return stored === 'uk' || stored === 'en' ? stored : DEFAULT_LANG;
+    return LANGS.includes(stored as Lang) ? (stored as Lang) : DEFAULT_LANG;
   }
 }

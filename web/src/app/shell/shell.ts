@@ -18,6 +18,14 @@ import { ThemeService } from '../core/theme/theme.service';
 // пов'язаній зі зчитуванням часу події.
 const CLOCK_TICK_MS = 60_000;
 
+// Повні самоназви — не через i18n-словник: назва мови на екрані завжди своя
+// власна, незалежно від того, якою мовою зараз показаний інтерфейс.
+const LANG_OPTIONS: { value: Lang; label: string }[] = [
+  { value: 'uk', label: 'Українська' },
+  { value: 'en', label: 'English' },
+  { value: 'ru', label: 'Русский' },
+];
+
 @Component({
   selector: 'app-shell',
   imports: [RouterLink, RouterLinkActive, RouterOutlet, TPipe, MatMenuModule, MatTooltipModule],
@@ -32,6 +40,8 @@ export class Shell {
   protected readonly online = inject(OnlineStatus);
   private readonly router = inject(Router);
   private readonly snackBar = inject(MatSnackBar);
+
+  protected readonly langOptions = LANG_OPTIONS;
 
   private readonly clockTick = signal(0);
 

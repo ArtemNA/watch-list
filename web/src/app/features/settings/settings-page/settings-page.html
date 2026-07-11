@@ -74,10 +74,13 @@
       <span class="settings-page__field-label">{{ 'shell.lang.label' | t }}</span>
       <div class="settings-page__toggle-group" role="group" [attr.aria-label]="'shell.lang.label' | t">
         <app-button size="s" [variant]="i18n.lang() === 'uk' ? 'primary' : 'ghost'" (click)="setLang('uk')">
-          UK
+          Українська
         </app-button>
         <app-button size="s" [variant]="i18n.lang() === 'en' ? 'primary' : 'ghost'" (click)="setLang('en')">
-          EN
+          English
+        </app-button>
+        <app-button size="s" [variant]="i18n.lang() === 'ru' ? 'primary' : 'ghost'" (click)="setLang('ru')">
+          Русский
         </app-button>
       </div>
     </div>

@@ -5,7 +5,7 @@
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const KINDS = new Set(['movie', 'tv']);
 const STATUSES = new Set(['want', 'watching', 'watched', 'dropped']);
-const LANGS = new Set(['uk', 'en']);
+const LANGS = new Set(['uk', 'en', 'ru']);
 const MAX_STRING = 20_000; // нотатки; решта рядків значно коротші
 const MAX_LINKS = 100;
 

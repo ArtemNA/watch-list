@@ -14,7 +14,7 @@ export interface ExternalRatings {
   metacritic?: number;
 }
 
-export type MetadataLang = 'uk' | 'en';
+export type MetadataLang = 'uk' | 'en' | 'ru';
 
 export interface WatchProviderItem {
   providerId: number;

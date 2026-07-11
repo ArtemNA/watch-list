@@ -102,26 +102,56 @@
       </a>
     }
 
-    <div class="shell__lang" role="group" [attr.aria-label]="'shell.lang.label' | t">
-      <button
-        type="button"
-        class="shell__lang-btn"
-        [class.shell__lang-btn--active]="i18n.lang() === 'uk'"
-        [attr.aria-pressed]="i18n.lang() === 'uk'"
-        (click)="setLang('uk')"
+    <button
+      type="button"
+      class="shell__lang-btn"
+      [matMenuTriggerFor]="langMenu"
+      [matTooltip]="'shell.lang.label' | t"
+      [attr.aria-label]="'shell.lang.label' | t"
+    >
+      {{ i18n.lang().toUpperCase() }}
+      <svg
+        class="shell__lang-btn-caret"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        width="14"
+        height="14"
       >
-        UK
-      </button>
-      <button
-        type="button"
-        class="shell__lang-btn"
-        [class.shell__lang-btn--active]="i18n.lang() === 'en'"
-        [attr.aria-pressed]="i18n.lang() === 'en'"
-        (click)="setLang('en')"
-      >
-        EN
-      </button>
-    </div>
+        <polyline points="6 9 12 15 18 9" />
+      </svg>
+    </button>
+    <mat-menu #langMenu="matMenu">
+      @for (option of langOptions; track option.value) {
+        <button
+          mat-menu-item
+          type="button"
+          class="shell__lang-menu-item"
+          [class.shell__lang-menu-item--active]="i18n.lang() === option.value"
+          [attr.aria-pressed]="i18n.lang() === option.value"
+          (click)="setLang(option.value)"
+        >
+          {{ option.label }}
+          @if (i18n.lang() === option.value) {
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              width="16"
+              height="16"
+            >
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+          }
+        </button>
+      }
+    </mat-menu>
 
     <button
       type="button"

@@ -70,6 +70,7 @@
 
 .settings-page__toggle-group {
   display: flex;
+  flex-wrap: wrap;
   gap: var(--space-2);
 }
 

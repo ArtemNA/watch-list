@@ -4,7 +4,13 @@ const FALLBACK_LANGUAGE = 'en-US';
 
 /** Мова TMDB-запиту = поточна мова UI; кирилична розкладка запиту її не змінює. */
 export function languageForUi(lang: Lang): string {
-  return lang === 'uk' ? 'uk-UA' : FALLBACK_LANGUAGE;
+  if (lang === 'uk') {
+    return 'uk-UA';
+  }
+  if (lang === 'ru') {
+    return 'ru-RU';
+  }
+  return FALLBACK_LANGUAGE;
 }
 
 export function isFallbackLanguage(language: string): boolean {
