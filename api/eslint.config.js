@@ -1,9 +1,11 @@
 // @ts-check
-const eslint = require('@eslint/js');
-const tseslint = require('typescript-eslint');
-const prettier = require('eslint-config-prettier');
+// ESM (не CJS): корінь має "type": "module" — потрібно, щоб Vercel збирав
+// функції як ESM (jose@6 — ESM-only і падав у CJS-збірці з ERR_REQUIRE_ESM).
+import eslint from '@eslint/js';
+import prettier from 'eslint-config-prettier';
+import tseslint from 'typescript-eslint';
 
-module.exports = tseslint.config(
+export default tseslint.config(
   { ignores: ['eslint.config.js'] },
   eslint.configs.recommended,
   tseslint.configs.recommended,
@@ -13,7 +15,7 @@ module.exports = tseslint.config(
     languageOptions: {
       parserOptions: {
         project: './tsconfig.json',
-        tsconfigRootDir: __dirname,
+        tsconfigRootDir: import.meta.dirname,
       },
     },
     rules: {
