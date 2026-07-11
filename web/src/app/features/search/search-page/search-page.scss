@@ -19,6 +19,27 @@
   max-width: 480px;
 }
 
+.search-page__linking-banner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-m);
+  background: var(--color-surface-2);
+  color: var(--color-text);
+  font-size: var(--font-size-s);
+
+  a {
+    color: var(--color-primary);
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
 .search-page__hint {
   color: var(--color-text-muted);
   font-size: var(--font-size-m);

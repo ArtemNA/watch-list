@@ -14,6 +14,24 @@ export interface ExternalRatings {
   metacritic?: number;
 }
 
+export type MetadataLang = 'uk' | 'en';
+
+export interface WatchProviderItem {
+  providerId: number;
+  providerName: string;
+  logoUrl: string;
+}
+
+// Дані по регіону (UA, fallback US) з TMDB watch/providers — не в ARCHITECTURE §2,
+// додано в Step 06: без цього поля "де подивитись" довелось би бити в API щоразу,
+// бо офлайн-кеш айтема не мав би звідки їх узяти (задокументовано в step-06.md).
+export interface WatchProviders {
+  link?: string; // deep-лінк TMDB (обов'язкова атрибуція JustWatch у UI)
+  flatrate?: WatchProviderItem[];
+  rent?: WatchProviderItem[];
+  buy?: WatchProviderItem[];
+}
+
 export interface MediaItem {
   id: string; // uuid v4, генерується на клієнті — ключ синку
   kind: MediaKind;
@@ -33,7 +51,9 @@ export interface MediaItem {
   genres?: string[];
   runtime?: number; // хв (для tv — епізод)
   externalRatings?: ExternalRatings; // знімок на момент останнього оновлення
-  metadataUpdatedAt?: string; // ISO; коли востаннє тягнули з API
+  watchProviders?: WatchProviders; // TMDB watch/providers, регіон UA з fallback US
+  metadataUpdatedAt?: string; // ISO; коли востаннє тягнули з API (OMDb+providers включно)
+  metadataLang?: MetadataLang; // мова, якою кешовано title/overview/genres
 
   // Мої дані (найцінніше — саме це merge'иться найобережніше)
   myRating?: number; // 1..10

@@ -1,0 +1,23 @@
+<div class="app-split-button">
+  <button type="button" class="app-split-button__main" [disabled]="disabled()" (click)="primaryClick.emit()">
+    <ng-content />
+  </button>
+  <button
+    type="button"
+    class="app-split-button__toggle"
+    [disabled]="disabled()"
+    [attr.aria-label]="menuAriaLabel()"
+    [matMenuTriggerFor]="menu"
+  >
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="6 9 12 15 18 9" />
+    </svg>
+  </button>
+  <mat-menu #menu="matMenu">
+    @for (option of options(); track option.value) {
+      <button mat-menu-item type="button" (click)="optionSelected.emit(option.value)">
+        {{ option.label }}
+      </button>
+    }
+  </mat-menu>
+</div>

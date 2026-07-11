@@ -47,6 +47,24 @@ export interface TmdbTranslations {
   translations: TmdbTranslation[];
 }
 
+export interface TmdbWatchProviderItem {
+  provider_id: number;
+  provider_name: string;
+  logo_path: string;
+  display_priority?: number;
+}
+
+export interface TmdbWatchProviderRegion {
+  link?: string;
+  flatrate?: TmdbWatchProviderItem[];
+  rent?: TmdbWatchProviderItem[];
+  buy?: TmdbWatchProviderItem[];
+}
+
+export interface TmdbWatchProviders {
+  results?: Record<string, TmdbWatchProviderRegion>;
+}
+
 export interface TmdbDetails {
   id: number;
   title?: string;
@@ -63,6 +81,7 @@ export interface TmdbDetails {
   vote_average?: number;
   external_ids?: TmdbExternalIds;
   translations?: TmdbTranslations;
+  'watch/providers'?: TmdbWatchProviders;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -75,9 +94,9 @@ export class TmdbApiService {
     });
   }
 
-  getDetails(kind: MediaKind, id: number): Observable<TmdbDetails> {
+  getDetails(kind: MediaKind, id: number, language: string): Observable<TmdbDetails> {
     return this.http.get<TmdbDetails>(`/api/tmdb/${kind}/${id}`, {
-      params: { append_to_response: 'external_ids,translations' },
+      params: { append_to_response: 'external_ids,watch/providers,translations', language },
     });
   }
 }

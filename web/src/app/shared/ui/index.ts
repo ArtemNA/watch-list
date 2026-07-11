@@ -4,3 +4,4 @@ export { AppChip, type ChipTone } from './chip/app-chip';
 export { AppEmptyState } from './empty-state/app-empty-state';
 export { AppInput } from './input/app-input';
 export { AppRating } from './rating/app-rating';
+export { AppSplitButton, type SplitButtonOption } from './split-button/app-split-button';

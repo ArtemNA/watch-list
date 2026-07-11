@@ -45,6 +45,7 @@ async function main() {
   loadEnvLocal();
 
   const tmdbHandler = (await import('./api/tmdb/[...path].ts')).default;
+  const omdbHandler = (await import('./api/omdb.ts')).default;
   const healthHandler = (await import('./api/health.ts')).default;
 
   const port = Number(process.env['PORT']) || 3000;
@@ -64,6 +65,12 @@ async function main() {
       const path = url.pathname.slice('/api/tmdb/'.length).split('/').filter(Boolean);
       req.query = { ...query, path };
       void tmdbHandler(req, res);
+      return;
+    }
+
+    if (url.pathname === '/api/omdb') {
+      req.query = query;
+      void omdbHandler(req, res);
       return;
     }
 

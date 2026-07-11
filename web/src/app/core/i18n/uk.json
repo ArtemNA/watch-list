@@ -45,6 +45,9 @@
   "devUi.textarea.label": "Нотатки",
   "devUi.card.title": "Приклад картки",
   "devUi.card.body": "Короткий текст всередині картки для перевірки токенів поверхні й тіні.",
+  "devUi.section.splitButton": "Split-кнопка (додати як…)",
+  "devUi.splitButton.menuAriaLabel": "Додати як…",
+  "devUi.splitButton.chosen": "Обрано",
 
   "library.title": "Бібліотека",
   "library.searchTmdb": "Пошук",
@@ -98,6 +101,28 @@
   "item.links.errors.required": "Назва і URL обов'язкові",
   "item.links.add": "Додати посилання",
 
+  "item.ratings.title": "Рейтинги",
+  "item.ratings.tmdb": "TMDB",
+  "item.ratings.imdb": "IMDb",
+  "item.ratings.rottenTomatoes": "Rotten Tomatoes",
+  "item.ratings.metacritic": "Metacritic",
+
+  "item.watch.title": "Де подивитись",
+  "item.watch.flatrate": "Підписка",
+  "item.watch.rent": "Оренда",
+  "item.watch.buy": "Купівля",
+  "item.watch.attribution": "Дані JustWatch через TMDB",
+
+  "item.linkTmdb.title": "Дані з TMDB",
+  "item.linkTmdb.description": "Цей айтем додано вручну — рейтинги і «де подивитись» доступні лише для айтемів, зв'язаних з TMDB.",
+  "item.linkTmdb.action": "Зв'язати з TMDB",
+
+  "item.metadata.refresh": "Оновити дані",
+  "item.metadata.refreshing": "Оновлюємо...",
+  "item.metadata.refreshError": "Не вдалося оновити дані. Спробуйте пізніше.",
+  "item.metadata.neverUpdated": "Ще не оновлювалось",
+  "item.metadata.lastUpdated": "Востаннє оновлено: {{date}}",
+
   "search.title": "Пошук TMDB",
   "search.placeholder": "Введіть назву фільму чи серіалу (мін. 2 символи)...",
   "search.hint": "Введіть щонайменше 2 символи, щоб почати пошук.",
@@ -110,8 +135,16 @@
   "search.loadingMore": "Завантаження...",
   "search.card.inLibrary": "У бібліотеці",
   "search.card.add": "Додати",
+  "search.card.addAsMenuLabel": "Додати як…",
   "search.add.success": "«{{title}}» додано в бібліотеку.",
   "search.add.alreadyInLibrary": "«{{title}}» вже в бібліотеці.",
+  "search.add.rateHint": "Постав оцінку.",
   "search.add.viewAction": "Переглянути",
-  "search.add.error": "Не вдалося додати. Спробуйте ще раз."
+  "search.add.error": "Не вдалося додати. Спробуйте ще раз.",
+
+  "search.linking.banner": "Обираєте відповідник з TMDB для айтема, доданого вручну.",
+  "search.linking.cancel": "Скасувати",
+  "search.linking.linkAction": "Обрати",
+  "search.linking.success": "Айтем зв'язано з TMDB.",
+  "search.linking.error": "Не вдалося зв'язати з TMDB. Спробуйте ще раз."
 }

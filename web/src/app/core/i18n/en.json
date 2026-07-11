@@ -45,6 +45,9 @@
   "devUi.textarea.label": "Notes",
   "devUi.card.title": "Sample card",
   "devUi.card.body": "A short piece of text inside a card to check surface and shadow tokens.",
+  "devUi.section.splitButton": "Split button (add as…)",
+  "devUi.splitButton.menuAriaLabel": "Add as…",
+  "devUi.splitButton.chosen": "Chosen",
 
   "library.title": "Library",
   "library.searchTmdb": "Search",
@@ -98,6 +101,28 @@
   "item.links.errors.required": "Label and URL are required",
   "item.links.add": "Add link",
 
+  "item.ratings.title": "Ratings",
+  "item.ratings.tmdb": "TMDB",
+  "item.ratings.imdb": "IMDb",
+  "item.ratings.rottenTomatoes": "Rotten Tomatoes",
+  "item.ratings.metacritic": "Metacritic",
+
+  "item.watch.title": "Where to watch",
+  "item.watch.flatrate": "Subscription",
+  "item.watch.rent": "Rent",
+  "item.watch.buy": "Buy",
+  "item.watch.attribution": "Data by JustWatch via TMDB",
+
+  "item.linkTmdb.title": "TMDB data",
+  "item.linkTmdb.description": "This item was added manually — ratings and \"where to watch\" are only available for items linked to TMDB.",
+  "item.linkTmdb.action": "Link to TMDB",
+
+  "item.metadata.refresh": "Refresh data",
+  "item.metadata.refreshing": "Refreshing...",
+  "item.metadata.refreshError": "Couldn't refresh the data. Please try again later.",
+  "item.metadata.neverUpdated": "Never refreshed",
+  "item.metadata.lastUpdated": "Last refreshed: {{date}}",
+
   "search.title": "TMDB search",
   "search.placeholder": "Enter a movie or show title (min. 2 characters)...",
   "search.hint": "Enter at least 2 characters to start searching.",
@@ -110,8 +135,16 @@
   "search.loadingMore": "Loading...",
   "search.card.inLibrary": "In library",
   "search.card.add": "Add",
+  "search.card.addAsMenuLabel": "Add as…",
   "search.add.success": "\"{{title}}\" added to your library.",
   "search.add.alreadyInLibrary": "\"{{title}}\" is already in your library.",
+  "search.add.rateHint": "Rate it.",
   "search.add.viewAction": "View",
-  "search.add.error": "Couldn't add it. Please try again."
+  "search.add.error": "Couldn't add it. Please try again.",
+
+  "search.linking.banner": "Choose the TMDB match for a manually added item.",
+  "search.linking.cancel": "Cancel",
+  "search.linking.linkAction": "Choose",
+  "search.linking.success": "Item linked to TMDB.",
+  "search.linking.error": "Couldn't link to TMDB. Please try again."
 }

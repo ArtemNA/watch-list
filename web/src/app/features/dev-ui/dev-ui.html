@@ -85,4 +85,19 @@
     <h2>{{ 'devUi.section.dialog' | t }}</h2>
     <app-button (click)="openTestDialog()">{{ 'devUi.openDialog' | t }}</app-button>
   </section>
+
+  <section class="dev-ui__section">
+    <h2>{{ 'devUi.section.splitButton' | t }}</h2>
+    <div class="dev-ui__row">
+      <app-split-button
+        [options]="splitButtonOptions()"
+        [menuAriaLabel]="'devUi.splitButton.menuAriaLabel' | t"
+        (primaryClick)="onSplitButtonOption('want')"
+        (optionSelected)="onSplitButtonOption($event)"
+      >
+        {{ 'search.card.add' | t }}
+      </app-split-button>
+      <span>{{ 'devUi.splitButton.chosen' | t }}: {{ ('status.' + splitButtonChoice()) | t }}</span>
+    </div>
+  </section>
 </div>

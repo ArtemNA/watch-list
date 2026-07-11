@@ -1,0 +1,58 @@
+.app-split-button {
+  display: inline-flex;
+  align-items: stretch;
+  border-radius: var(--radius-m);
+  overflow: hidden;
+}
+
+.app-split-button__main,
+.app-split-button__toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  border: none;
+  background: var(--color-primary);
+  color: var(--color-primary-contrast);
+  font: inherit;
+  font-size: var(--font-size-m);
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    filter var(--transition-fast),
+    opacity var(--transition-fast);
+
+  &:hover:not(:disabled) {
+    filter: brightness(1.08);
+  }
+
+  &:active:not(:disabled) {
+    opacity: 0.85;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.app-split-button__main {
+  padding: 0 var(--space-4);
+  min-width: 40px;
+}
+
+.app-split-button__toggle {
+  width: 36px;
+  padding: 0;
+  border-left: 1px solid color-mix(in srgb, var(--color-primary-contrast) 25%, transparent);
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+}

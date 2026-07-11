@@ -1,13 +1,15 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
 import { I18nService } from '../../../core/i18n/i18n.service';
 import { TPipe } from '../../../core/i18n/t.pipe';
+import type { MediaStatus } from '../../../core/models/media-item.model';
 import { AppButton } from '../../../shared/ui/button/app-button';
 import { AppChip } from '../../../shared/ui/chip/app-chip';
 import { AppEmptyState } from '../../../shared/ui/empty-state/app-empty-state';
 import { AppInput } from '../../../shared/ui/input/app-input';
+import { AppSplitButton, type SplitButtonOption } from '../../../shared/ui/split-button/app-split-button';
 import type { TmdbSearchItem } from '../../../core/api/tmdb-api.service';
 import { mergeSearchItems, type SearchResult } from '../search-mapping';
 import { SearchService } from '../search.service';
@@ -16,10 +18,11 @@ type SearchStatus = 'idle' | 'loading' | 'error' | 'loadingMore';
 
 const SEARCH_DEBOUNCE_MS = 400;
 const MIN_QUERY_LENGTH = 2;
+const ADD_AS_STATUSES: MediaStatus[] = ['watching', 'watched', 'dropped'];
 
 @Component({
   selector: 'app-search-page',
-  imports: [RouterLink, TPipe, AppButton, AppChip, AppEmptyState, AppInput],
+  imports: [RouterLink, TPipe, AppButton, AppChip, AppEmptyState, AppInput, AppSplitButton],
   templateUrl: './search-page.html',
   styleUrl: './search-page.scss',
 })
@@ -27,6 +30,7 @@ export class SearchPage {
   private readonly searchService = inject(SearchService);
   private readonly snackBar = inject(MatSnackBar);
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
   protected readonly i18n = inject(I18nService);
 
   protected readonly queryDraft = signal('');
@@ -44,8 +48,29 @@ export class SearchPage {
   protected readonly hasSearched = computed(() => this.lastQuery() !== '');
   protected readonly hasMore = computed(() => this.page() < this.totalPages());
 
+  /** Присутній, коли на пошук перейшли з кнопки «Зв'язати з TMDB» ручного айтема (Step 06, задача 5). */
+  protected readonly linkItemId = signal<string | null>(null);
+
+  protected readonly addAsOptions = computed<SplitButtonOption[]>(() =>
+    ADD_AS_STATUSES.map((status) => ({ value: status, label: this.i18n.t(`status.${status}`) })),
+  );
+
   private searchTimer: ReturnType<typeof setTimeout> | null = null;
   private requestToken = 0;
+
+  constructor() {
+    const params = this.route.snapshot.queryParamMap;
+    const linkItemId = params.get('linkItemId');
+    if (linkItemId) {
+      this.linkItemId.set(linkItemId);
+    }
+
+    const prefillQuery = params.get('q');
+    if (prefillQuery) {
+      this.queryDraft.set(prefillQuery);
+      void this.runSearch(prefillQuery, 1);
+    }
+  }
 
   onQueryInput(value: string): void {
     this.queryDraft.set(value);
@@ -76,19 +101,45 @@ export class SearchPage {
     }
   }
 
-  async addItem(result: SearchResult): Promise<void> {
+  async addItem(result: SearchResult, status: MediaStatus = 'want'): Promise<void> {
     this.addingIds.update((ids) => new Set(ids).add(result.id));
     try {
-      const { mediaItem, alreadyExists } = await this.searchService.addToLibrary(result);
+      const { mediaItem, alreadyExists } = await this.searchService.addToLibrary(result, status);
       const messageKey = alreadyExists ? 'search.add.alreadyInLibrary' : 'search.add.success';
-      const ref = this.snackBar.open(
-        this.i18n.t(messageKey, { title: mediaItem.title }),
-        this.i18n.t('search.add.viewAction'),
-        { duration: 5000 },
-      );
+      let message = this.i18n.t(messageKey, { title: mediaItem.title });
+      if (!alreadyExists && status === 'watched') {
+        message += ` ${this.i18n.t('search.add.rateHint')}`;
+      }
+      const ref = this.snackBar.open(message, this.i18n.t('search.add.viewAction'), { duration: 5000 });
       ref.onAction().subscribe(() => void this.router.navigate(['/item', mediaItem.id]));
     } catch {
       this.snackBar.open(this.i18n.t('search.add.error'), this.i18n.t('common.cancel'), { duration: 5000 });
+    } finally {
+      this.addingIds.update((ids) => {
+        const next = new Set(ids);
+        next.delete(result.id);
+        return next;
+      });
+    }
+  }
+
+  /** MatMenu-опції завжди зі скінченного набору ADD_AS_STATUSES — каст безпечний. */
+  addItemAs(result: SearchResult, status: string): void {
+    void this.addItem(result, status as MediaStatus);
+  }
+
+  async linkItem(result: SearchResult): Promise<void> {
+    const itemId = this.linkItemId();
+    if (!itemId) {
+      return;
+    }
+    this.addingIds.update((ids) => new Set(ids).add(result.id));
+    try {
+      await this.searchService.linkToExistingItem(itemId, result);
+      await this.router.navigate(['/item', itemId]);
+      this.snackBar.open(this.i18n.t('search.linking.success'), this.i18n.t('common.cancel'), { duration: 5000 });
+    } catch {
+      this.snackBar.open(this.i18n.t('search.linking.error'), this.i18n.t('common.cancel'), { duration: 5000 });
     } finally {
       this.addingIds.update((ids) => {
         const next = new Set(ids);

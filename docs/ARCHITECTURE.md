@@ -65,6 +65,12 @@ interface MediaItem {
   metadataUpdatedAt?: string; // ISO; коли востаннє тягнули з API
   metadataLang?: 'uk' | 'en'; // мова, якою кешовано title/overview/genres
                               // (додано після Step 05; оновлення — Step 06)
+  watchProviders?: {          // кеш TMDB watch/providers (регіон UA, fallback US),
+    link?: string;            // додано в Step 06 — щоб «де подивитись» працювало
+    flatrate?: WatchProviderItem[]; // з кешу без запиту при кожному відкритті
+    rent?: WatchProviderItem[];
+    buy?: WatchProviderItem[];
+  };
 
   // Мої дані (найцінніше — саме це merge'иться найобережніше)
   myRating?: number;          // 1..10

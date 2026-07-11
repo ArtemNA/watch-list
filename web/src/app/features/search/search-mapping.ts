@@ -1,9 +1,9 @@
+import { mapCommonDetailsFields, parseYear, posterUrlFor } from '../../core/api/tmdb-mapping';
+import { isFallbackLanguage, languageForUi } from '../../core/api/tmdb-language';
 import type { TmdbDetails, TmdbSearchItem } from '../../core/api/tmdb-api.service';
 import type { NewMediaItemInput } from '../../core/data/items.repository';
 import type { Lang } from '../../core/i18n/i18n.service';
-
-const FALLBACK_LANGUAGE = 'en-US';
-const POSTER_BASE_URL = 'https://image.tmdb.org/t/p/w342';
+import type { MediaStatus } from '../../core/models/media-item.model';
 
 export type SearchKind = 'movie' | 'tv';
 
@@ -25,14 +25,7 @@ export interface SearchPage {
   totalPages: number;
 }
 
-/** Мова TMDB-запиту = поточна мова UI; кирилична розкладка запиту її не змінює. */
-export function languageForUi(lang: Lang): string {
-  return lang === 'uk' ? 'uk-UA' : FALLBACK_LANGUAGE;
-}
-
-export function isFallbackLanguage(language: string): boolean {
-  return language === FALLBACK_LANGUAGE;
-}
+export { isFallbackLanguage, languageForUi };
 
 /** Лишає тільки movie/tv, дедуплікує за (media_type, id), зберігає порядок TMDB. */
 export function dedupeSearchItems(items: TmdbSearchItem[]): TmdbSearchItem[] {
@@ -66,18 +59,6 @@ export function mergeSearchItems(existing: TmdbSearchItem[], incoming: TmdbSearc
   return merged;
 }
 
-function parseYear(date: string | undefined): number | undefined {
-  if (!date) {
-    return undefined;
-  }
-  const year = Number(date.slice(0, 4));
-  return Number.isFinite(year) && year > 0 ? year : undefined;
-}
-
-function posterUrlFor(path: string | null | undefined): string | undefined {
-  return path ? `${POSTER_BASE_URL}${path}` : undefined;
-}
-
 /** Мапить сирий результат пошуку в картку для UI (без позначки «у бібліотеці» — це реактивна частина сервісу). */
 export function mapSearchItem(item: TmdbSearchItem): Omit<SearchResult, 'inLibrary' | 'existingItemId'> {
   const kind = item.media_type as SearchKind;
@@ -96,29 +77,28 @@ export function mapSearchItem(item: TmdbSearchItem): Omit<SearchResult, 'inLibra
   };
 }
 
-/** Мапить деталі TMDB у вхід репозиторію — статус завжди 'want' (Крок 05 не чіпає інші статуси). */
-export function mapDetailsToNewItem(details: TmdbDetails, kind: SearchKind): NewMediaItemInput {
-  const title = (kind === 'movie' ? details.title : details.name) || details.original_title || details.original_name || '';
-  const originalTitle = kind === 'movie' ? details.original_title : details.original_name;
-  const releaseDate = kind === 'movie' ? details.release_date : details.first_air_date;
-  const runtime = kind === 'movie' ? details.runtime : details.episode_run_time?.[0];
-  const ukTranslation = details.translations?.translations.find((t) => t.iso_639_1 === 'uk')?.data;
-  const titleUk = kind === 'movie' ? ukTranslation?.title : ukTranslation?.name;
+/**
+ * Мапить деталі TMDB у вхід репозиторію. `status` за замовчуванням 'want', але викликач
+ * може передати інший (Step 06, задача 0б: split-кнопка «Додати як…» на картці пошуку).
+ * `metadataUpdatedAt` свідомо НЕ проставляється тут — OMDb-рейтинги і watch-providers ще не
+ * тягнуті, а виставлення "щойно оновлено" заблокувало б автооновлення на сторінці айтема
+ * (metadata.service, Step 06 задача 3) аж на 7 днів. Перший відкритий item-page сам
+ * довантажить решту й тоді проставить мітку.
+ */
+export function mapDetailsToNewItem(
+  details: TmdbDetails,
+  kind: SearchKind,
+  lang: Lang,
+  status: MediaStatus = 'want',
+): NewMediaItemInput {
+  const common = mapCommonDetailsFields(details, kind);
 
   return {
     kind,
-    status: 'want',
+    status,
     tmdbId: details.id,
-    imdbId: details.external_ids?.imdb_id ?? undefined,
-    title,
-    originalTitle: originalTitle || undefined,
-    titleUk: titleUk || undefined,
-    year: parseYear(releaseDate),
-    posterUrl: posterUrlFor(details.poster_path),
-    overview: details.overview || undefined,
-    genres: details.genres?.map((genre) => genre.name),
-    runtime: runtime || undefined,
+    ...common,
     externalRatings: details.vote_average ? { tmdb: details.vote_average } : undefined,
-    metadataUpdatedAt: new Date().toISOString(),
+    metadataLang: lang,
   };
 }

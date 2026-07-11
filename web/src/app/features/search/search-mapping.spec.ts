@@ -141,8 +141,8 @@ describe('mapDetailsToNewItem', () => {
     };
   }
 
-  it('maps a movie into a new-item input with status "want"', () => {
-    const result = mapDetailsToNewItem(movieDetails(), 'movie');
+  it('maps a movie into a new-item input with status "want" and the given metadataLang', () => {
+    const result = mapDetailsToNewItem(movieDetails(), 'movie', 'uk');
 
     expect(result).toMatchObject({
       kind: 'movie',
@@ -158,8 +158,18 @@ describe('mapDetailsToNewItem', () => {
       genres: ['Фантастика', 'Пригоди'],
       runtime: 155,
       externalRatings: { tmdb: 7.8 },
+      metadataLang: 'uk',
     });
-    expect(result.metadataUpdatedAt).toEqual(expect.any(String));
+  });
+
+  it('leaves metadataUpdatedAt unset (OMDb/watch-providers are not fetched yet)', () => {
+    const result = mapDetailsToNewItem(movieDetails(), 'movie', 'uk');
+    expect(result.metadataUpdatedAt).toBeUndefined();
+  });
+
+  it('stores the status passed by the caller (split-button "Add as…" in search), defaulting to "want"', () => {
+    expect(mapDetailsToNewItem(movieDetails(), 'movie', 'uk').status).toBe('want');
+    expect(mapDetailsToNewItem(movieDetails(), 'movie', 'uk', 'watched').status).toBe('watched');
   });
 
   it('maps a tv show using name/original_name/first_air_date/episode_run_time', () => {
@@ -175,19 +185,20 @@ describe('mapDetailsToNewItem', () => {
       translations: { translations: [{ iso_639_1: 'uk', data: { name: 'Дюна: Пророцтво' } }] },
     });
 
-    const result = mapDetailsToNewItem(details, 'tv');
+    const result = mapDetailsToNewItem(details, 'tv', 'en');
 
     expect(result.title).toBe('Дюна: Пророцтво');
     expect(result.originalTitle).toBe('Dune: Prophecy');
     expect(result.year).toBe(2024);
     expect(result.runtime).toBe(60);
     expect(result.titleUk).toBe('Дюна: Пророцтво');
+    expect(result.metadataLang).toBe('en');
   });
 
   it('omits imdbId/titleUk when TMDB does not provide them', () => {
     const details = movieDetails({ external_ids: undefined, translations: undefined });
 
-    const result = mapDetailsToNewItem(details, 'movie');
+    const result = mapDetailsToNewItem(details, 'movie', 'uk');
 
     expect(result.imdbId).toBeUndefined();
     expect(result.titleUk).toBeUndefined();

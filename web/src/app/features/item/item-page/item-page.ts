@@ -2,6 +2,7 @@ import { Component, computed, effect, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { map } from 'rxjs';
 
@@ -16,13 +17,19 @@ import { AppInput } from '../../../shared/ui/input/app-input';
 import { AppRating } from '../../../shared/ui/rating/app-rating';
 import { DeleteConfirmDialog } from '../delete-confirm-dialog/delete-confirm-dialog';
 import { faviconUrl, normalizeUrl } from '../link-utils';
+import { MetadataService } from '../metadata.service';
 
 const STATUSES: MediaStatus[] = ['want', 'watching', 'watched', 'dropped'];
 const NOTES_DEBOUNCE_MS = 800;
 
+interface RatingEntry {
+  key: 'tmdb' | 'imdb' | 'rottenTomatoes' | 'metacritic';
+  value: string;
+}
+
 @Component({
   selector: 'app-item-page',
-  imports: [RouterLink, TPipe, AppButton, AppCard, AppChip, AppInput, AppRating],
+  imports: [RouterLink, TPipe, AppButton, AppCard, AppChip, AppInput, AppRating, MatTooltipModule],
   templateUrl: './item-page.html',
   styleUrl: './item-page.scss',
 })
@@ -32,6 +39,7 @@ export class ItemPage {
   private readonly router = inject(Router);
   private readonly dialog = inject(MatDialog);
   private readonly snackBar = inject(MatSnackBar);
+  private readonly metadataService = inject(MetadataService);
   protected readonly i18n = inject(I18nService);
 
   protected readonly statuses = STATUSES;
@@ -59,6 +67,30 @@ export class ItemPage {
   protected readonly linkUrlDraft = signal('');
   protected readonly linkFormError = signal<string | null>(null);
 
+  protected readonly refreshingMetadata = signal(false);
+  private autoRefreshedForId: string | null = null;
+
+  protected readonly ratingEntries = computed<RatingEntry[]>(() => {
+    const ratings = this.item()?.externalRatings;
+    if (!ratings) {
+      return [];
+    }
+    const entries: RatingEntry[] = [];
+    if (ratings.tmdb !== undefined) {
+      entries.push({ key: 'tmdb', value: ratings.tmdb.toFixed(1) });
+    }
+    if (ratings.imdb !== undefined) {
+      entries.push({ key: 'imdb', value: ratings.imdb.toFixed(1) });
+    }
+    if (ratings.rottenTomatoes !== undefined) {
+      entries.push({ key: 'rottenTomatoes', value: ratings.rottenTomatoes });
+    }
+    if (ratings.metacritic !== undefined) {
+      entries.push({ key: 'metacritic', value: String(ratings.metacritic) });
+    }
+    return entries;
+  });
+
   constructor() {
     effect(() => {
       const current = this.item();
@@ -68,6 +100,17 @@ export class ItemPage {
         this.notesSaveState.set('idle');
         this.cancelLinkForm();
       }
+    });
+
+    // Автооновлення метаданих при відкритті сторінки (Step 06, задача 3) — раз на завантажений
+    // айтем, щоб repo.update() усередині refresh() не спричиняв повторний виклик по колу.
+    effect(() => {
+      const current = this.item();
+      if (!current || this.autoRefreshedForId === current.id || !this.metadataService.shouldRefresh(current)) {
+        return;
+      }
+      this.autoRefreshedForId = current.id;
+      void this.refreshMetadata(current);
     });
   }
 
@@ -154,6 +197,40 @@ export class ItemPage {
         void this.deleteItem(item);
       }
     });
+  }
+
+  async refreshMetadata(item: MediaItem): Promise<void> {
+    this.refreshingMetadata.set(true);
+    try {
+      await this.metadataService.refresh(item);
+    } catch {
+      this.snackBar.open(this.i18n.t('item.metadata.refreshError'), this.i18n.t('common.cancel'), {
+        duration: 5000,
+      });
+    } finally {
+      this.refreshingMetadata.set(false);
+    }
+  }
+
+  lastUpdatedTooltip(item: MediaItem): string {
+    if (!item.metadataUpdatedAt) {
+      return this.i18n.t('item.metadata.neverUpdated');
+    }
+    const locale = this.i18n.lang() === 'uk' ? 'uk-UA' : 'en-US';
+    const date = new Date(item.metadataUpdatedAt).toLocaleString(locale);
+    return this.i18n.t('item.metadata.lastUpdated', { date });
+  }
+
+  openTmdbLinkSearch(item: MediaItem): void {
+    void this.router.navigate(['/search'], { queryParams: { linkItemId: item.id, q: item.title } });
+  }
+
+  tmdbUrl(item: MediaItem): string {
+    return `https://www.themoviedb.org/${item.kind}/${item.tmdbId}`;
+  }
+
+  imdbUrl(item: MediaItem): string {
+    return `https://www.imdb.com/title/${item.imdbId}`;
   }
 
   private async saveNotes(): Promise<void> {

@@ -2,9 +2,22 @@
   <div class="item-page">
     <div class="item-page__topbar">
       <a class="item-page__back" routerLink="/">{{ 'item.backToLibrary' | t }}</a>
-      <app-button variant="danger" size="s" (click)="openDeleteConfirm(it)">
-        {{ 'item.delete.action' | t }}
-      </app-button>
+      <div class="item-page__topbar-actions">
+        @if (it.tmdbId) {
+          <app-button
+            variant="ghost"
+            size="s"
+            [disabled]="refreshingMetadata()"
+            [matTooltip]="lastUpdatedTooltip(it)"
+            (click)="refreshMetadata(it)"
+          >
+            {{ (refreshingMetadata() ? 'item.metadata.refreshing' : 'item.metadata.refresh') | t }}
+          </app-button>
+        }
+        <app-button variant="danger" size="s" (click)="openDeleteConfirm(it)">
+          {{ 'item.delete.action' | t }}
+        </app-button>
+      </div>
     </div>
 
     <header class="item-page__header">
@@ -39,6 +52,16 @@
             <span>{{ it.year }}</span>
           }
           <span>{{ ('kind.' + it.kind) | t }}</span>
+          @if (it.tmdbId) {
+            <a class="item-page__external-link" [href]="tmdbUrl(it)" target="_blank" rel="noopener noreferrer">
+              TMDB ↗
+            </a>
+          }
+          @if (it.imdbId) {
+            <a class="item-page__external-link" [href]="imdbUrl(it)" target="_blank" rel="noopener noreferrer">
+              IMDb ↗
+            </a>
+          }
         </div>
 
         @if (it.genres && it.genres.length > 0) {
@@ -54,6 +77,83 @@
         }
       </div>
     </header>
+
+    @if (it.tmdbId) {
+      @if (ratingEntries().length > 0) {
+        <app-card class="item-page__section" [title]="'item.ratings.title' | t">
+          <div class="item-page__ratings">
+            @for (entry of ratingEntries(); track entry.key) {
+              <div class="item-page__rating-entry">
+                <span class="item-page__rating-entry-label">{{ ('item.ratings.' + entry.key) | t }}</span>
+                <span class="item-page__rating-entry-value">{{ entry.value }}</span>
+              </div>
+            }
+          </div>
+        </app-card>
+      }
+
+      @if (it.watchProviders; as wp) {
+        <app-card class="item-page__section" [title]="'item.watch.title' | t">
+          @if (wp.flatrate?.length) {
+            <div class="item-page__watch-group">
+              <span class="item-page__watch-group-label">{{ 'item.watch.flatrate' | t }}</span>
+              <div class="item-page__watch-providers">
+                @for (provider of wp.flatrate; track provider.providerId) {
+                  <img
+                    class="item-page__watch-provider-logo"
+                    [src]="provider.logoUrl"
+                    [alt]="provider.providerName"
+                    [title]="provider.providerName"
+                    width="40"
+                    height="40"
+                  />
+                }
+              </div>
+            </div>
+          }
+          @if (wp.rent?.length) {
+            <div class="item-page__watch-group">
+              <span class="item-page__watch-group-label">{{ 'item.watch.rent' | t }}</span>
+              <div class="item-page__watch-providers">
+                @for (provider of wp.rent; track provider.providerId) {
+                  <img
+                    class="item-page__watch-provider-logo"
+                    [src]="provider.logoUrl"
+                    [alt]="provider.providerName"
+                    [title]="provider.providerName"
+                    width="40"
+                    height="40"
+                  />
+                }
+              </div>
+            </div>
+          }
+          @if (wp.buy?.length) {
+            <div class="item-page__watch-group">
+              <span class="item-page__watch-group-label">{{ 'item.watch.buy' | t }}</span>
+              <div class="item-page__watch-providers">
+                @for (provider of wp.buy; track provider.providerId) {
+                  <img
+                    class="item-page__watch-provider-logo"
+                    [src]="provider.logoUrl"
+                    [alt]="provider.providerName"
+                    [title]="provider.providerName"
+                    width="40"
+                    height="40"
+                  />
+                }
+              </div>
+            </div>
+          }
+          <p class="item-page__watch-attribution">{{ 'item.watch.attribution' | t }}</p>
+        </app-card>
+      }
+    } @else {
+      <app-card class="item-page__section" [title]="'item.linkTmdb.title' | t">
+        <p class="item-page__link-tmdb-description">{{ 'item.linkTmdb.description' | t }}</p>
+        <app-button size="s" (click)="openTmdbLinkSearch(it)">{{ 'item.linkTmdb.action' | t }}</app-button>
+      </app-card>
+    }
 
     <app-card class="item-page__section" [title]="'item.my.title' | t">
       <div class="item-page__field">

@@ -3,6 +3,13 @@
     <h1 class="search-page__title">{{ 'search.title' | t }}</h1>
   </header>
 
+  @if (linkItemId(); as itemId) {
+    <div class="search-page__linking-banner">
+      <span>{{ 'search.linking.banner' | t }}</span>
+      <a [routerLink]="['/item', itemId]">{{ 'search.linking.cancel' | t }}</a>
+    </div>
+  }
+
   <app-input
     class="search-page__input"
     [placeholder]="'search.placeholder' | t"
@@ -67,14 +74,30 @@
             }
 
             <div class="search-card__actions">
-              @if (result.inLibrary) {
+              @if (linkItemId()) {
+                @if (result.inLibrary) {
+                  <a [routerLink]="['/item', result.existingItemId]">
+                    <app-chip tone="watched">{{ 'search.card.inLibrary' | t }}</app-chip>
+                  </a>
+                } @else {
+                  <app-button size="s" [disabled]="addingIds().has(result.id)" (click)="linkItem(result)">
+                    {{ 'search.linking.linkAction' | t }}
+                  </app-button>
+                }
+              } @else if (result.inLibrary) {
                 <a [routerLink]="['/item', result.existingItemId]">
                   <app-chip tone="watched">{{ 'search.card.inLibrary' | t }}</app-chip>
                 </a>
               } @else {
-                <app-button size="s" [disabled]="addingIds().has(result.id)" (click)="addItem(result)">
+                <app-split-button
+                  [disabled]="addingIds().has(result.id)"
+                  [options]="addAsOptions()"
+                  [menuAriaLabel]="'search.card.addAsMenuLabel' | t"
+                  (primaryClick)="addItem(result)"
+                  (optionSelected)="addItemAs(result, $event)"
+                >
                   {{ 'search.card.add' | t }}
-                </app-button>
+                </app-split-button>
               }
             </div>
           </div>
