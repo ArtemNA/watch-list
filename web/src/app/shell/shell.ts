@@ -1,4 +1,4 @@
-import { Component, DestroyRef, inject, signal } from '@angular/core';
+import { Component, DestroyRef, computed, inject, signal } from '@angular/core';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -42,6 +42,10 @@ export class Shell {
   private readonly snackBar = inject(MatSnackBar);
 
   protected readonly langOptions = LANG_OPTIONS;
+
+  // Компактний варіант кнопки акаунта на вузьких екранах (Step 14) —
+  // перша літера email замість email, що не влазить поруч з рештою хедера.
+  protected readonly accountInitial = computed(() => this.auth.email()?.trim().charAt(0).toUpperCase() || '?');
 
   private readonly clockTick = signal(0);
 

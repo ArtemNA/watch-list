@@ -39,6 +39,22 @@
   font-size: var(--font-size-s);
 }
 
+// Консистентні вертикальні гепи між рядками всередині картки-секції
+// (Backup: hint/row/divider/preview; Вигляд: theme/language рядки —
+// раніше злипались, Step 14).
+.settings-page__hint,
+.settings-page__row,
+.settings-page__divider,
+.settings-page__preview,
+.settings-page__error,
+.settings-page__field {
+  margin-top: var(--space-4);
+
+  &:first-child {
+    margin-top: 0;
+  }
+}
+
 .settings-page__preview {
   display: flex;
   flex-direction: column;

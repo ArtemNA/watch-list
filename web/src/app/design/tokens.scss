@@ -52,6 +52,9 @@
   --font-size-m: 15px;
   --font-size-l: 19px;
   --font-size-xl: 25px;
+  // 16px на ВСІХ брейкпоінтах для input/textarea/select: Safari на iPhone
+  // автозумить сторінку при фокусі на полі з font-size < 16px (Step 14).
+  --font-size-input: 16px;
 
   // --- Рух ---
   --transition-fast: 150ms ease;

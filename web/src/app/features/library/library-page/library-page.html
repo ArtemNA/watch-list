@@ -28,30 +28,46 @@
     </div>
 
     <div class="library-page__row">
-      <div class="library-page__kind" role="group" [attr.aria-label]="'library.filters.kind' | t">
-        <app-button
-          size="s"
-          [variant]="filters().kind === 'all' ? 'primary' : 'ghost'"
-          (click)="setKind('all')"
-        >
-          {{ 'library.filters.allKinds' | t }}
-        </app-button>
-        @for (kind of kinds; track kind) {
+      <div class="library-page__chipscroll">
+        <div class="library-page__kind" role="group" [attr.aria-label]="'library.filters.kind' | t">
           <app-button
             size="s"
-            [variant]="filters().kind === kind ? 'primary' : 'ghost'"
-            (click)="setKind(kind)"
+            [variant]="filters().kind === 'all' ? 'primary' : 'ghost'"
+            (click)="setKind('all')"
           >
-            {{ ('kind.' + kind) | t }}
+            {{ 'library.filters.allKinds' | t }}
           </app-button>
-        }
-        <app-button
-          size="s"
-          [variant]="filters().favoriteOnly ? 'primary' : 'ghost'"
-          (click)="toggleFavoriteOnly()"
-        >
-          {{ 'library.filters.favoriteOnly' | t }}
-        </app-button>
+          @for (kind of kinds; track kind) {
+            <app-button
+              size="s"
+              [variant]="filters().kind === kind ? 'primary' : 'ghost'"
+              (click)="setKind(kind)"
+            >
+              {{ ('kind.' + kind) | t }}
+            </app-button>
+          }
+          <app-button
+            size="s"
+            [variant]="filters().favoriteOnly ? 'primary' : 'ghost'"
+            (click)="toggleFavoriteOnly()"
+          >
+            {{ 'library.filters.favoriteOnly' | t }}
+          </app-button>
+        </div>
+
+        <div class="library-page__sort-field">
+          <label class="library-page__sort-label" for="library-sort">{{ 'library.filters.sort' | t }}</label>
+          <select
+            id="library-sort"
+            class="library-page__sort"
+            [value]="filters().sort"
+            (change)="onSortChange($event)"
+          >
+            @for (sort of sorts; track sort) {
+              <option [value]="sort">{{ ('library.sort.' + sort) | t }}</option>
+            }
+          </select>
+        </div>
       </div>
 
       <app-input
@@ -60,20 +76,6 @@
         [value]="searchDraft()"
         (valueChange)="onSearchInput($event)"
       />
-
-      <div class="library-page__sort-field">
-        <label class="library-page__sort-label" for="library-sort">{{ 'library.filters.sort' | t }}</label>
-        <select
-          id="library-sort"
-          class="library-page__sort"
-          [value]="filters().sort"
-          (change)="onSortChange($event)"
-        >
-          @for (sort of sorts; track sort) {
-            <option [value]="sort">{{ ('library.sort.' + sort) | t }}</option>
-          }
-        </select>
-      </div>
     </div>
   </div>
 

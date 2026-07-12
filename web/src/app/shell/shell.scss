@@ -38,25 +38,24 @@
   width: auto;
 }
 
-@media (max-width: 400px) {
-  .shell__logo-img {
-    height: 28px;
-  }
-}
-
 .shell__nav {
   display: flex;
   flex: 1;
+  flex-shrink: 0;
   align-items: center;
   gap: var(--space-2);
 }
 
 .shell__nav-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
   padding: var(--space-2) var(--space-3);
   border-radius: var(--radius-s);
   color: var(--color-text-muted);
   font-size: var(--font-size-m);
   text-decoration: none;
+  white-space: nowrap;
   transition:
     background-color var(--transition-fast),
     color var(--transition-fast);
@@ -74,6 +73,10 @@
     outline: 2px solid var(--color-primary);
     outline-offset: -2px;
   }
+}
+
+.shell__nav-icon {
+  flex: 0 0 auto;
 }
 
 .shell__actions {
@@ -220,6 +223,10 @@
   }
 }
 
+.shell__account-btn-avatar {
+  display: none;
+}
+
 .shell__lang-btn {
   display: inline-flex;
   align-items: center;
@@ -290,6 +297,61 @@
   padding: var(--space-4);
 }
 
+// Компактний хедер: nav-лінки — тільки іконки (з tooltip+aria-label), email
+// у кнопці акаунта — тільки ініціал-аватарка. Мета — один рядок хедера на
+// 375px усіма трьома мовами, включно з довшими uk/ru написами (Step 14).
+@media (max-width: 640px) {
+  // Логотип — повний word-mark (icon+"WatchList", 242×64) не влазить поруч
+  // з nav+actions на 375px; показуємо тільки квадратну іконку-марку через
+  // overflow:hidden-кроп (звичний img, без окремого square-асета).
+  .shell__logo {
+    width: 28px;
+    overflow: hidden;
+  }
+
+  .shell__logo-img {
+    height: 28px;
+  }
+
+  .shell__nav {
+    gap: 0;
+  }
+
+  .shell__nav-link {
+    padding: var(--space-2) var(--space-1);
+  }
+
+  .shell__nav-label {
+    display: none;
+  }
+
+  // 375px з довшими uk/ru написами лишає рівно нуль запасу без цього —
+  // компактніший gap між кнопками праворуч (email/sync/lang/theme).
+  .shell__actions {
+    gap: var(--space-2);
+  }
+
+  .shell__account-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    max-width: none;
+    padding: 0;
+    border-radius: 50%;
+    font-size: var(--font-size-s);
+  }
+
+  .shell__account-btn-email {
+    display: none;
+  }
+
+  .shell__account-btn-avatar {
+    display: inline-block;
+  }
+}
+
 @media (max-width: 400px) {
   .shell__header {
     padding: var(--space-2) var(--space-3);
@@ -297,9 +359,5 @@
 
   .shell__content {
     padding: var(--space-3);
-  }
-
-  .shell__account-btn {
-    max-width: 120px;
   }
 }

@@ -30,10 +30,34 @@
   gap: var(--space-3);
 }
 
+// Чіпи фільтрів — один горизонтально-скрольний рядок, без переносу
+// (ARCHITECTURE §8 v2; ACTUAL fix — Step 14: на 375px uk/ru-написи ламали
+// рядки на 2-3 лінії). Скрол — усередині рядка, сторінка не скролиться.
 .library-page__tabs {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: var(--space-2);
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x proximity;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border) transparent;
+  padding-bottom: var(--space-1);
+
+  &::-webkit-scrollbar {
+    height: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: var(--color-border);
+    border-radius: 999px;
+  }
+}
+
+.library-page__tabs > * {
+  flex: 0 0 auto;
+  scroll-snap-align: start;
 }
 
 .library-page__row {
@@ -43,21 +67,55 @@
   gap: var(--space-3);
 }
 
+// Тип + улюблене + сортування — другий такий самий горизонтально-скрольний
+// рядок; пошук — окремий повношириний рядок (не чіп, текстове поле).
+.library-page__chipscroll {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  gap: var(--space-3);
+  min-width: 0;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x proximity;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border) transparent;
+  padding-bottom: var(--space-1);
+
+  &::-webkit-scrollbar {
+    height: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: var(--color-border);
+    border-radius: 999px;
+  }
+}
+
 .library-page__kind {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  flex: 0 0 auto;
   gap: var(--space-2);
 }
 
-.library-page__search {
-  flex: 1 1 200px;
-  min-width: 160px;
+.library-page__kind > * {
+  flex: 0 0 auto;
+  scroll-snap-align: start;
 }
 
 .library-page__sort-field {
   display: flex;
   align-items: center;
+  flex: 0 0 auto;
   gap: var(--space-2);
+  scroll-snap-align: start;
+}
+
+.library-page__search {
+  flex: 1 1 200px;
+  min-width: 160px;
 }
 
 .library-page__sort-label {
@@ -73,7 +131,7 @@
   border: 1px solid var(--color-border);
   background: var(--color-surface);
   color: var(--color-text);
-  font-size: var(--font-size-m);
+  font-size: var(--font-size-input);
   font-family: var(--font-family);
 }
 
@@ -172,13 +230,28 @@
   margin-top: var(--space-1);
 }
 
+// Гарантований 2-рядковий блок фільтрів на вузьких екранах: chipscroll
+// (тип+улюблене+сортування) і пошук — кожен на своєму рядку, а не
+// органічний wrap (той ламався непередбачувано на довших uk/ru написах).
+@media (max-width: 480px) {
+  .library-page__row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .library-page__chipscroll {
+    width: 100%;
+  }
+
+  .library-page__search {
+    flex-basis: auto;
+    width: 100%;
+  }
+}
+
 @media (max-width: 400px) {
   .library-page__grid {
     grid-template-columns: repeat(2, 1fr);
     gap: var(--space-3);
-  }
-
-  .library-page__search {
-    flex-basis: 100%;
   }
 }

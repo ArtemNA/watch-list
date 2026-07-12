@@ -68,7 +68,7 @@
   border-radius: var(--radius-s);
   background: var(--color-surface-2);
   color: var(--color-text);
-  font-size: var(--font-size-s);
+  font-size: var(--font-size-input);
 }
 
 .share-list-dialog__code {
@@ -79,7 +79,7 @@
   border-radius: var(--radius-s);
   background: var(--color-surface-2);
   color: var(--color-text);
-  font-size: var(--font-size-s);
+  font-size: var(--font-size-input);
   font-family: monospace;
   resize: vertical;
 }
