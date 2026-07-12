@@ -1,32 +1,41 @@
 // Дизайн-токени WatchList — див. docs/ARCHITECTURE.md §8.
 // Дефолт — м'яка темна тема (:root). [data-theme='light'] перевизначає кольори.
 // Ніяких чистих #000/#fff — всюди приглушені, тоновані значення.
+// Палітра v2 (Step 15) — вирівняна з лого: фіолет + корал. Імена токенів
+// не міняються (компоненти не чіпаємо) — тільки значення (DECISIONS #22а).
+
+// Breakpoint перемикання навігаційного каркасу Shell: ≥768px — тонкий
+// однорядковий хедер, <768px — нижній таб-бар (ARCHITECTURE §8 v2, step-15 §2).
+// Sass-змінна (не CSS custom property) — потрібна всередині @media у
+// компонентних .scss через `@use '.../design/tokens' as tokens`.
+$bp-nav: 768px;
 
 :root {
   color-scheme: dark;
 
   // --- Кольори: поверхні ---
-  --color-bg: #181a20;
-  --color-surface: #1f222a;
-  --color-surface-2: #272b35;
-  --color-border: rgba(255, 255, 255, 0.08);
+  --color-bg: #16151d;
+  --color-surface: #1e1c27;
+  --color-surface-2: #26232f;
+  --color-border: rgba(237, 234, 243, 0.09);
 
   // --- Кольори: текст ---
-  --color-text: #e7e5e2;
-  --color-text-muted: #9fa0a8;
+  --color-text: #eceaf2;
+  --color-text-muted: #9a95ab;
 
   // --- Кольори: акценти ---
-  --color-primary: #8da9d8;
-  --color-primary-contrast: #14161b;
-  --color-accent: #caa06c;
-  --color-danger: #d17a7a;
+  --color-primary: #a08cf0;
+  --color-primary-contrast: #17151f;
+  --color-accent: #f07860;
+  --color-danger: #d95c6c;
   --color-success: #7fbf8f;
+  --color-star: #f0c060;
 
   // --- Кольори: статуси айтемів ---
-  --color-status-want: #7f9cc4;
-  --color-status-watching: #d1a860;
+  --color-status-want: #a08cf0;
+  --color-status-watching: #f0c060;
   --color-status-watched: #7fbf8f;
-  --color-status-dropped: #b98080;
+  --color-status-dropped: #8f8a9e;
 
   // --- Форма ---
   --radius-s: 8px;
@@ -63,24 +72,25 @@
 :root[data-theme='light'] {
   color-scheme: light;
 
-  --color-bg: #f5f4f1;
-  --color-surface: #fbfaf8;
-  --color-surface-2: #edece8;
-  --color-border: rgba(0, 0, 0, 0.08);
+  --color-bg: #f6f4f0;
+  --color-surface: #fdfcfa;
+  --color-surface-2: #edeae4;
+  --color-border: rgba(38, 36, 48, 0.1);
 
-  --color-text: #262830;
-  --color-text-muted: #6b6d74;
+  --color-text: #262430;
+  --color-text-muted: #6c6880;
 
-  --color-primary: #3d5480;
-  --color-primary-contrast: #f7f6f3;
-  --color-accent: #8a6535;
-  --color-danger: #a83f3f;
+  --color-primary: #6a58c8;
+  --color-primary-contrast: #f7f6fb;
+  --color-accent: #c85a44;
+  --color-danger: #b8404f;
   --color-success: #3f7a52;
+  --color-star: #b8860b;
 
-  --color-status-want: #45608c;
-  --color-status-watching: #8a6a28;
+  --color-status-want: #6a58c8;
+  --color-status-watching: #a07818;
   --color-status-watched: #3f7a52;
-  --color-status-dropped: #8a4f4f;
+  --color-status-dropped: #7d7890;
 
   --shadow-1: 0 2px 8px rgba(30, 25, 15, 0.1);
   --shadow-2: 0 8px 28px rgba(30, 25, 15, 0.14);

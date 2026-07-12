@@ -82,6 +82,14 @@
 .settings-page__field-label {
   color: var(--color-text);
   font-size: var(--font-size-m);
+  font-weight: 600;
+  word-break: break-all;
+}
+
+.settings-page__account-status {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-s);
+  white-space: nowrap;
 }
 
 .settings-page__toggle-group {

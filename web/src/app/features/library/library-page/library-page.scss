@@ -67,13 +67,16 @@
   gap: var(--space-3);
 }
 
-// Тип + улюблене + сортування — другий такий самий горизонтально-скрольний
-// рядок; пошук — окремий повношириний рядок (не чіп, текстове поле).
-.library-page__chipscroll {
+// Тип + улюблене + сортування — компактні MatMenu-дропдаунами кнопки
+// (step-15 §3, той самий патерн, що мовний дропдаун у хедері) в один
+// горизонтально-скрольний рядок (запасний варіант — на практиці вміщується
+// без скролу навіть на 360px, бо контроли компактні); пошук — окремий
+// повношириний рядок (не чіп, текстове поле).
+.library-page__controls {
   display: flex;
   flex: 1 1 auto;
   align-items: center;
-  gap: var(--space-3);
+  gap: var(--space-2);
   min-width: 0;
   overflow-x: auto;
   overscroll-behavior-x: contain;
@@ -93,23 +96,8 @@
   }
 }
 
-.library-page__kind {
-  display: flex;
-  flex-wrap: nowrap;
+.library-page__controls > * {
   flex: 0 0 auto;
-  gap: var(--space-2);
-}
-
-.library-page__kind > * {
-  flex: 0 0 auto;
-  scroll-snap-align: start;
-}
-
-.library-page__sort-field {
-  display: flex;
-  align-items: center;
-  flex: 0 0 auto;
-  gap: var(--space-2);
   scroll-snap-align: start;
 }
 
@@ -118,21 +106,41 @@
   min-width: 160px;
 }
 
-.library-page__sort-label {
-  font-size: var(--font-size-s);
-  color: var(--color-text-muted);
-  white-space: nowrap;
-}
-
-.library-page__sort {
+.library-page__dropdown-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
   height: 40px;
   padding: 0 var(--space-3);
-  border-radius: var(--radius-s);
   border: 1px solid var(--color-border);
+  border-radius: var(--radius-s);
   background: var(--color-surface);
   color: var(--color-text);
-  font-size: var(--font-size-input);
-  font-family: var(--font-family);
+  font: inherit;
+  font-size: var(--font-size-s);
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+
+  &:hover {
+    background: var(--color-surface-2);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: -2px;
+  }
+}
+
+.library-page__dropdown-caret {
+  flex: 0 0 auto;
+  color: var(--color-text-muted);
+}
+
+.library-page__menu-item.library-page__menu-item--active {
+  color: var(--color-primary);
+  font-weight: 600;
 }
 
 .library-page__grid {
@@ -230,16 +238,16 @@
   margin-top: var(--space-1);
 }
 
-// Гарантований 2-рядковий блок фільтрів на вузьких екранах: chipscroll
-// (тип+улюблене+сортування) і пошук — кожен на своєму рядку, а не
-// органічний wrap (той ламався непередбачувано на довших uk/ru написах).
+// Гарантований 2-рядковий блок фільтрів на вузьких екранах: controls
+// (тип-дропдаун+улюблене+сортування-дропдаун) і пошук — кожен на своєму
+// рядку, а не органічний wrap (той ламався непередбачувано на uk/ru написах).
 @media (max-width: 480px) {
   .library-page__row {
     flex-direction: column;
     align-items: stretch;
   }
 
-  .library-page__chipscroll {
+  .library-page__controls {
     width: 100%;
   }
 

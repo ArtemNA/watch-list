@@ -1,5 +1,6 @@
 {
   "app.title": "WatchList",
+  "nav.library": "Библиотека",
   "nav.search": "Поиск",
   "nav.lists": "Списки",
   "nav.settings": "Настройки",
@@ -9,6 +10,13 @@
   "nav.account.sync": "Синхронизировать",
   "nav.account.syncing": "Синхронизация...",
   "nav.account.logout": "Выйти",
+
+  "tabs.ariaLabel": "Основная навигация",
+  "tabs.library": "Библиотека",
+  "tabs.lists": "Списки",
+  "tabs.search": "Поиск",
+  "tabs.profile": "Профиль",
+  "tabs.add": "Добавить",
 
   "shell.offline.label": "Офлайн",
   "shell.offline.tooltip": "Нет соединения с сетью. Библиотека и редактирование работают, синк и поиск — недоступны.",
@@ -258,7 +266,9 @@
   "auth.errors.unknown": "Что-то пошло не так. Попробуйте ещё раз.",
   "auth.sessionExpired": "Сессия завершена. Войдите снова.",
 
-  "settings.title": "Настройки",
+  "settings.title": "Профиль",
+  "settings.account.title": "Аккаунт",
+  "settings.account.guestHint": "Войдите, чтобы синхронизировать библиотеку между устройствами. Без входа приложение продолжает работать полностью локально.",
   "settings.backup.title": "Резервная копия",
   "settings.backup.hint": "В библиотеке {{count}} элементов.",
   "settings.backup.export": "Экспортировать JSON",

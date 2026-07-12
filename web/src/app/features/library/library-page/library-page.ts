@@ -1,6 +1,7 @@
 import { Component, computed, effect, inject, signal, untracked } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { MatDialog } from '@angular/material/dialog';
+import { MatMenuModule } from '@angular/material/menu';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
 import { ItemsRepository } from '../../../core/data/items.repository';
@@ -36,7 +37,17 @@ function parseSortFilter(raw: string | null): LibrarySort {
 
 @Component({
   selector: 'app-library-page',
-  imports: [RouterLink, TPipe, AppButton, AppChip, AppEmptyState, AppFavoriteToggle, AppInput, AppRating],
+  imports: [
+    RouterLink,
+    TPipe,
+    AppButton,
+    AppChip,
+    AppEmptyState,
+    AppFavoriteToggle,
+    AppInput,
+    AppRating,
+    MatMenuModule,
+  ],
   templateUrl: './library-page.html',
   styleUrl: './library-page.scss',
 })
@@ -108,8 +119,17 @@ export class LibraryPage {
     });
   }
 
-  onSortChange(event: Event): void {
-    this.updateFilters({ sort: (event.target as HTMLSelectElement).value as LibrarySort });
+  // Компактні MatMenu-дропдауни (Тип/Сортування) — той самий патерн, що
+  // мовний дропдаун у хедері (step-15 §3): кнопка показує поточний вибір.
+  protected readonly kindLabel = computed(() => {
+    const kind = this.filters().kind;
+    return kind === 'all' ? this.i18n.t('library.filters.allKinds') : this.i18n.t('kind.' + kind);
+  });
+
+  protected readonly sortLabel = computed(() => this.i18n.t('library.sort.' + this.filters().sort));
+
+  setSort(sort: LibrarySort): void {
+    this.updateFilters({ sort });
   }
 
   onSearchInput(value: string): void {

@@ -28,46 +28,91 @@
     </div>
 
     <div class="library-page__row">
-      <div class="library-page__chipscroll">
-        <div class="library-page__kind" role="group" [attr.aria-label]="'library.filters.kind' | t">
-          <app-button
-            size="s"
-            [variant]="filters().kind === 'all' ? 'primary' : 'ghost'"
+      <div class="library-page__controls">
+        <button
+          type="button"
+          class="library-page__dropdown-btn"
+          [matMenuTriggerFor]="kindMenu"
+          [attr.aria-label]="'library.filters.kind' | t"
+        >
+          {{ kindLabel() }}
+          <svg
+            class="library-page__dropdown-caret"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            width="14"
+            height="14"
+          >
+            <polyline points="6 9 12 15 18 9" />
+          </svg>
+        </button>
+        <mat-menu #kindMenu="matMenu">
+          <button
+            mat-menu-item
+            type="button"
+            class="library-page__menu-item"
+            [class.library-page__menu-item--active]="filters().kind === 'all'"
             (click)="setKind('all')"
           >
             {{ 'library.filters.allKinds' | t }}
-          </app-button>
+          </button>
           @for (kind of kinds; track kind) {
-            <app-button
-              size="s"
-              [variant]="filters().kind === kind ? 'primary' : 'ghost'"
+            <button
+              mat-menu-item
+              type="button"
+              class="library-page__menu-item"
+              [class.library-page__menu-item--active]="filters().kind === kind"
               (click)="setKind(kind)"
             >
               {{ ('kind.' + kind) | t }}
-            </app-button>
+            </button>
           }
-          <app-button
-            size="s"
-            [variant]="filters().favoriteOnly ? 'primary' : 'ghost'"
-            (click)="toggleFavoriteOnly()"
-          >
-            {{ 'library.filters.favoriteOnly' | t }}
-          </app-button>
-        </div>
+        </mat-menu>
 
-        <div class="library-page__sort-field">
-          <label class="library-page__sort-label" for="library-sort">{{ 'library.filters.sort' | t }}</label>
-          <select
-            id="library-sort"
-            class="library-page__sort"
-            [value]="filters().sort"
-            (change)="onSortChange($event)"
+        <app-favorite-toggle
+          [active]="filters().favoriteOnly"
+          [ariaLabel]="'library.filters.favoriteOnly' | t"
+          (toggled)="toggleFavoriteOnly()"
+        />
+
+        <button
+          type="button"
+          class="library-page__dropdown-btn"
+          [matMenuTriggerFor]="sortMenu"
+          [attr.aria-label]="'library.filters.sort' | t"
+        >
+          {{ sortLabel() }}
+          <svg
+            class="library-page__dropdown-caret"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            width="14"
+            height="14"
           >
-            @for (sort of sorts; track sort) {
-              <option [value]="sort">{{ ('library.sort.' + sort) | t }}</option>
-            }
-          </select>
-        </div>
+            <polyline points="6 9 12 15 18 9" />
+          </svg>
+        </button>
+        <mat-menu #sortMenu="matMenu">
+          @for (sort of sorts; track sort) {
+            <button
+              mat-menu-item
+              type="button"
+              class="library-page__menu-item"
+              [class.library-page__menu-item--active]="filters().sort === sort"
+              (click)="setSort(sort)"
+            >
+              {{ ('library.sort.' + sort) | t }}
+            </button>
+          }
+        </mat-menu>
       </div>
 
       <app-input

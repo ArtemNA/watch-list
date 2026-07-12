@@ -1,5 +1,6 @@
 {
   "app.title": "WatchList",
+  "nav.library": "Бібліотека",
   "nav.search": "Пошук",
   "nav.lists": "Списки",
   "nav.settings": "Налаштування",
@@ -9,6 +10,13 @@
   "nav.account.sync": "Синхронізувати",
   "nav.account.syncing": "Синхронізація...",
   "nav.account.logout": "Вийти",
+
+  "tabs.ariaLabel": "Основна навігація",
+  "tabs.library": "Бібліотека",
+  "tabs.lists": "Списки",
+  "tabs.search": "Пошук",
+  "tabs.profile": "Профіль",
+  "tabs.add": "Додати",
 
   "shell.offline.label": "Офлайн",
   "shell.offline.tooltip": "Немає з'єднання з мережею. Бібліотека і редагування працюють, синк і пошук — недоступні.",
@@ -258,7 +266,9 @@
   "auth.errors.unknown": "Щось пішло не так. Спробуйте ще раз.",
   "auth.sessionExpired": "Сесію завершено. Увійдіть знову.",
 
-  "settings.title": "Налаштування",
+  "settings.title": "Профіль",
+  "settings.account.title": "Акаунт",
+  "settings.account.guestHint": "Увійдіть, щоб синхронізувати бібліотеку між пристроями. Без входу апка й далі працює повністю локально.",
   "settings.backup.title": "Бекап",
   "settings.backup.hint": "У бібліотеці {{count}} айтемів.",
   "settings.backup.export": "Експортувати JSON",

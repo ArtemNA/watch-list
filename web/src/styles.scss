@@ -22,3 +22,12 @@ body {
     color var(--transition-fast);
 }
 
+// MatSnackBar рендериться в overlay-контейнер поза Shell, тому глобально —
+// на мобільному (<768px) підняти його над таб-баром (step-15 §2), а не дати
+// йому лягти врівень із самим нижнім краєм екрана позаду FAB/табів.
+@media (max-width: (tokens.$bp-nav - 1)) {
+  .mat-mdc-snack-bar-container {
+    margin-bottom: calc(56px + env(safe-area-inset-bottom) + var(--space-3)) !important;
+  }
+}
+

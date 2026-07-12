@@ -1,23 +1,37 @@
+@use '../design/tokens';
+
 :host {
   display: flex;
   flex-direction: column;
   min-height: 100%;
 }
 
+// --- Хедер: спільні шматки для десктоп- і мобільної версій ---
+
 .shell__header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  flex-wrap: wrap;
   gap: var(--space-2);
-  padding: var(--space-3) var(--space-4);
   background: var(--color-surface);
   border-bottom: 1px solid var(--color-border);
+}
+
+// --- Десктоп (≥768px): лого + nav-лінки + дії, один рядок ---
+
+.shell__header--mobile {
+  display: none;
+}
+
+.shell__header--desktop {
+  padding: var(--space-3) var(--space-4);
+  flex-wrap: wrap;
 }
 
 .shell__logo {
   display: inline-flex;
   align-items: center;
+  flex: 0 0 auto;
   text-decoration: none;
   border-radius: var(--radius-s);
   transition: opacity var(--transition-fast);
@@ -41,9 +55,9 @@
 .shell__nav {
   display: flex;
   flex: 1;
-  flex-shrink: 0;
   align-items: center;
-  gap: var(--space-2);
+  gap: var(--space-1);
+  min-width: 0;
 }
 
 .shell__nav-link {
@@ -82,33 +96,10 @@
 .shell__actions {
   display: flex;
   flex-wrap: wrap;
+  flex: 0 0 auto;
   align-items: center;
   justify-content: flex-end;
-  gap: var(--space-2) var(--space-3);
-}
-
-.shell__login-link {
-  display: inline-flex;
-  align-items: center;
-  height: 36px;
-  padding: 0 var(--space-3);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-s);
-  color: var(--color-text);
-  font-size: var(--font-size-s);
-  font-weight: 600;
-  text-decoration: none;
-  white-space: nowrap;
-  transition: background-color var(--transition-fast);
-
-  &:hover {
-    background: var(--color-surface-2);
-  }
-
-  &:focus-visible {
-    outline: 2px solid var(--color-primary);
-    outline-offset: -2px;
-  }
+  gap: var(--space-2);
 }
 
 .shell__offline {
@@ -191,25 +182,22 @@
   line-height: 1;
 }
 
-.shell__account-btn {
-  // НЕ flex: text-overflow: ellipsis не працює на flex-контейнерах (текст стає
-  // анонімним flex-айтемом і обрізається без «…»). Вертикальне центрування —
-  // через line-height = висота мінус бордери.
-  display: inline-block;
+// Аватар-коло (Step 15) — замінює і "Увійти"-лінк, і email-кнопку: email
+// ніде в хедері текстом більше не показується (лише в disabled-рядку меню).
+.shell__avatar-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
   height: 36px;
-  line-height: 34px;
-  max-width: 160px;
-  padding: 0 var(--space-3);
+  flex: 0 0 auto;
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-s);
+  border-radius: 50%;
   background: transparent;
   color: var(--color-text);
   font: inherit;
   font-size: var(--font-size-s);
-  font-weight: 600;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  font-weight: 700;
   cursor: pointer;
   transition: background-color var(--transition-fast);
 
@@ -219,12 +207,13 @@
 
   &:focus-visible {
     outline: 2px solid var(--color-primary);
-    outline-offset: -2px;
+    outline-offset: 2px;
   }
 }
 
-.shell__account-btn-avatar {
-  display: none;
+.shell__menu-email {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-s);
 }
 
 .shell__lang-btn {
@@ -275,6 +264,7 @@
   justify-content: center;
   width: 40px;
   height: 40px;
+  flex: 0 0 auto;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-s);
   background: transparent;
@@ -297,67 +287,104 @@
   padding: var(--space-4);
 }
 
-// Компактний хедер: nav-лінки — тільки іконки (з tooltip+aria-label), email
-// у кнопці акаунта — тільки ініціал-аватарка. Мета — один рядок хедера на
-// 375px усіма трьома мовами, включно з довшими uk/ru написами (Step 14).
-@media (max-width: 640px) {
-  // Логотип — повний word-mark (icon+"WatchList", 242×64) не влазить поруч
-  // з nav+actions на 375px; показуємо тільки квадратну іконку-марку через
-  // overflow:hidden-кроп (звичний img, без окремого square-асета).
-  .shell__logo {
-    width: 28px;
-    overflow: hidden;
-  }
+// --- Мобільний (<768px): тонкий заголовок зверху + таб-бар знизу ---
 
-  .shell__logo-img {
-    height: 28px;
-  }
-
-  .shell__nav {
-    gap: 0;
-  }
-
-  .shell__nav-link {
-    padding: var(--space-2) var(--space-1);
-  }
-
-  .shell__nav-label {
-    display: none;
-  }
-
-  // 375px з довшими uk/ru написами лишає рівно нуль запасу без цього —
-  // компактніший gap між кнопками праворуч (email/sync/lang/theme).
-  .shell__actions {
-    gap: var(--space-2);
-  }
-
-  .shell__account-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 36px;
-    height: 36px;
-    max-width: none;
-    padding: 0;
-    border-radius: 50%;
-    font-size: var(--font-size-s);
-  }
-
-  .shell__account-btn-email {
-    display: none;
-  }
-
-  .shell__account-btn-avatar {
-    display: inline-block;
-  }
+.shell__tabbar {
+  display: none;
 }
 
-@media (max-width: 400px) {
-  .shell__header {
+@media (max-width: (tokens.$bp-nav - 1)) {
+  .shell__header--desktop {
+    display: none;
+  }
+
+  .shell__header--mobile {
+    display: flex;
     padding: var(--space-2) var(--space-3);
   }
 
+  .shell__mobile-title {
+    min-width: 0;
+    overflow: hidden;
+    color: var(--color-text);
+    font-size: var(--font-size-l);
+    font-weight: 700;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .shell__mobile-status {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
   .shell__content {
-    padding: var(--space-3);
+    // Знизу — таб-бар (56px + safe-area) над рештою простору для контенту,
+    // щоб останні картки/снекбари не ховались за ним.
+    padding: var(--space-3) var(--space-3) calc(56px + env(safe-area-inset-bottom) + var(--space-4));
+  }
+
+  .shell__tabbar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 20;
+    display: flex;
+    align-items: stretch;
+    height: calc(56px + env(safe-area-inset-bottom));
+    padding-bottom: env(safe-area-inset-bottom);
+    background: var(--color-surface);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .shell__tab {
+    display: flex;
+    flex: 1 1 0;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    min-width: 0;
+    color: var(--color-text-muted);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+
+    &--active {
+      color: var(--color-primary);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--color-primary);
+      outline-offset: -2px;
+    }
+  }
+
+  .shell__tab-label {
+    font-size: 11px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  // Центральна FAB-кнопка "+" — веде на /search разом зі звичайним табом
+  // "Пошук" поруч (це той самий головний флоу "знайти і додати" — свідомий
+  // дубль маршруту заради візуального акценту, step-15 §2).
+  .shell__tab--fab {
+    justify-content: flex-start;
+  }
+
+  .shell__tab-fab-circle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    margin-top: -20px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+    color: var(--color-primary-contrast);
+    box-shadow: var(--shadow-2);
   }
 }

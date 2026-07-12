@@ -1,13 +1,18 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, DestroyRef, computed, inject, signal } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { Router, RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 
+import { AuthService } from '../../../core/auth/auth.service';
 import { ItemsRepository } from '../../../core/data/items.repository';
 import { I18nService, Lang } from '../../../core/i18n/i18n.service';
 import { TPipe } from '../../../core/i18n/t.pipe';
 import type { MediaItem } from '../../../core/models/media-item.model';
 import { mergeItems } from '../../../core/sync/merge';
+import { runInteractiveSync } from '../../../core/sync/run-interactive-sync';
+import { SYNC_CLOCK_TICK_MS, syncStatusText } from '../../../core/sync/sync-status-text';
+import { SyncService } from '../../../core/sync/sync.service';
 import type { ConflictResolution, SyncConflict } from '../../../core/sync/sync.service';
 import { ThemeService } from '../../../core/theme/theme.service';
 import { AppButton } from '../../../shared/ui/button/app-button';
@@ -33,7 +38,7 @@ type ImportState = 'idle' | 'previewing' | 'importing';
 
 @Component({
   selector: 'app-settings-page',
-  imports: [TPipe, AppButton, AppCard],
+  imports: [RouterLink, TPipe, AppButton, AppCard],
   templateUrl: './settings-page.html',
   styleUrl: './settings-page.scss',
 })
@@ -41,8 +46,11 @@ export class SettingsPage {
   private readonly repo = inject(ItemsRepository);
   private readonly dialog = inject(MatDialog);
   private readonly snackBar = inject(MatSnackBar);
+  private readonly router = inject(Router);
   protected readonly i18n = inject(I18nService);
   protected readonly theme = inject(ThemeService);
+  protected readonly auth = inject(AuthService);
+  protected readonly sync = inject(SyncService);
 
   protected readonly itemCount = computed(() => this.repo.items().length);
 
@@ -50,8 +58,31 @@ export class SettingsPage {
   protected readonly preview = signal<ImportPreview | null>(null);
   protected readonly importError = signal<string | null>(null);
 
+  // Тримає "N хв тому" в статусі синку свіжим без reload (той самий підхід,
+  // що індикатор синку в хедері — ARCHITECTURE §6).
+  private readonly clockTick = signal(0);
+
+  constructor() {
+    const timer = setInterval(() => this.clockTick.update((n) => n + 1), SYNC_CLOCK_TICK_MS);
+    inject(DestroyRef).onDestroy(() => clearInterval(timer));
+  }
+
+  protected readonly accountSyncStatus = computed(() => {
+    this.clockTick();
+    return syncStatusText(this.sync, this.i18n);
+  });
+
   setLang(lang: Lang): void {
     this.i18n.setLang(lang);
+  }
+
+  async runSync(): Promise<void> {
+    await runInteractiveSync(this.sync, this.i18n, this.snackBar);
+  }
+
+  logout(): void {
+    this.auth.logout();
+    void this.router.navigateByUrl('/');
   }
 
   async exportBackup(): Promise<void> {

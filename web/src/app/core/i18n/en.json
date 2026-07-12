@@ -1,5 +1,6 @@
 {
   "app.title": "WatchList",
+  "nav.library": "Library",
   "nav.search": "Search",
   "nav.lists": "Lists",
   "nav.settings": "Settings",
@@ -9,6 +10,13 @@
   "nav.account.sync": "Sync now",
   "nav.account.syncing": "Syncing...",
   "nav.account.logout": "Log out",
+
+  "tabs.ariaLabel": "Main navigation",
+  "tabs.library": "Library",
+  "tabs.lists": "Lists",
+  "tabs.search": "Search",
+  "tabs.profile": "Profile",
+  "tabs.add": "Add",
 
   "shell.offline.label": "Offline",
   "shell.offline.tooltip": "No network connection. Library and editing still work; sync and search are unavailable.",
@@ -258,7 +266,9 @@
   "auth.errors.unknown": "Something went wrong. Please try again.",
   "auth.sessionExpired": "Your session has expired. Please log in again.",
 
-  "settings.title": "Settings",
+  "settings.title": "Profile",
+  "settings.account.title": "Account",
+  "settings.account.guestHint": "Log in to sync your library across devices. Without an account, the app still works fully offline.",
   "settings.backup.title": "Backup",
   "settings.backup.hint": "Your library has {{count}} items.",
   "settings.backup.export": "Export JSON",

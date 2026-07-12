@@ -1,6 +1,29 @@
 <div class="settings-page">
   <h1 class="settings-page__title">{{ 'settings.title' | t }}</h1>
 
+  <app-card class="settings-page__section" [title]="'settings.account.title' | t">
+    @if (auth.isLoggedIn()) {
+      <div class="settings-page__field">
+        <span class="settings-page__field-label">{{ auth.email() }}</span>
+        <span class="settings-page__account-status">{{ accountSyncStatus() }}</span>
+      </div>
+      <div class="settings-page__row">
+        <app-button size="s" [disabled]="sync.isSyncing()" (click)="runSync()">
+          {{ (sync.isSyncing() ? 'nav.account.syncing' : 'nav.account.sync') | t }}
+        </app-button>
+      </div>
+      <div class="settings-page__divider"></div>
+      <div class="settings-page__row">
+        <app-button size="s" variant="ghost" (click)="logout()">{{ 'nav.account.logout' | t }}</app-button>
+      </div>
+    } @else {
+      <p class="settings-page__hint">{{ 'settings.account.guestHint' | t }}</p>
+      <div class="settings-page__row">
+        <app-button size="s" routerLink="/auth">{{ 'nav.login' | t }}</app-button>
+      </div>
+    }
+  </app-card>
+
   <app-card class="settings-page__section" [title]="'settings.backup.title' | t">
     <p class="settings-page__hint">{{ 'settings.backup.hint' | t: { count: itemCount() } }}</p>
 

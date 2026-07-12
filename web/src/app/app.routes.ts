@@ -18,18 +18,20 @@ export const routes: Routes = [
     path: '',
     component: Shell,
     children: [
-      { path: '', component: LibraryPage },
-      { path: 'search', component: SearchPage },
+      // data.titleKey — лише для мобільного тонкого заголовка Shell (step-15 §2),
+      // на логіку сторінок не впливає. Сторінки без titleKey показують app.title.
+      { path: '', component: LibraryPage, data: { titleKey: 'library.title' } },
+      { path: 'search', component: SearchPage, data: { titleKey: 'search.title' } },
       { path: 'item/:id', component: ItemPage },
-      { path: 'lists', component: ListsPage },
-      { path: 'lists/:id', component: ListDetailPage },
+      { path: 'lists', component: ListsPage, data: { titleKey: 'lists.title' } },
+      { path: 'lists/:id', component: ListDetailPage, data: { titleKey: 'lists.title' } },
       // Превью з пошуку БЕЗ додавання в бібліотеку (Step 13) — дані живуть тільки
       // в пам'яті сторінки, нічого не пишеться в IndexedDB.
       { path: 'preview/:kind/:tmdbId', component: PreviewPage },
       // Шер списку (Step 12) — превью working і для незалогіненого відвідувача.
       { path: 'share/:code', component: SharePreviewPage },
       { path: 'auth', component: AuthPage },
-      { path: 'settings', component: SettingsPage },
+      { path: 'settings', component: SettingsPage, data: { titleKey: 'settings.title' } },
       // /dev/ui — постійна демо-сторінка дизайн-системи (CLAUDE.md, DECISIONS #14),
       // у проді ховається guard'ом, з коду НЕ видаляється (Step 09, задача 5).
       { path: 'dev/ui', component: DevUi, canActivate: [devOnlyGuard] },
