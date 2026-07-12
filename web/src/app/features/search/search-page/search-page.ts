@@ -1,6 +1,9 @@
 import { Component, computed, inject, signal } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+
+import { AddItemDialog } from '../../library/add-item-dialog/add-item-dialog';
 
 import { I18nService } from '../../../core/i18n/i18n.service';
 import { TPipe } from '../../../core/i18n/t.pipe';
@@ -29,6 +32,7 @@ const ADD_AS_STATUSES: MediaStatus[] = ['watching', 'watched', 'dropped'];
 })
 export class SearchPage {
   private readonly searchService = inject(SearchService);
+  private readonly dialog = inject(MatDialog);
   private readonly snackBar = inject(MatSnackBar);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
@@ -99,6 +103,12 @@ export class SearchPage {
     }
 
     this.searchTimer = setTimeout(() => void this.runSearch(trimmed, 1), SEARCH_DEBOUNCE_MS);
+  }
+
+  // Ручне додавання живе на сторінці пошуку (зауваження власника після
+  // step-15) — той самий AddItemDialog, що відкривала бібліотека.
+  openAddDialog(): void {
+    this.dialog.open(AddItemDialog);
   }
 
   retry(): void {

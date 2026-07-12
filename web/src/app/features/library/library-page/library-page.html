@@ -1,6 +1,9 @@
 <div class="library-page">
   <header class="library-page__header">
     <h1 class="library-page__title">{{ 'library.title' | t }}</h1>
+    <!-- Увесь хедер видно лише на десктопі (≥768px): на мобільному h1 дублює
+         верхній рядок Shell, «Пошук» — таб/FAB, а «Додати вручну» живе на
+         сторінці пошуку. -->
     <div class="library-page__header-actions">
       <app-button variant="ghost" routerLink="/search">{{ 'library.searchTmdb' | t }}</app-button>
       <app-button (click)="openAddDialog()">{{ 'library.addManually' | t }}</app-button>
@@ -29,6 +32,53 @@
 
     <div class="library-page__row">
       <div class="library-page__controls">
+        <!-- Статус-дропдаун — ТІЛЬКИ мобільний (<768px): скрольний ряд чіпів
+             там виглядав обрізаним; на десктопі чіпи лишаються, а ця кнопка
+             схована CSS-ом. -->
+        <button
+          type="button"
+          class="library-page__dropdown-btn library-page__status-dd"
+          [matMenuTriggerFor]="statusMenu"
+          [attr.aria-label]="'library.filters.status' | t"
+        >
+          {{ statusLabel() }}<span class="library-page__dd-count">&nbsp;({{ statusCount() }})</span>
+          <svg
+            class="library-page__dropdown-caret"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            width="14"
+            height="14"
+          >
+            <polyline points="6 9 12 15 18 9" />
+          </svg>
+        </button>
+        <mat-menu #statusMenu="matMenu">
+          <button
+            mat-menu-item
+            type="button"
+            class="library-page__menu-item"
+            [class.library-page__menu-item--active]="filters().status === 'all'"
+            (click)="setStatus('all')"
+          >
+            {{ 'library.filters.all' | t }} ({{ totalCount() }})
+          </button>
+          @for (status of statuses; track status) {
+            <button
+              mat-menu-item
+              type="button"
+              class="library-page__menu-item"
+              [class.library-page__menu-item--active]="filters().status === status"
+              (click)="setStatus(status)"
+            >
+              {{ ('status.' + status) | t }} ({{ counts()[status] }})
+            </button>
+          }
+        </mat-menu>
+
         <button
           type="button"
           class="library-page__dropdown-btn"
@@ -81,11 +131,25 @@
 
         <button
           type="button"
-          class="library-page__dropdown-btn"
+          class="library-page__dropdown-btn library-page__sort-dd"
           [matMenuTriggerFor]="sortMenu"
           [attr.aria-label]="'library.filters.sort' | t"
         >
-          {{ sortLabel() }}
+          <svg
+            class="library-page__sort-icon"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            width="15"
+            height="15"
+          >
+            <path d="M11 5h10M11 9h7M11 13h4" />
+            <path d="M3 17l3 3 3-3M6 18V4" />
+          </svg>
+          <span class="library-page__sort-label">{{ sortLabel() }}</span>
           <svg
             class="library-page__dropdown-caret"
             viewBox="0 0 24 24"

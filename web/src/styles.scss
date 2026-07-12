@@ -29,5 +29,17 @@ body {
   .mat-mdc-snack-bar-container {
     margin-bottom: calc(56px + env(safe-area-inset-bottom) + var(--space-3)) !important;
   }
+
+  // На мобільному заголовок сторінки вже показує верхній рядок Shell
+  // (route.data.titleKey) — h1 на самих сторінках дублював його (зауваження
+  // власника після step-15). Ховаємо ЛИШЕ на сторінках, чий titleKey збігається
+  // зі змістом h1; list-detail (назва списку) і media-header (назва фільму)
+  // НЕ чіпаємо — там h1 несе унікальну інформацію.
+  .library-page__title,
+  .search-page__title,
+  .lists-page__title,
+  .settings-page__title {
+    display: none;
+  }
 }
 

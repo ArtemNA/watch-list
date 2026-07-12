@@ -52,11 +52,28 @@
       </app-empty-state>
     } @else if (!hasSearched()) {
       <p class="search-page__hint">{{ 'search.hint' | t }}</p>
+      @if (!linkItemId()) {
+        <!-- Ручне додавання живе на сторінці пошуку (зауваження власника після
+             step-15): FAB веде сюди, і «не знайшов у TMDB → додай вручну» —
+             природне місце для цієї дії. У режимі зв'язування (linkItemId)
+             кнопки нема — там свій флоу «Обрати». -->
+        <div class="search-page__manual">
+          <app-button variant="ghost" (click)="openAddDialog()">
+            {{ 'library.addManually' | t }}
+          </app-button>
+        </div>
+      }
     } @else if (results().length === 0) {
       <app-empty-state
         [title]="'search.noResults.title' | t"
         [description]="'search.noResults.description' | t"
-      />
+      >
+        @if (!linkItemId()) {
+          <app-button action variant="ghost" (click)="openAddDialog()">
+            {{ 'library.addManually' | t }}
+          </app-button>
+        }
+      </app-empty-state>
     } @else {
       <div class="search-page__grid">
         @for (result of results(); track result.kind + ':' + result.id) {

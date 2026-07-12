@@ -128,6 +128,19 @@ export class LibraryPage {
 
   protected readonly sortLabel = computed(() => this.i18n.t('library.sort.' + this.filters().sort));
 
+  // Мобільний статус-дропдаун (фікс після step-15: скрольний ряд чіпів на
+  // телефоні виглядав обрізаним). Назва і лічильник — окремо: лічильник на
+  // вузьких екранах ховається CSS-ом, щоб рядок контролів гарантовано влазив.
+  protected readonly statusLabel = computed(() => {
+    const status = this.filters().status;
+    return status === 'all' ? this.i18n.t('library.filters.all') : this.i18n.t('status.' + status);
+  });
+
+  protected readonly statusCount = computed(() => {
+    const status = this.filters().status;
+    return status === 'all' ? this.totalCount() : this.counts()[status];
+  });
+
   setSort(sort: LibrarySort): void {
     this.updateFilters({ sort });
   }

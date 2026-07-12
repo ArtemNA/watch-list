@@ -1,7 +1,16 @@
+@use '../../../design/tokens';
+
 .library-page {
   display: flex;
   flex-direction: column;
   gap: var(--space-5);
+}
+
+// Статус-дропдаун — мобільна заміна ряду чіпів; на десктопі схований.
+// Компаунд-селектор: одиночний .library-page__status-dd програвав би
+// .library-page__dropdown-btn (display: inline-flex), оголошеному нижче.
+.library-page__dropdown-btn.library-page__status-dd {
+  display: none;
 }
 
 .library-page__header {
@@ -138,6 +147,11 @@
   color: var(--color-text-muted);
 }
 
+.library-page__sort-icon {
+  flex: 0 0 auto;
+  color: var(--color-text-muted);
+}
+
 .library-page__menu-item.library-page__menu-item--active {
   color: var(--color-primary);
   font-weight: 600;
@@ -238,8 +252,53 @@
   margin-top: var(--space-1);
 }
 
+// Мобільний (<768px, під таб-баром step-15): зауваження власника після
+// step-15 — скрольний ряд статус-чіпів виглядав обрізаним, а кнопка «Пошук»
+// дублювала таб/FAB. Тому: чіпи і «Пошук»-кнопка ховаються, статус стає
+// таким самим компактним дропдауном, як Тип/Сортування — один рядок
+// контролів без жодного горизонтального скролу. h1 сторінки ховається
+// глобально (styles.scss) — заголовок показує верхній рядок Shell.
+@media (max-width: (tokens.$bp-nav - 1)) {
+  .library-page__tabs {
+    display: none;
+  }
+
+  .library-page__dropdown-btn.library-page__status-dd {
+    display: inline-flex;
+  }
+
+  // Увесь хедер-блок сторінки ховається: h1 дублює верхній рядок Shell,
+  // «Пошук» дублює таб/FAB, а «Додати вручну» переїхала на сторінку пошуку
+  // (зауваження власника: самотня кнопка тут виглядала погано). Ручне
+  // додавання на мобільному: FAB → пошук → «Додати вручну» (hint/no-results)
+  // або CTA порожньої бібліотеки.
+  .library-page__header {
+    display: none;
+  }
+
+  // Щоб рядок [Статус ▾][Тип ▾][♥][⇅▾] гарантовано влазив у 360–375px усіма
+  // мовами БЕЗ скролу: лічильник статусу і текст сортування ховаються
+  // (лічильники видно в меню, сортування впізнається за іконкою ⇅),
+  // а падінги кнопок стискаються (найдовший кейс — ru «Хочу посмотреть»).
+  .library-page__dd-count {
+    display: none;
+  }
+
+  .library-page__sort-label {
+    display: none;
+  }
+
+  .library-page__dropdown-btn {
+    padding: 0 var(--space-2);
+  }
+
+  .library-page__controls {
+    gap: var(--space-1);
+  }
+}
+
 // Гарантований 2-рядковий блок фільтрів на вузьких екранах: controls
-// (тип-дропдаун+улюблене+сортування-дропдаун) і пошук — кожен на своєму
+// (статус+тип+улюблене+сортування дропдаунами) і пошук — кожен на своєму
 // рядку, а не органічний wrap (той ламався непередбачувано на uk/ru написах).
 @media (max-width: 480px) {
   .library-page__row {

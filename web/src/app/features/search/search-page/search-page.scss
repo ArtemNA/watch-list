@@ -45,6 +45,11 @@
   font-size: var(--font-size-m);
 }
 
+.search-page__manual {
+  display: flex;
+  margin-top: var(--space-2);
+}
+
 .search-page__spinner {
   display: flex;
   align-items: center;
